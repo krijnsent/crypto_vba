@@ -24,9 +24,9 @@ Debug.Print PublicKraken("OHLC", "?pair=XXBTZEUR")
 t1 = DateDiff("s", "1/1/1970", "1/1/2014")
 t2 = DateDiff("s", "1/1/1970", "1/1/2018")
 
-Debug.Print PrivateKraken("Balance", apikey_kraken, secretkey_kraken)
+Debug.Print PrivateKraken("Balance", apikey, secretkey)
 '{"error":[],"result":{"ZEUR":"15.35","KFEE":"935","XXBT": etc...
-Debug.Print PrivateKraken("TradesHistory", apikey_kraken, secretkey_kraken, "start=" & t1 & "&end=" & t2 & "&")
+Debug.Print PrivateKraken("TradesHistory", apikey, secretkey, "start=" & t1 & "&end=" & t2 & "&")
 '{"error":[],"result":{"trades":{"TBSI6I-EO4KN-MLU4AI":{"ordertxid":"O7AERY-NCNDR-6WKLMU","pair":"XXMRZEUR","time":1493715960.4854,"type":"buy","ordertype":"limit","price": etc...
 
 End Sub
