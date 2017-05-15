@@ -1,3 +1,4 @@
+Attribute VB_Name = "ModHash"
 Sub TestHash()
 
 'Check hashes e.g. here: https://www.freeformatter.com/sha256-generator.html
@@ -10,7 +11,7 @@ Debug.Print ComputeHash_C("SHA512", "input_string", "my_key", "STR64")
 '9DsHyKCMZmDa5+y2I4v9ErMAa4rTWXVZVqDA5HOuScHFJBjUJeJW11B6CojHJHQHIzXJc8tkneRLRCqaZfV05A==
 
 Debug.Print ComputeHash_C("SHA384", "input_string", "", "RAW")
-'Å¸TÃ’xNPÃ·xÅ¾oÂº   Ã†ÃÂ°â€]â€™SÃ«ÂÃ…Ã¹ÃRÃ©â„¢jÂ¹
+'ŸTÒxNP÷xoº   ÆÏ°”]’SëÅùÏRé™j¹
 
 End Sub
 
@@ -186,7 +187,7 @@ Function Base64Encode(inData)
     Dim nGroup, pOut, sGroup
     
     'Create one long from this 3 bytes.
-    nGroup = &H10000 * Asc(Mid(inData, I, 1)) + _
+    nGroup = &H10000 * asc(Mid(inData, I, 1)) + _
       &H100 * MyASC(Mid(inData, I + 1, 1)) + MyASC(Mid(inData, I + 2, 1))
     
     'Oct splits the long To 8 groups with 3 bits
@@ -217,7 +218,7 @@ Function Base64Encode(inData)
 End Function
 
 Function MyASC(OneChar)
-  If OneChar = "" Then MyASC = 0 Else MyASC = Asc(OneChar)
+  If OneChar = "" Then MyASC = 0 Else MyASC = asc(OneChar)
 End Function
 
 
