@@ -3,7 +3,7 @@ Sub TestBTCe()
 
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
-'Kraken will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
+'BTCe will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
 Dim apikey As String
 Dim secretkey As String
@@ -11,7 +11,7 @@ Dim secretkey As String
 apikey = "your api key here"
 secretkey = "your secret key here"
 
-'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_kraken = "the key to use everywhere" etc )
+'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
 apikey = apikey_btce
 secretkey = secretkey_btce
 
@@ -33,7 +33,7 @@ End Sub
 
 Function PublicBTCe(Method As String, Optional MethodOptions As String) As String
 
-ApiSite = "https://btc-e.com/api/3/"
+'https://btc-e.com/api/3/docs
 
 PublicApiSite = "https://btc-e.com"
 urlPath = "/api/3/" & Method & MethodOptions
@@ -50,6 +50,7 @@ Set objHTTP = Nothing
 End Function
 Function PrivateBTCe(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
 
+'https://btc-e.com/tapi/docs
 Dim NonceUnique As String
 
 'BTC-e wants a 10-digit Nonce
