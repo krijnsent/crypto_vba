@@ -187,7 +187,7 @@ Function Base64Encode(inData)
     Dim nGroup, pOut, sGroup
     
     'Create one long from this 3 bytes.
-    nGroup = &H10000 * asc(Mid(inData, I, 1)) + _
+    nGroup = &H10000 * Asc(Mid(inData, I, 1)) + _
       &H100 * MyASC(Mid(inData, I + 1, 1)) + MyASC(Mid(inData, I + 2, 1))
     
     'Oct splits the long To 8 groups with 3 bits
@@ -218,7 +218,7 @@ Function Base64Encode(inData)
 End Function
 
 Function MyASC(OneChar)
-  If OneChar = "" Then MyASC = 0 Else MyASC = asc(OneChar)
+  If OneChar = "" Then MyASC = 0 Else MyASC = Asc(OneChar)
 End Function
 
 

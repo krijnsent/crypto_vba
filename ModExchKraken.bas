@@ -29,6 +29,7 @@ Debug.Print PrivateKraken("Balance", apikey, secretkey)
 Debug.Print PrivateKraken("TradesHistory", apikey, secretkey, "start=" & t1 & "&end=" & t2 & "&")
 '{"error":[],"result":{"trades":{"TBSI6I-EO4KN-MLU4AI":{"ordertxid":"O7AERY-NCNDR-6WKLMU","pair":"XXMRZEUR","time":1493715960.4854,"type":"buy","ordertype":"limit","price": etc...
 
+
 End Sub
 
 Function PublicKraken(Method As String, Optional MethodOptions As String) As String
