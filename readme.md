@@ -18,11 +18,11 @@ Import the .bas files you need: starting with ModHash.bas and adding the exchang
 - Better testing
 - Better error handling
 - For historical prices, include https://www.cryptocompare.com/api/
-- Post-process the Array to a more usable format (flat table)
 - Build excel functions to get the information directly to a sheet
 - Later: place orders
 
 # Done
+- Post-process the Array to a more usable format (flat table)
 - Process the response to something you can use in Excel: an array/Range etc.
 - Build a function to transform the JSON to an Array
 - Build tests for all modules/functions

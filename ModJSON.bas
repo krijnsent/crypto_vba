@@ -2,6 +2,8 @@ Attribute VB_Name = "ModJSON"
 'Functions in module:
 'MaxDepth - integer with the maximum depth of the JSON
 'JsonToArray - transforms JSON into an array with an internal tree structure
+'ArrayTable - transforms JsonToArray (internal tree) into a flat table for output
+'Source: https://github.com/krijnsent/crypto_vba
 
 Sub TestDepth()
 
@@ -34,7 +36,6 @@ JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723]
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Debug.Print MaxDepth(Json)
 '4
-
 
 End Sub
 
@@ -126,6 +127,62 @@ Next
 
 End Sub
 
+Sub TestArrayTable()
+
+Dim JsonResponse As String
+Dim Json As Dictionary
+Dim JsonRes As Dictionary
+
+'Set Sht = Worksheets("TEST")
+'Sht.Cells.ClearContents
+
+'Kraken Time
+JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""Mon, 22 May 17 12:23:51 +0000""}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+Set JsonRes = Json("result")
+ResArr = JsonToArray(JsonRes)
+Tbl = ArrayTable(ResArr)
+Debug.Print Tbl(1, 1)
+Debug.Print Tbl(2, 2)
+'unixtime
+'Mon, 22 May 17 12:23:51 +0000
+'Sht.Range("B2").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
+
+'Poloniex returnTicker
+JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+Tbl = ArrayTable(ResArr)
+Debug.Print Tbl(1, 2)
+Debug.Print Tbl(3, 3)
+'BTC_BCN
+'0.04775443
+'Sht.Range("B6").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
+
+'Kraken OHLC
+JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+Set JsonRes = Json("result")
+ResArr = JsonToArray(Json)
+Tbl = ArrayTable(ResArr)
+Debug.Print Tbl(1, 2)
+Debug.Print Tbl(4, 4)
+'result
+'1492614000
+'Sht.Range("B11").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
+
+'BTCe depth
+JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+Tbl = ArrayTable(ResArr)
+Debug.Print Tbl(1, 2)
+Debug.Print Tbl(4, 4)
+'btc_eur
+'1924,41
+'Sht.Range("B21").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
+
+End Sub
 
 Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional NodeLvl As Integer = 1) As Integer
     
@@ -269,3 +326,66 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
     JsonToArray = ResArr
 
 End Function
+
+Function ArrayTable(ArrIn As Variant) As Variant
+
+'Expected input: NODE_LVL -- PARENT -- KEY -- VALUE -- TYPE
+Dim NrIt As Integer
+Dim MaxD As Integer
+
+'Get max depth and max items at that level
+MaxD = 0
+NrIt = 0
+NrObj = 0
+NrVal = 0
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    If Val(ArrIn(1, rw)) > MaxD Then
+        MaxD = ArrIn(1, rw)
+        If ArrIn(5, rw) = "OBJ" Then NrIt = ArrIn(4, rw)
+    End If
+    If ArrIn(5, rw) = "VAL" Then NrVal = NrVal + 1
+    If ArrIn(5, rw) = "OBJ" Then NrObj = NrObj + 1
+Next
+
+If NrObj > 0 Then
+    ReDim ResArr(1 To MaxD + NrIt - 1, 1 To 2)
+Else
+    ReDim ResArr(1 To MaxD + NrVal - 1, 1 To 2)
+End If
+
+TempRw = 0
+ResRw = 2
+
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    Lvl = Val(ArrIn(1, rw))
+    If rw < UBound(ArrIn, 2) Then
+        NextLvl = Val(ArrIn(1, rw + 1))
+    Else
+        NextLvl = 0
+    End If
+    If Lvl = MaxD Then
+        If Val(ArrIn(3, rw)) > 0 Then
+            ResArr(MaxD + TempRw, 1) = "VAL_" & ArrIn(3, rw)
+        Else
+            ResArr(MaxD + TempRw, 1) = ArrIn(3, rw)
+        End If
+        ResArr(MaxD + TempRw, ResRw) = ArrIn(4, rw)
+        For k = 1 To Lvl
+            If IsEmpty(ResArr(k, ResRw)) Then ResArr(k, ResRw) = ResArr(k, ResRw - 1)
+        Next k
+        TempRw = TempRw + 1
+        If rw < UBound(ArrIn, 2) And NextLvl < Lvl Then
+            TempRw = 0
+            ResRw = ResRw + 1
+            ReDim Preserve ResArr(1 To MaxD + NrIt - 1, 1 To ResRw)
+        End If
+    ElseIf Lvl > 0 Then
+        ResArr(Lvl, 1) = "GROUP_" & Lvl
+        ResArr(Lvl, ResRw) = ArrIn(3, rw)
+    End If
+Next
+
+ArrayTable = ResArr
+
+End Function
+
