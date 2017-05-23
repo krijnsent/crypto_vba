@@ -1,7 +1,7 @@
 # crypto_vba
-An Excel/VBA project to communicate with various cryptocurrency exchanges APIs
+An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 2013, but should work for Excel 2007+.
 
-# First steps:
+# Exchanges:
 Get information from:
 - [kraken](https://www.kraken.com/)
 - [poloniex](https://www.poloniex.com/) 
@@ -15,14 +15,14 @@ Import the .bas files you need: starting with ModHash.bas and adding the exchang
 
 # ToDo
 - Build an XLSM file with working examples
+- Better testing
 - Better error handling
 - For historical prices, include https://www.cryptocompare.com/api/
 - Post-process the Array to a more usable format (flat table)
-- Build excel functions to get the information
+- Build excel functions to get the information directly to a sheet
 - Later: place orders
 
 # Done
-<strike>
 - Process the response to something you can use in Excel: an array/Range etc.
 - Build a function to transform the JSON to an Array
 - Build tests for all modules/functions
@@ -30,4 +30,3 @@ Import the .bas files you need: starting with ModHash.bas and adding the exchang
 - Build the Poloniex and BTC-e API connectors
 - Build the Kraken API connector
 - Build a working and tested VBA hash function
-</strike>
