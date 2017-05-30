@@ -21,8 +21,8 @@ Debug.Print PublicKraken("OHLC", "?pair=XXBTZEUR")
 '{"error":[],"result":{"XXBTZEUR":[[1494806880,"1641.101","1642.850","1641.101"," etc...
 
 'Unix time period:
-t1 = DateDiff("s", "1/1/1970", "1/1/2014")
-t2 = DateDiff("s", "1/1/1970", "1/1/2018")
+t1 = DateToUnixTime("1/1/2014")
+t2 = DateToUnixTime("1/1/2018")
 
 Debug.Print PrivateKraken("Balance", apikey, secretkey)
 '{"error":[],"result":{"ZEUR":"15.35","KFEE":"935","XXBT": etc...

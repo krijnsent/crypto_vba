@@ -21,8 +21,8 @@ Debug.Print PublicBTCe("ticker", "/ltc_btc-btc_eur")
 '{"ltc_btc":{"high":0.01453,"low":0.012,"avg":0.013265,"vol":3266.44821,"vol_cur":247301.29778,"last":0.0143,"buy":0.01432,"sell":0.0143,"updated":1495026094},"btc_eur":{"high": etc...
 
 'Unix time period:
-t1 = DateDiff("s", "1/1/1970", "1/1/2014")
-t2 = DateDiff("s", "1/1/1970", "1/1/2018")
+t1 = DateToUnixTime("1/1/2014")
+t2 = DateToUnixTime("1/1/2018")
 
 Debug.Print PrivateBTCe("getInfo", apikey, secretkey)
 '{"success":1,"return":{"funds":{"usd":0,"btc":0.14,"ltc":0,"nmc":0, etc...

@@ -11,12 +11,13 @@ The API response is pure JSON, for which I included https://github.com/VBA-tools
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
 
 # How to use?
-Import the .bas files you need: starting with ModHash.bas and adding the exchange(s) you might need. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you.
+Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you.
 
 # ToDo
 - Build an XLSM file with working examples
 - Better testing
 - Better error handling
+- ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
 - For historical prices, include https://www.cryptocompare.com/api/
 - Build excel functions to get the information directly to a sheet
 - Later: place orders

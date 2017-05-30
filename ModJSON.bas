@@ -336,19 +336,34 @@ Dim MaxD As Integer
 'Get max depth and max items at that level
 MaxD = 0
 NrIt = 0
+MaxNrIt = 0
 NrObj = 0
 NrVal = 0
+'Find maximum depth
 For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
     If Val(ArrIn(1, rw)) > MaxD Then
         MaxD = ArrIn(1, rw)
-        If ArrIn(5, rw) = "OBJ" Then NrIt = ArrIn(4, rw)
+    End If
+Next
+
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    If Val(ArrIn(1, rw)) = MaxD - 1 And ArrIn(5, rw) = "OBJ" Then
+        NrIt = ArrIn(4, rw)
+        If NrIt > MaxNrIt Then
+            MaxNrIt = NrIt
+        End If
     End If
     If ArrIn(5, rw) = "VAL" Then NrVal = NrVal + 1
     If ArrIn(5, rw) = "OBJ" Then NrObj = NrObj + 1
 Next
 
 If NrObj > 0 Then
-    ReDim ResArr(1 To MaxD + NrIt - 1, 1 To 2)
+    If MaxNrIt > NrIt Then
+        'Lowest level in JSON has different number of items, take maximum
+        ReDim ResArr(1 To MaxD + MaxNrIt - 1, 1 To 2)
+    Else
+        ReDim ResArr(1 To MaxD + NrIt - 1, 1 To 2)
+    End If
 Else
     ReDim ResArr(1 To MaxD + NrVal - 1, 1 To 2)
 End If
@@ -377,7 +392,7 @@ For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
         If rw < UBound(ArrIn, 2) And NextLvl < Lvl Then
             TempRw = 0
             ResRw = ResRw + 1
-            ReDim Preserve ResArr(1 To MaxD + NrIt - 1, 1 To ResRw)
+            ReDim Preserve ResArr(1 To MaxD + MaxNrIt - 1, 1 To ResRw)
         End If
     ElseIf Lvl > 0 Then
         ResArr(Lvl, 1) = "GROUP_" & Lvl
