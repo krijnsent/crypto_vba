@@ -30,13 +30,13 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build tests for all modules/functions
 - Integrate VBA-JSON into the project
 - Build the Bittrex API connector
-- Build the BTC-e connector
-- Build the Poloniex and BTC-e API connectors
+- Build the BTC-e API connector
+- Build the Poloniex API connectors
 - Build the Kraken API connector
 - Build a working and tested VBA hash function
 
 # Donate
-If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:
-BTC: 1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa
-ETH: 0x6f61c0d77f410e614e294c454380bbb6ecc7bdc1
-Cheers!
+If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>
+BTC: 1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa <br/>
+ETH: 0x6f61c0d77f410e614e294c454380bbb6ecc7bdc1<br/>
+<b>Cheers!</b>
