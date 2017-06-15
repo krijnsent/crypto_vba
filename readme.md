@@ -6,6 +6,7 @@ Get information from:
 - [kraken](https://www.kraken.com/)
 - [poloniex](https://www.poloniex.com/) 
 - [btc-e](https://www.btc-e.com/) 
+- [Bittrex](https://www.bittrex.com/) 
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
@@ -17,17 +18,25 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build an XLSM file with working examples
 - Better testing
 - Better error handling
-- ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
 - For historical prices, include https://www.cryptocompare.com/api/
 - Build excel functions to get the information directly to a sheet
 - Later: place orders
 
 # Done
+- ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
 - Post-process the Array to a more usable format (flat table)
 - Process the response to something you can use in Excel: an array/Range etc.
 - Build a function to transform the JSON to an Array
 - Build tests for all modules/functions
 - Integrate VBA-JSON into the project
+- Build the Bittrex API connector
+- Build the BTC-e connector
 - Build the Poloniex and BTC-e API connectors
 - Build the Kraken API connector
 - Build a working and tested VBA hash function
+
+# Donate
+If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:
+BTC: 1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa
+ETH: 0x6f61c0d77f410e614e294c454380bbb6ecc7bdc1
+Cheers!
