@@ -15,7 +15,7 @@ Debug.Print ComputeHash_C("SHA384", "input_string", "", "RAW")
 
 End Sub
 
-Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal key As String, Optional OutType As String) As Variant
+Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As String, Optional OutType As String) As Variant
 
     'Created by Koen Rijnsent, www.castoro.nl
     'Function to return a hash
@@ -31,9 +31,9 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal key As S
     Dim bytes() As Byte
     
     BTxt = StrConv(clearText, vbFromUnicode)
-    BKey = StrConv(key, vbFromUnicode)
+    BKey = StrConv(Key, vbFromUnicode)
     
-    If key <> "" Then
+    If Key <> "" Then
         If Meth = "SHA512" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA512")
         ElseIf Meth = "SHA384" Then
@@ -43,7 +43,7 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal key As S
         Else
             Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA1")
         End If
-        SHAhasher.key = BKey
+        SHAhasher.Key = BKey
         bytes = SHAhasher.ComputeHash_2(BTxt)
     Else
         If Meth = "SHA512" Then
