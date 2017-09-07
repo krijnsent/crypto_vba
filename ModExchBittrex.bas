@@ -14,7 +14,7 @@ secretkey = "your secret key here"
 apikey = apikey_bittrex
 secretkey = secretkey_bittrex
 
-Debug.Print PublicBittrex("getmarketsummary", "?market=btc-ltc")
+Debug.Print PublicBittrex("getmarketsummary", "?market=btc-DOGE")
 '{"success":true,"message":"","result":[{"MarketName":"BTC-LTC","High":0.01250680,"Low":0.01132497,"Volume":222923.75389408,"Last":0.01218025,"BaseVolume":2639.03223291,"TimeStamp":"2017-06-15T20:49:50.27","Bid":0.01218026,"Ask":0.01224870,"OpenBuyOrders":1439,"OpenSellOrders":2785,"PrevDay":0.01137500,"Created":"2014-02-13T00:00:00"}]}
 Debug.Print PublicBittrex("getmarkethistory", "?market=BTC-DOGE")
 '{"success":true,"message":"","result":[{"Id":6313536,"TimeStamp":"2017-06-15T20:49:05.46","Quantity":84553.23767320,etc.
@@ -25,7 +25,7 @@ t2 = DateToUnixTime("1/1/2018")
 
 Debug.Print PrivateBittrex("account/getbalances", apikey, secretkey)
 '{"success":true,"message":"","result":[{"Currency":"BTC","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"},{"Currency":"XMR","Balance":0.00000000,"Available":0.00000000,"Pending":0.00000000,"CryptoAddress":etc...
-Debug.Print PrivateBittrex("account/getbalance", apikey, secretkey, "&currency=BTC")
+Debug.Print PrivateBittrex("account/getbalance", apikey, secretkey, "&currency=ETH")
 '{"success":true,"message":"","result":{"Currency":"BTC","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"}}
 
 End Sub
@@ -60,6 +60,7 @@ APIsign = ComputeHash_C("SHA512", TradeApiSite & postdata, secretkey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+Debug.Print "POST: " & TradeApiSite & postdata
 objHTTP.Open "POST", TradeApiSite & postdata, False
 objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"

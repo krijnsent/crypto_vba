@@ -24,6 +24,7 @@ Debug.Print PublicBTCe("ticker", "/ltc_btc-btc_eur")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
+Debug.Print t1, t2
 Debug.Print PrivateBTCe("getInfo", apikey, secretkey)
 '{"success":1,"return":{"funds":{"usd":0,"btc":0.14,"ltc":0,"nmc":0, etc...
 Debug.Print PrivateBTCe("TradeHistory", apikey, secretkey, "&since=" & t1 & "&end=" & t2)

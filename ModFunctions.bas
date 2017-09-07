@@ -15,3 +15,19 @@ Function UnixTimeToDate(ts As Long) As Date
     UnixTimeToDate = DateSerial(1970, 1, intDays + 1) + TimeSerial(intHours, intMins, intSecs)
 End Function
 
+Function TransposeArr(ArrIn As Variant)
+
+    'Custom transpose function, worksheetfunction.transpose won't handle long strings
+    'It will give error 13, https://stackoverflow.com/questions/23315252/vba-tranpose-type-mismatch-error
+    Dim TempArr As Variant
+
+    ReDim TempArr(1 To UBound(ArrIn, 2), 1 To UBound(ArrIn, 1))
+    For I = 1 To UBound(ArrIn, 2)
+        For j = 1 To UBound(ArrIn, 1)
+            TempArr(I, j) = ArrIn(j, I)
+        Next
+    Next
+    
+    TransposeArr = TempArr
+    
+End Function
