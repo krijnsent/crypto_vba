@@ -37,11 +37,11 @@ Function PublicLiqui(Method As String, Optional MethodOptions As String) As Stri
 
 PublicApiSite = "https://api.liqui.io"
 urlPath = "/api/3/" & Method & MethodOptions
-URL = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", URL
+objHTTP.Open "GET", url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicLiqui = objHTTP.ResponseText
@@ -62,16 +62,16 @@ NonceUnique = DateDiff("s", "1/1/1970", Now)
 TradeApiSite = "https://api.liqui.io"
 urlPath = "/tapi/"
 postdata = "method=" & Method & MethodOptions & "&nonce=" & NonceUnique
-URL = TradeApiSite & urlPath
+url = TradeApiSite & urlPath
 APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
 Debug.Print postdata
-Debug.Print URL
+Debug.Print url
 Debug.Print apikey
 Debug.Print APIsign
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "POST", URL, False
+objHTTP.Open "POST", url, False
 objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.SetRequestHeader "Key", apikey

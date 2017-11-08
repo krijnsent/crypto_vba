@@ -35,11 +35,11 @@ Function PublicBittrex(Method As String, Optional MethodOptions As String) As St
 'https://bittrex.com/home/api
 PublicApiSite = "https://bittrex.com"
 urlPath = "/api/v1.1/public/" & Method & MethodOptions
-URL = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", URL
+objHTTP.Open "GET", url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicBittrex = objHTTP.ResponseText
