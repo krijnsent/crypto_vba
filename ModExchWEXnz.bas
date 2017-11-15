@@ -38,11 +38,11 @@ Function PublicWEXnz(Method As String, Optional MethodOptions As String) As Stri
 
 PublicApiSite = "https://wex.nz"
 urlPath = "/api/3/" & Method & MethodOptions
-url = PublicApiSite & urlPath
+Url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", url
+objHTTP.Open "GET", Url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicWEXnz = objHTTP.ResponseText

@@ -35,11 +35,11 @@ Function PublicCoinone(Method As String, Optional MethodOptions As String) As St
 'https://Coinone.com/home/api
 PublicApiSite = "https://api.coinone.co.kr/"
 urlPath = Method & "/" & MethodOptions
-url = PublicApiSite & urlPath
+Url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", url
+objHTTP.Open "GET", Url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicCoinone = objHTTP.ResponseText
@@ -56,7 +56,7 @@ NonceUnique = DateDiff("s", "1/1/1970", Now) & "0000"
 'NonceUnique = "1510140617707865"
 TradeApiSite = "https://api.coinone.co.kr/v2/"
 
-url = TradeApiSite & Method
+Url = TradeApiSite & Method
 
 postdata = "access_token=" & apikey & "&" & "nonce=" & NonceUnique
 If MethodOptions <> "" Then
@@ -72,7 +72,7 @@ APIsign = ComputeHash_C("SHA512", Base64Encode(postdata_json_txt), secretkey, "S
 
 '' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "POST", url, False
+objHTTP.Open "POST", Url, False
 objHTTP.SetRequestHeader "Content-Type", "application/json"
 objHTTP.SetRequestHeader "X-COINONE-PAYLOAD", postdata64
 objHTTP.SetRequestHeader "X-COINONE-SIGNATURE", APIsign

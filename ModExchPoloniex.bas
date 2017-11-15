@@ -37,11 +37,11 @@ Function PublicPoloniex(Method As String, Optional MethodOptions As String) As S
 
 PublicApiSite = "https://poloniex.com"
 urlPath = "/public?command=" & Method & MethodOptions
-url = PublicApiSite & urlPath
+Url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", url
+objHTTP.Open "GET", Url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicPoloniex = objHTTP.ResponseText
@@ -59,13 +59,13 @@ Dim postdata As String
 NonceUnique = DateDiff("s", "1/1/1970", Now)
 NonceUnique = NonceUnique & Right(Timer * 100, 2) & "0000"
 
-url = "https://poloniex.com/tradingApi"
+Url = "https://poloniex.com/tradingApi"
 postdata = "command=" & Method & MethodOptions & "&nonce=" & NonceUnique
 APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "POST", url, False
+objHTTP.Open "POST", Url, False
 objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.SetRequestHeader "Key", apikey

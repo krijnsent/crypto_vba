@@ -38,11 +38,11 @@ Function PublicKraken(Method As String, Optional MethodOptions As String) As Str
 
 PublicApiSite = "https://api.kraken.com"
 urlPath = "/0/public/" & Method & MethodOptions
-url = PublicApiSite & urlPath
+Url = PublicApiSite & urlPath
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", url
+objHTTP.Open "GET", Url
 objHTTP.Send
 objHTTP.WaitForResponse
 PublicKraken = objHTTP.ResponseText
@@ -64,12 +64,12 @@ TradeApiSite = "https://api.kraken.com"
 urlPath = "/0/private/" & Method
 postdata = MethodOptions & "nonce=" & NonceUnique
 
-url = TradeApiSite & urlPath
+Url = TradeApiSite & urlPath
 APIsign = ComputeHash_C("SHA512", urlPath & ComputeHash_C("SHA256", NonceUnique & postdata, "", "RAW"), Base64Decode(secretkey), "STR64")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "POST", url, False
+objHTTP.Open "POST", Url, False
 objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.SetRequestHeader "API-Key", apikey

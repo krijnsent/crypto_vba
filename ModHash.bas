@@ -34,6 +34,7 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
     BKey = StrConv(Key, vbFromUnicode)
     
     If Key <> "" Then
+        'MD5 does not work with a key, no error catching yet
         If Meth = "SHA512" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA512")
         ElseIf Meth = "SHA384" Then
@@ -52,6 +53,8 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
             Set SHAhasher = CreateObject("System.Security.Cryptography.SHA256Managed")
         ElseIf Meth = "SHA384" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.SHA256Managed")
+        ElseIf Meth = "MD5" Then
+            Set SHAhasher = CreateObject("System.Security.Cryptography.MD5CryptoServiceProvider")
         Else
             Set SHAhasher = CreateObject("System.Security.Cryptography.SHA1Managed")
         End If

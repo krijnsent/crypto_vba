@@ -9,6 +9,8 @@ Get information from/send information to:
 - [Liqui](https://liqui.io/)
 - [WEXnz](https://wex.nz/)
 - [Coinone](https://coinone.co.kr/)
+- [Cryptopia](https://www.cryptopia.co.nz/)
+
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
@@ -39,6 +41,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Kraken API connector
 - Build the Liqui API connector
 - Build the Coinone API connector
+- Build the Cryptopia API connector
 - Build a working and tested VBA hash function
 
 # Donate
