@@ -53,6 +53,7 @@ Function PrivateCryptopia(Method As String, apikey As String, secretkey As Strin
 
 Dim NonceUnique As String
 Dim postdata As String
+Dim Url As String
 
 'Cryptopia nonce
 NonceUnique = DateDiff("s", "1/1/1970", Now)
@@ -60,7 +61,7 @@ NonceUnique = DateDiff("s", "1/1/1970", Now)
 TradeApiSite = "https://www.cryptopia.co.nz"
 urlPath = "/api/"
 Url = TradeApiSite & urlPath & Method
-UrlEnc = LCase(WorksheetFunction.EncodeURL(Url))
+UrlEnc = LCase(URLEncode(Url))
 
 postdata = MethodOptions '{"Currency":""}
 postdataJsonTxt = Replace(postdata, "=", Chr(34) & ":" & Chr(34))

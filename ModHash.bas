@@ -183,15 +183,15 @@ Function Base64Encode(inData)
   'rfc1521
   '2001 Antonin Foller, Motobit Software, http://Motobit.cz
   Const Base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-  Dim cOut, sOut, I
+  Dim cOut, sOut, i
   
   'For each group of 3 bytes
-  For I = 1 To Len(inData) Step 3
+  For i = 1 To Len(inData) Step 3
     Dim nGroup, pOut, sGroup
     
     'Create one long from this 3 bytes.
-    nGroup = &H10000 * Asc(Mid(inData, I, 1)) + _
-      &H100 * MyASC(Mid(inData, I + 1, 1)) + MyASC(Mid(inData, I + 2, 1))
+    nGroup = &H10000 * Asc(Mid(inData, i, 1)) + _
+      &H100 * MyASC(Mid(inData, i + 1, 1)) + MyASC(Mid(inData, i + 2, 1))
     
     'Oct splits the long To 8 groups with 3 bits
     nGroup = Oct(nGroup)

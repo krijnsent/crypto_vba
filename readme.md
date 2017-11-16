@@ -43,6 +43,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Coinone API connector
 - Build the Cryptopia API connector
 - Build a working and tested VBA hash function
+- Added the UrlEncode function for Cryptopia
 
 # Donate
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>

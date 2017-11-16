@@ -213,11 +213,11 @@ Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional Node
     If TypeName(ObjIn) = "Collection" Then
         'arrays ([]) to collections, arrays only have values
         Set CollIn = ObjIn
-        For I = 1 To CollIn.Count
+        For i = 1 To CollIn.Count
             'item could be value, object or array, determine:
             Set iO = Nothing
             On Error Resume Next
-            Set iO = CollIn(I)
+            Set iO = CollIn(i)
             On Error GoTo 0
 
             'item/value
@@ -225,7 +225,7 @@ Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional Node
                 If NodeLvl + 1 > MaxLvl Then MaxLvl = NodeLvl + 1
                 NextLvl = MaxDepth(iO, MaxLvl, NodeLvl + 1)
             End If
-        Next I
+        Next i
     ElseIf TypeName(ObjIn) = "Dictionary" Then
         'objects ({}) to dictionaries, Objects have key:values
         Set DictIn = ObjIn
@@ -273,13 +273,13 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
     If TypeName(ObjIn) = "Collection" Then
         'arrays ([]) to collections, arrays only have values
         Set CollIn = ObjIn
-        For I = 1 To CollIn.Count
+        For i = 1 To CollIn.Count
             'item could be value, object or array, determine:
             iV = ""
             Set iO = Nothing
             On Error Resume Next
-            iV = CollIn(I)
-            Set iO = CollIn(I)
+            iV = CollIn(i)
+            Set iO = CollIn(i)
             On Error GoTo 0
 
             'item/value
@@ -288,23 +288,23 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
                 ReDim Preserve ResArr(1 To 5, 1 To UBound(ResArr, 2) + 1)
                 ResArr(1, UBound(ResArr, 2)) = NodeLvl
                 ResArr(2, UBound(ResArr, 2)) = ParentKey
-                ResArr(3, UBound(ResArr, 2)) = I
+                ResArr(3, UBound(ResArr, 2)) = i
                 ResArr(4, UBound(ResArr, 2)) = iO.Count
                 ResArr(5, UBound(ResArr, 2)) = "OBJ"
                 'Debug.Print "LVL: " & NodeLvl & ", PARENT: " & ParentKey & " , KEY: " & I & " VALUE: count: " & iO.Count & " , TYPE:OBJ"
-                ParentKey = I
-                NextLvl = JsonToArray(iO, str(I), NodeLvl + 1, ResArr)
+                ParentKey = i
+                NextLvl = JsonToArray(iO, str(i), NodeLvl + 1, ResArr)
             Else
                 'item, write simple value
                 'Debug.Print "LVL: " & NodeLvl & ", PARENT: " & ParentKey & " , KEY: " & I & " VALUE:" & iV & " , TYPE:VAL"
                 ReDim Preserve ResArr(1 To 5, 1 To UBound(ResArr, 2) + 1)
                 ResArr(1, UBound(ResArr, 2)) = NodeLvl
                 ResArr(2, UBound(ResArr, 2)) = ParentKey
-                ResArr(3, UBound(ResArr, 2)) = I
+                ResArr(3, UBound(ResArr, 2)) = i
                 ResArr(4, UBound(ResArr, 2)) = iV
                 ResArr(5, UBound(ResArr, 2)) = "VAL"
             End If
-        Next I
+        Next i
     ElseIf TypeName(ObjIn) = "Dictionary" Then
         'objects ({}) to dictionaries, Objects have key:values
         Set DictIn = ObjIn
