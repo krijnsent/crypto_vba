@@ -1,5 +1,5 @@
 # crypto_vba
-An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 2013/2016, but should work for Excel 2007+.
+An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 2016, but should work for Excel 2007+.
 
 # Exchanges:
 Get information from/send information to:
@@ -22,9 +22,9 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Expand the XLSM file with working examples
 - Better testing
 - Better error handling
-- For historical prices, include https://www.cryptocompare.com/api/
+- For historical prices, include e.g. https://www.cryptocompare.com/api/
 - Build excel functions to get the information directly to a sheet
-- Later: place orders
+- Later: place/cancel orders
 
 # Done
 - Working examples of several exchanges in the example file
@@ -36,14 +36,14 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build tests for all modules/functions
 - Integrate VBA-JSON into the project
 - Build the Bittrex API connector
-- Build the WEXnz API connector
+- Build the WEXnz API connector (used to be BTCe)
 - Build the Poloniex API connector
 - Build the Kraken API connector
 - Build the Liqui API connector
 - Build the Coinone API connector
 - Build the Cryptopia API connector
 - Build a working and tested VBA hash function
-- Added the UrlEncode function for Cryptopia
+- Added the UrlEncode function for Cryptopia (and Excel versions before 2016)
 
 # Donate
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>
