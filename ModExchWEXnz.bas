@@ -24,7 +24,7 @@ Debug.Print PublicWEXnz("ticker", "/ltc_btc-btc_eur")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print t1, t2
+'Debug.Print t1, t2
 Debug.Print PrivateWEXnz("getInfo", apikey, secretkey)
 '{"success":1,"return":{"funds":{"usd":0,"btc":0.14,"ltc":0,"nmc":0, etc...
 Debug.Print PrivateWEXnz("TradeHistory", apikey, secretkey, "&since=" & t1 & "&end=" & t2)
@@ -34,24 +34,18 @@ End Sub
 
 Function PublicWEXnz(Method As String, Optional MethodOptions As String) As String
 
-'https://btc-e.com/api/3/docs
-
+'https://wex.nz/api/3/docs
+Dim Url As String
 PublicApiSite = "https://wex.nz"
 urlPath = "/api/3/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicWEXnz = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicWEXnz = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivateWEXnz(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
 
-'https://btc-e.com/tapi/docs
+'https://wex.nz/tapi/docs
 Dim NonceUnique As String
 
 'BTC-e wants a 10-digit Nonce
@@ -64,10 +58,10 @@ APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", TradeApiSite, False
-objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.SetRequestHeader "Key", apikey
-objHTTP.SetRequestHeader "Sign", APIsign
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+objHTTP.setRequestHeader "Key", apikey
+objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse

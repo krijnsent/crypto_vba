@@ -1,4 +1,42 @@
 Attribute VB_Name = "ModFunctions"
+'Functions in module:
+'DateToUnixTime - retuns the UnixTime of a date/time
+'UnixTimeToDate - returns the date/time of a UnixTime
+'TransposeArr - Custom transpose function, worksheetfunction.transpose won't handle long strings
+'URLEncode - especially for Excel 2013 and before, afterwards it's a standard function
+'Source: https://github.com/krijnsent/crypto_vba
+Sub TestFunctions()
+
+Debug.Print DateToUnixTime(#4/26/2017#)
+'1493164800
+Debug.Print DateToUnixTime(Now)
+'e.g. 1511958343
+Debug.Print UnixTimeToDate(1493164800)
+'26-4-2017
+Debug.Print UnixTimeToDate(1511958343)
+'29-11-2017 12:25:43
+
+' Declare a two dimensional array
+' Fill the array with text made up of i and j values
+Dim TestArr(1 To 3, 1 To 2) As Variant
+Dim i As Long, j As Long
+For i = LBound(TestArr) To UBound(TestArr)
+    For j = LBound(TestArr, 2) To UBound(TestArr, 2)
+        TestArr(i, j) = CStr(i) & ":" & CStr(j)
+    Next j
+Next i
+FlipArr = TransposeArr(TestArr)
+Debug.Print TestArr(1, 2)
+Debug.Print FlipArr(2, 1)
+
+
+Debug.Print URLEncode("http://www.github.com/")
+'http%3A%2F%2Fwww.github.com%2F
+Debug.Print URLEncode("https://github.com/search?q=crypto_vba&type=")
+'https%3A%2F%2Fgithub.com%2Fsearch%3Fq%3Dcrypto_vba%26type%3D
+
+End Sub
+
 Function DateToUnixTime(dt) As Long
     DateToUnixTime = DateDiff("s", "1/1/1970", dt)
 End Function

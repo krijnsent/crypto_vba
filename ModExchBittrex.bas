@@ -33,17 +33,12 @@ End Sub
 Function PublicBittrex(Method As String, Optional MethodOptions As String) As String
 
 'https://bittrex.com/home/api
+Dim Url As String
 PublicApiSite = "https://bittrex.com"
 urlPath = "/api/v1.1/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicBittrex = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicBittrex = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivateBittrex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -60,11 +55,11 @@ APIsign = ComputeHash_C("SHA512", TradeApiSite & postdata, secretkey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-Debug.Print "POST: " & TradeApiSite & postdata
+'Debug.Print "POST: " & TradeApiSite & postdata
 objHTTP.Open "POST", TradeApiSite & postdata, False
-objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.SetRequestHeader "apisign", APIsign
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+objHTTP.setRequestHeader "apisign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse

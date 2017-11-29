@@ -124,7 +124,6 @@ Next
 '4 --  3 -- 1 -- 1924,41 -- VAL
 '4 --  4 -- 1 -- 1924,41522 -- VAL
 
-
 End Sub
 
 Sub TestArrayTable()
@@ -182,16 +181,17 @@ Debug.Print Tbl(4, 4)
 '1924,41
 'Sht.Range("B21").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
 
-
-'Poloniex deposit/withdrawal
+'Poloniex deposit/withdrawal, no header output
 JsonResponse = "{""deposits"":[{""currency"":""BTC"",""address"":""DEP1"",""amount"":""0.01006132"",""confirmations"":10,""txid"":""17f819a91369a9ff6c4a34216d434597cfc1b4a3d0489b46bd6f924137a47701"",""timestamp"":1399305798,""status"":""COMPLETE""},{""currency"":""BTC"",""address"":""DEP2"",""amount"":""0.00404104"",""confirmations"":10,""txid"":""7acb90965b252e55a894b535ef0b0b65f45821f2899e4a379d3e43799604695c"",""timestamp"":1399245916,""status"":""COMPLETE""}],""withdrawals"":[{""withdrawalNumber"":134933,""currency"":""BTC"",""address"":""1N2i5n8DwTGzUq2Vmn9TUL8J1vdr1XBDFg"",""amount"":""5.00010000"", ""timestamp"":1399267904,""status"":""COMPLETE: 36e483efa6aff9fd53a235177579d98451c4eb237c210e66cd2b9a2d4a988f8e"",""ipAddress"":""IP192""}]}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
 Tbl = ArrayTable(ResArr, False)
 Debug.Print Tbl(1, 2)
 Debug.Print Tbl(4, 2)
+'deposits
+'DEP2
 
-'Remove last element
+'Test no header reply
 JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
@@ -199,7 +199,28 @@ ResArr = JsonToArray(Json)
 Tbl = ArrayTable(ResArr, False)
 Debug.Print Tbl(1, 2)
 Debug.Print Tbl(4, 4)
+'result
+'1492617600
 
+'Empty data set returned 1
+JsonResponse = "{""success"":true,""message"":"""",""result"":[]}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+Tbl = ArrayTable(ResArr, True)
+Debug.Print Tbl(1, 2)
+Debug.Print Tbl(3, 2)
+'Waar
+'0
+
+'Empty data set returned 2
+JsonResponse = "{""success"":false,""message"":""APISIGN_NOT_PROVIDED"",""result"":null}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+Tbl = ArrayTable(ResArr, True)
+Debug.Print Tbl(1, 2)
+Debug.Print Tbl(2, 2)
+'Onwaar
+'APISIGN_NOT_PROVIDED
 
 End Sub
 
@@ -367,7 +388,8 @@ For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
     Lvl = Val(ArrIn(1, rw))
     If Lvl < MaxD And Lvl > 0 Then
         TblHeaders.Add "GROUP_" & Lvl, "GROUP_" & Lvl
-    ElseIf Lvl = MaxD And ArrIn(5, rw) = "VAL" Then
+    'ElseIf Lvl = MaxD And ArrIn(5, rw) = "VAL" Then
+    ElseIf Lvl = MaxD Then
         If Val(ArrIn(3, rw)) > 0 Then
             TblHeaders.Add "VAL_" & ArrIn(3, rw), "VAL_" & ArrIn(3, rw)
         Else

@@ -33,18 +33,12 @@ End Sub
 Function PublicCryptopia(Method As String, Optional MethodOptions As String) As String
 
 'https://www.cryptopia.co.nz/forum/Thread/255
-
+Dim Url As String
 PublicApiSite = "https://www.cryptopia.co.nz"
 urlPath = "/api/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicCryptopia = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicCryptopia = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivateCryptopia(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -76,9 +70,9 @@ HeaderValue = "amx " & apikey & ":" & hmacSignature & ":" & NonceUnique
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", Url, False
-objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.SetRequestHeader "Content-Type", "application/json"
-objHTTP.SetRequestHeader "Authorization", HeaderValue
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/json"
+objHTTP.setRequestHeader "Authorization", HeaderValue
 objHTTP.Send (postdataJsonTxt)
 
 objHTTP.WaitForResponse

@@ -52,7 +52,7 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
         ElseIf Meth = "SHA256" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.SHA256Managed")
         ElseIf Meth = "SHA384" Then
-            Set SHAhasher = CreateObject("System.Security.Cryptography.SHA256Managed")
+            Set SHAhasher = CreateObject("System.Security.Cryptography.SHA384Managed")
         ElseIf Meth = "MD5" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.MD5CryptoServiceProvider")
         Else

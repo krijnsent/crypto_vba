@@ -33,17 +33,12 @@ End Sub
 Function PublicCoinone(Method As String, Optional MethodOptions As String) As String
 
 'https://Coinone.com/home/api
+Dim Url As String
 PublicApiSite = "https://api.coinone.co.kr/"
 urlPath = Method & "/" & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicCoinone = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicCoinone = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivateCoinone(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -73,9 +68,9 @@ APIsign = ComputeHash_C("SHA512", Base64Encode(postdata_json_txt), secretkey, "S
 '' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", Url, False
-objHTTP.SetRequestHeader "Content-Type", "application/json"
-objHTTP.SetRequestHeader "X-COINONE-PAYLOAD", postdata64
-objHTTP.SetRequestHeader "X-COINONE-SIGNATURE", APIsign
+objHTTP.setRequestHeader "Content-Type", "application/json"
+objHTTP.setRequestHeader "X-COINONE-PAYLOAD", postdata64
+objHTTP.setRequestHeader "X-COINONE-SIGNATURE", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse

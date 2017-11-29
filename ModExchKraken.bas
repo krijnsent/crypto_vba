@@ -35,18 +35,12 @@ End Sub
 Function PublicKraken(Method As String, Optional MethodOptions As String) As String
 
 'https://www.kraken.com/en-us/help/api#public-market-data
-
+Dim Url As String
 PublicApiSite = "https://api.kraken.com"
 urlPath = "/0/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicKraken = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicKraken = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivateKraken(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -70,10 +64,10 @@ APIsign = ComputeHash_C("SHA512", urlPath & ComputeHash_C("SHA256", NonceUnique 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", Url, False
-objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.SetRequestHeader "API-Key", apikey
-objHTTP.SetRequestHeader "API-Sign", APIsign
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+objHTTP.setRequestHeader "API-Key", apikey
+objHTTP.setRequestHeader "API-Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse

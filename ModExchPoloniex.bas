@@ -34,18 +34,12 @@ End Sub
 Function PublicPoloniex(Method As String, Optional MethodOptions As String) As String
 
 'https://poloniex.com/support/api/
-
+Dim Url As String
 PublicApiSite = "https://poloniex.com"
 urlPath = "/public?command=" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "GET", Url
-objHTTP.Send
-objHTTP.WaitForResponse
-PublicPoloniex = objHTTP.ResponseText
-Set objHTTP = Nothing
+PublicPoloniex = GetDataFromURL(Url, "GET")
 
 End Function
 Function PrivatePoloniex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -66,10 +60,10 @@ APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", Url, False
-objHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.SetRequestHeader "Key", apikey
-objHTTP.SetRequestHeader "Sign", APIsign
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+objHTTP.setRequestHeader "Key", apikey
+objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
