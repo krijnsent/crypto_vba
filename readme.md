@@ -10,6 +10,7 @@ Get information from/send information to:
 - [WEXnz](https://wex.nz/)
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
+- [Binance](http://binance.com/)
 
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
@@ -42,6 +43,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Liqui API connector
 - Build the Coinone API connector
 - Build the Cryptopia API connector
+- Build the Binance API connector
 - Build a working and tested VBA hash function
 - Added the UrlEncode function for Cryptopia (and Excel versions before 2016)
 
@@ -49,4 +51,5 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>
 BTC: 1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa <br/>
 ETH: 0x6f61c0d77f410e614e294c454380bbb6ecc7bdc1<br/>
+DOGE: DHSN2ZEaLqoSW6v9Mg39pwNktHBD7ESSsi <br/>
 <b>Cheers!</b>

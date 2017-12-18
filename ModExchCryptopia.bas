@@ -63,8 +63,8 @@ postdataJsonTxt = Replace(postdataJsonTxt, "&", Chr(34) & "," & Chr(34))
 postdataJsonTxt = "{" & Chr(34) & postdataJsonTxt & Chr(34) & "}"
 req64 = ComputeHash_C("MD5", postdataJsonTxt, "", "STR64")
 
-Signature = apikey & "POST" & UrlEnc & NonceUnique & req64
-hmacSignature = ComputeHash_C("SHA256", Signature, Base64Decode(secretkey), "STR64")
+signature = apikey & "POST" & UrlEnc & NonceUnique & req64
+hmacSignature = ComputeHash_C("SHA256", signature, Base64Decode(secretkey), "STR64")
 HeaderValue = "amx " & apikey & ":" & hmacSignature & ":" & NonceUnique
 
 ' Instantiate a WinHttpRequest object and open it
