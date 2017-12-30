@@ -11,6 +11,7 @@ Get information from/send information to:
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
 - [Binance](http://binance.com/)
+- [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee
 - [Coinspot](https://www.coinspot.com.au/) - seems to have back end issues 20171220
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
@@ -45,6 +46,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Cryptopia API connector
 - Build the Binance API connector
 - Build the Coinspot API connector
+- Build the Coinigy API connector
 - Build a working and tested VBA hash function
 - Added the UrlEncode function for Cryptopia (and Excel versions before 2016)
 

@@ -314,7 +314,7 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
                 ResArr(5, UBound(ResArr, 2)) = "OBJ"
                 'Debug.Print "LVL: " & NodeLvl & ", PARENT: " & ParentKey & " , KEY: " & I & " VALUE: count: " & iO.Count & " , TYPE:OBJ"
                 ParentKey = i
-                NextLvl = JsonToArray(iO, str(i), NodeLvl + 1, ResArr)
+                NextLvl = JsonToArray(iO, Str(i), NodeLvl + 1, ResArr)
             Else
                 'item, write simple value
                 'Debug.Print "LVL: " & NodeLvl & ", PARENT: " & ParentKey & " , KEY: " & I & " VALUE:" & iV & " , TYPE:VAL"

@@ -44,13 +44,15 @@ End Function
 Function PrivateBinance(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
+Dim TimeCorrection As Long
 'https://binance.com/home/api
 
 'Get a 13-digit Nonce -> use timecorrection if needed, -3600 is default
 'Time error reply: {"code":-1021,"msg":"Timestamp for this request was 1000ms ahead of the server's time."}
 TimeCorrection = -3600
 NonceUnique = DateDiff("s", "1/1/1970", Now)
-NonceUnique = NonceUnique + TimeCorrection & Right(Timer * 100, 2) & "0"
+NonceUnique = Trim(Str((Val(NonceUnique) + TimeCorrection)) & Right(Timer * 100, 2) & "0")
+Debug.Print NonceUnique
 TradeApiSite = "https://api.binance.com/api/v3/"
 
 postdata = MethodOptions & "&timestamp=" & NonceUnique
