@@ -51,7 +51,7 @@ Dim TimeCorrection As Long
 'Time error reply: {"code":-1021,"msg":"Timestamp for this request was 1000ms ahead of the server's time."}
 TimeCorrection = -3600
 NonceUnique = DateDiff("s", "1/1/1970", Now)
-NonceUnique = Trim(Str((Val(NonceUnique) + TimeCorrection)) & Right(Timer * 100, 2) & "0")
+NonceUnique = Trim(Str((Val(NonceUnique) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 Debug.Print NonceUnique
 TradeApiSite = "https://api.binance.com/api/v3/"
 
