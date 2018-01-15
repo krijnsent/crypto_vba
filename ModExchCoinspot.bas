@@ -22,9 +22,10 @@ t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
 Debug.Print PrivateCoinspot("my/balances", apikey, secretkey)
-'{"status":"invalid"}
+'{"status":"invalid"} / {"status":"no nonce"}
 Debug.Print PrivateCoinspot("orders/history", apikey, secretkey, "&cointype=LTC")
-'{"status":"invalid"}
+'{"status":"invalid"} / {"status":"no nonce"}
+'ERROR: https://stackoverflow.com/questions/47799323/coinspot-api-with-powershell
 
 End Sub
 
@@ -46,7 +47,7 @@ Dim NonceUnique As String
 'https://Coinspot.com/home/api
 
 'Get a 10-digit Nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
+NonceUnique = DateDiff("s", "1/1/1970", Now) & "0000000"
 TradeApiSite = "https://www.coinspot.com.au"
 
 postpath = "/api/" & Method
@@ -58,7 +59,6 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 'Debug.Print "POST: " & TradeApiSite & postdata
 objHTTP.Open "POST", TradeApiSite & postpath, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.setRequestHeader "key", apikey
 objHTTP.setRequestHeader "sign", APIsign
 objHTTP.Send (postdata)

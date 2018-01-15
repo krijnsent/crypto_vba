@@ -61,7 +61,7 @@ Payload = Base64Encode(Json)
 
 'signature = HMAC-SHA384(payload, api-secret).digest('hex')
 ApiSite = "https://api.bitfinex.com"
-Signature = ComputeHash_C("SHA384", Payload, secretkey, "STRHEX")
+signature = ComputeHash_C("SHA384", Payload, secretkey, "STRHEX")
 
 Url = ApiSite & "/v1/" & Method
 HTTPMethod = "POST"
@@ -73,7 +73,7 @@ objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windo
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.setRequestHeader "X-BFX-APIKEY", apikey
 objHTTP.setRequestHeader "X-BFX-PAYLOAD", Payload
-objHTTP.setRequestHeader "X-BFX-SIGNATURE", Signature
+objHTTP.setRequestHeader "X-BFX-SIGNATURE", signature
 objHTTP.Send get_url
 
 objHTTP.WaitForResponse

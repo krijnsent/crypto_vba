@@ -11,6 +11,7 @@ Get information from/send information to:
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
 - [Binance](http://binance.com/)
+- [HitBTC](https://hitbtc.com/)
 - [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee
 - [Coinspot](https://www.coinspot.com.au/) - seems to have back end issues 20171220
 - [GDAX](https://www.gdax.com/) - first setup, public api works. Private method doesn't work due to missing account validation by GDAX
@@ -47,8 +48,9 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Coinone API connector
 - Build the Cryptopia API connector
 - Build the Binance API connector
-- Build the Coinspot API connector - not finished
 - Build the Coinigy API connector
+- Build the HitBTC API connector
+- Build the Coinspot API connector - not finished
 - Build the GDAX API connector - not finished
 - Build the Bitfinex API connector - not finished
 - Build a working and tested VBA hash function
