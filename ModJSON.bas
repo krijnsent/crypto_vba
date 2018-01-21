@@ -140,9 +140,9 @@ JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
 ResArr = JsonToArray(JsonRes)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 1)
-Debug.Print Tbl(2, 2)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 1)
+Debug.Print tbl(2, 2)
 'unixtime
 'Mon, 22 May 17 12:23:51 +0000
 'Sht.Range("B2").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
@@ -151,9 +151,9 @@ Debug.Print Tbl(2, 2)
 JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(3, 3)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(3, 3)
 'BTC_BCN
 '0.04775443
 'Sht.Range("B6").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
@@ -163,9 +163,9 @@ JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990""
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(4, 4)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(4, 4)
 'result
 '1492614000
 'Sht.Range("B11").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
@@ -174,9 +174,9 @@ Debug.Print Tbl(4, 4)
 JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(4, 4)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(4, 4)
 'btc_eur
 '1924,41
 'Sht.Range("B21").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
@@ -185,9 +185,9 @@ Debug.Print Tbl(4, 4)
 JsonResponse = "{""deposits"":[{""currency"":""BTC"",""address"":""DEP1"",""amount"":""0.01006132"",""confirmations"":10,""txid"":""17f819a91369a9ff6c4a34216d434597cfc1b4a3d0489b46bd6f924137a47701"",""timestamp"":1399305798,""status"":""COMPLETE""},{""currency"":""BTC"",""address"":""DEP2"",""amount"":""0.00404104"",""confirmations"":10,""txid"":""7acb90965b252e55a894b535ef0b0b65f45821f2899e4a379d3e43799604695c"",""timestamp"":1399245916,""status"":""COMPLETE""}],""withdrawals"":[{""withdrawalNumber"":134933,""currency"":""BTC"",""address"":""1N2i5n8DwTGzUq2Vmn9TUL8J1vdr1XBDFg"",""amount"":""5.00010000"", ""timestamp"":1399267904,""status"":""COMPLETE: 36e483efa6aff9fd53a235177579d98451c4eb237c210e66cd2b9a2d4a988f8e"",""ipAddress"":""IP192""}]}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, False)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(4, 2)
+tbl = ArrayTable(ResArr, False)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(4, 2)
 'deposits
 'DEP2
 
@@ -196,9 +196,9 @@ JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990""
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, False)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(4, 4)
+tbl = ArrayTable(ResArr, False)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(4, 4)
 'result
 '1492617600
 
@@ -206,9 +206,9 @@ Debug.Print Tbl(4, 4)
 JsonResponse = "{""success"":true,""message"":"""",""result"":[]}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(3, 2)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(3, 2)
 'Waar
 '0
 
@@ -216,9 +216,9 @@ Debug.Print Tbl(3, 2)
 JsonResponse = "{""success"":false,""message"":""APISIGN_NOT_PROVIDED"",""result"":null}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-Tbl = ArrayTable(ResArr, True)
-Debug.Print Tbl(1, 2)
-Debug.Print Tbl(2, 2)
+tbl = ArrayTable(ResArr, True)
+Debug.Print tbl(1, 2)
+Debug.Print tbl(2, 2)
 'Onwaar
 'APISIGN_NOT_PROVIDED
 

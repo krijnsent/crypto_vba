@@ -11,6 +11,7 @@ Get information from/send information to:
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
 - [Binance](http://binance.com/)
+- [Kucoin](https://www.kucoin.com/)
 - [HitBTC](https://hitbtc.com/)
 - [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee
 - [Coinspot](https://www.coinspot.com.au/) - seems to have back end issues 20171220
@@ -49,6 +50,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Cryptopia API connector
 - Build the Binance API connector
 - Build the Coinigy API connector
+- Build the Kucoin API connector
 - Build the HitBTC API connector
 - Build the Coinspot API connector - not finished
 - Build the GDAX API connector - not finished
