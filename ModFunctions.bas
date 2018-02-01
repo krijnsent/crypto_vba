@@ -38,7 +38,10 @@ Debug.Print URLEncode("https://github.com/search?q=crypto_vba&type=")
 End Sub
 
 Function DateToUnixTime(dt) As Long
+    DateToUnixTime = 0
+    On Error Resume Next
     DateToUnixTime = DateDiff("s", "1/1/1970", dt)
+    On Error GoTo 0
 End Function
 
 Function UnixTimeToDate(ts As Long) As Date

@@ -28,11 +28,11 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Expand the XLSM file with working examples
 - Better testing
 - Better error handling
-- For historical prices, include e.g. https://www.cryptocompare.com/api/
-- Build excel functions to get the information directly to a sheet
 - Later: place/cancel orders
 
 # Done
+- For historical prices, include https://www.cryptocompare.com/api/
+- Build excel functions to get the information directly to a sheet - TEST PHASE
 - Working examples of several exchanges in the example file
 - Created a basic XLSM sample file
 - ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
@@ -61,6 +61,6 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 # Donate
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>
 BTC: 1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa <br/>
-ETH: 0x6f61c0d77f410e614e294c454380bbb6ecc7bdc1<br/>
+ETH (or ERC-20 tokens): 0x9070C5D93ADb58B8cc0b281051710CB67a40C72B<br/>
 DOGE: DHSN2ZEaLqoSW6v9Mg39pwNktHBD7ESSsi <br/>
 <b>Cheers!</b>
