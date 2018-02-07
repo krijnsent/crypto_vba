@@ -50,7 +50,7 @@ Dim NonceUnique As String
 Dim postdata As String
 
 'HitBTC nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
+NonceUnique = CreateNonce(10)
 
 TradeApiSite = "http://api.hitbtc.com"
 urlPath = "/api/1/trading/" & Method & "?nonce=" & NonceUnique & "&apikey=" & apikey

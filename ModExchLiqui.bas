@@ -49,9 +49,8 @@ Function PrivateLiqui(Method As String, apikey As String, secretkey As String, O
 Dim NonceUnique As String
 Dim postdata As String
 
-'Liqui nonce: 16 characters
-NonceUnique = DateDiff("s", "1/1/1970", Now)
-'NonceUnique = NonceUnique & Right(Timer * 100, 2)
+'Liqui nonce: 10 characters
+NonceUnique = CreateNonce(10)
 
 TradeApiSite = "https://api.liqui.io"
 urlPath = "/tapi/"

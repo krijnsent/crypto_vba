@@ -50,7 +50,7 @@ Dim postdata As String
 Dim Url As String
 
 'Cryptopia nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
+NonceUnique = CreateNonce(10)
 
 TradeApiSite = "https://www.cryptopia.co.nz"
 urlPath = "/api/"

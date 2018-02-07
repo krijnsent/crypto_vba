@@ -44,7 +44,7 @@ Dim NonceUnique As String
 Dim Json As String
 Dim PayloadDict As Scripting.Dictionary
 
-NonceUnique = DateDiff("s", "1/1/1970", Now) & "00000"
+NonceUnique = CreateNonce(15)
 'see the general Bitfinex documentation here: https://bitfinex.readme.io/v1/docs/rest-general
 
 'the payload has to look like this: payload = parameters-object -> JSON encode -> base64

@@ -51,8 +51,7 @@ Dim NonceUnique As String
 Dim postdata As String
 
 'Kraken nonce: 16 characters
-NonceUnique = DateDiff("s", "1/1/1970", Now)
-NonceUnique = NonceUnique & Right(Timer * 100, 2) & "0000"
+NonceUnique = CreateNonce(16)
 
 TradeApiSite = "https://api.kraken.com"
 urlPath = "/0/private/" & Method

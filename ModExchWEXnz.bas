@@ -49,7 +49,7 @@ Function PrivateWEXnz(Method As String, apikey As String, secretkey As String, O
 Dim NonceUnique As String
 
 'BTC-e wants a 10-digit Nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
+NonceUnique = CreateNonce(10)
 TradeApiSite = "https://wex.nz/tapi/"
 
 postdata = "method=" & Method & MethodOptions & "&nonce=" & NonceUnique

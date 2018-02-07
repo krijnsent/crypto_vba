@@ -50,8 +50,7 @@ Dim postdata As String
 'https://poloniex.com/support/api/
 
 'Poloniex nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
-NonceUnique = NonceUnique & Right(Timer * 100, 2) & "0000"
+NonceUnique = CreateNonce(16)
 
 Url = "https://poloniex.com/tradingApi"
 postdata = "command=" & Method & MethodOptions & "&nonce=" & NonceUnique

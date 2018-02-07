@@ -18,6 +18,7 @@ Debug.Print GetDataFromURL("https://api.kraken.com/0/public/Time", "GET")
 
 End Sub
 
+
 Function GetDataFromURL(strURL As String, strMethod As String, Optional strPostData As String) As String
 
 ' Instantiate a WinHttpRequest object and open it
@@ -106,3 +107,4 @@ Function GetDataFromURL_COPY_PASTED(strURL, strMethod, strPostData)
   On Error GoTo 0
   Set objWinHttp = Nothing
 End Function
+

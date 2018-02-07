@@ -46,8 +46,8 @@ Function PrivateCoinone(Method As String, apikey As String, secretkey As String,
 Dim NonceUnique As String
 'http://doc.coinone.co.kr/
 
-'Get a 10-digit Nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now) & "0000"
+'Get a 14-digit Nonce
+NonceUnique = CreateNonce(14)
 'NonceUnique = "1510140617707865"
 TradeApiSite = "https://api.coinone.co.kr/v2/"
 

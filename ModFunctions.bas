@@ -7,6 +7,15 @@ Attribute VB_Name = "ModFunctions"
 'Source: https://github.com/krijnsent/crypto_vba
 Sub TestFunctions()
 
+Debug.Print CreateNonce()
+'151802369827
+Debug.Print CreateNonce("10")
+'1518023698
+Debug.Print CreateNonce(3)
+'151
+Debug.Print CreateNonce(15)
+'151802369828000
+
 Debug.Print DateToUnixTime(#4/26/2017#)
 '1493164800
 Debug.Print DateToUnixTime(Now)
@@ -28,7 +37,6 @@ Next i
 FlipArr = TransposeArr(TestArr)
 Debug.Print TestArr(1, 2)
 Debug.Print FlipArr(2, 1)
-
 
 Debug.Print URLEncode("http://www.github.com/")
 'http%3A%2F%2Fwww.github.com%2F
@@ -55,6 +63,23 @@ Function UnixTimeToDate(ts As Long) As Date
     
     UnixTimeToDate = DateSerial(1970, 1, intDays + 1) + TimeSerial(intHours, intMins, intSecs)
 End Function
+
+Function CreateNonce(Optional NonceLength As Integer = 12) As String
+    
+    Dim ScsLng As Long
+    ScsLng = Int(Timer() * 100)
+    
+    NonceUnique = DateDiff("s", "1/1/1970", Now)
+    If NonceLength >= 12 Then
+        CreateNonce = NonceUnique & Right(ScsLng, 2) & String(NonceLength - 12, "0")
+    ElseIf NonceLength >= 1 Then
+        CreateNonce = Left(NonceUnique & Right(ScsLng, 2), NonceLength)
+    Else
+        CreateNonce = 0
+    End If
+
+End Function
+
 
 Function TransposeArr(ArrIn As Variant)
 

@@ -47,7 +47,7 @@ Dim NonceUnique As String
 'https://bittrex.com/home/api
 
 'Get a 10-digit Nonce
-NonceUnique = DateDiff("s", "1/1/1970", Now)
+NonceUnique = CreateNonce(10)
 TradeApiSite = "https://bittrex.com/api/v1.1/"
 
 postdata = Method & "?apikey=" & apikey & MethodOptions & "&nonce=" & NonceUnique
