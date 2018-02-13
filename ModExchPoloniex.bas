@@ -58,6 +58,9 @@ APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+'If you get VBA: An error occurred in the secure channel support
+'Check out: https://github.com/krijnsent/crypto_vba/issues/25 -> try the extra option below
+'objHTTP.Option(4) = 13056
 objHTTP.Open "POST", Url, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"

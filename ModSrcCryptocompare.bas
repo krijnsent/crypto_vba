@@ -69,6 +69,27 @@ Debug.Print ResArr(1, 1), ResArr(1, 2)
 Debug.Print ResArr(2, 1), ResArr(2, 2)
 'e.g.  31-1-2018 09:00:00           8117
 
+ResArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 48, DateSerial(2018, 1, 1), "Kraken")
+Debug.Print ResArr(1, 1)
+'time
+
+'Test DayHourMin variable
+ResArr = C_ARR_OHLCV("4H", "XMR", "BTC", "EC", 48)
+Debug.Print ResArr(1, 1)
+'time
+
+ResArr = C_ARR_OHLCV("BLA", "XLM", "EUR", "EC", 48)
+Debug.Print ResArr(1, 1)
+'ERROR, DayHourMin must end with D, H or M
+
+ResArr = C_ARR_OHLCV("99H", "XMR", "BTC", "EC", 48)
+Debug.Print ResArr(1, 1)
+'ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M
+
+ResArr = C_ARR_OHLCV("HH", "XMR", "BTC", "EC", 48)
+Debug.Print ResArr(1, 1)
+'ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M
+
 ResArr = C_ARR_OHLCV("H", "BTC", "EUR", "ABD")
 Debug.Print ResArr(1, 1), ResArr(1, 2), ResArr(1, 3)
 'unknown ReturnColumn unknown ReturnColumn unknown ReturnColumn
@@ -81,9 +102,6 @@ ResArr = C_ARR_OHLCV("H", "ETH", "EUR", "")
 Debug.Print ResArr(1, 1)
 'ERROR ReturnColumns, use the letters ETCHLOFV
 
-ResArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 48, DateSerial(2018, 1, 1), "Kraken")
-Debug.Print ResArr(1, 1)
-'ERROR, cryptocompare API gave back an empty result, try other settings
 
 End Sub
 
@@ -181,7 +199,7 @@ Set Json = Nothing
 
 End Function
 
-Function C_ARR_OHLCV(DayHour As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional Exchange As String) As Variant()
+Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional Exchange As String) As Variant()
 
 'ReturnColumns: variable "TEOHLCFV" -> select columns you want back in the order you want them back, no spaces
 'T = timestamp (unixtime)
@@ -195,6 +213,7 @@ Function C_ARR_OHLCV(DayHour As String, CurrBuy As String, CurrSell As String, R
 
 Dim ExchangeTxt As String
 Dim PrTxt As String
+Dim AggrVal As String
 Dim cmd As String
 Dim utime As Long
 Dim Json As Object
@@ -202,16 +221,32 @@ Dim TempArr As Variant
 ColumnOptions = "ETCHLOFV"
 Application.Volatile
 
-If UCase(DayHour) = "D" Then
+If UCase(Right(DayHourMin, 1)) = "D" Then
     cmd = "histoday"
-ElseIf UCase(DayHour) = "H" Then
+ElseIf UCase(Right(DayHourMin, 1)) = "H" Then
     cmd = "histohour"
+ElseIf UCase(Right(DayHourMin, 1)) = "M" Then
+    cmd = "histominute"
 Else
     'Error
     ReDim TempArr(1 To 1, 1 To 1)
-    TempArr(1, 1) = "ERROR, DayHour must be D or H"
+    TempArr(1, 1) = "ERROR, DayHourMin must end with D, H or M"
     C_ARR_OHLCV = TempArr
     Exit Function
+End If
+
+AggrTxt = ""
+If Len(DayHourMin) > 1 Then
+    AggrVal = Left(DayHourMin, Len(DayHourMin) - 1)
+    If Val(AggrVal) >= 1 And Val(AggrVal) <= 60 Then
+        AggrTxt = "&aggregate=" & Val(AggrVal)
+    Else
+        'Error
+        ReDim TempArr(1 To 1, 1 To 1)
+        TempArr(1, 1) = "ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M"
+        C_ARR_OHLCV = TempArr
+        Exit Function
+    End If
 End If
 
 If MaxTimeDate > DateSerial(2000, 1, 1) Then
@@ -232,8 +267,8 @@ Else
     NrLinesTxt = ""
 End If
 
-PrTxt = PublicCryptoCompareData(cmd, "?fsym=" & CurrBuy & "&tsym=" & CurrSell & TimeTxt & NrLinesTxt & ExchangeTxt)
-'Debug.Print cmd & "?fsym=" & CurrBuy & "&tsym=" & CurrSell & TimeTxt & NrLinesTxt & ExchangeTxt
+PrTxt = PublicCryptoCompareData(cmd, "?fsym=" & CurrBuy & "&tsym=" & CurrSell & AggrTxt & TimeTxt & NrLinesTxt & ExchangeTxt)
+'Debug.Print cmd & "?fsym=" & CurrBuy & "&tsym=" & CurrSell & AggrTxt & TimeTxt & NrLinesTxt & ExchangeTxt
 'Debug.Print PrTxt
 Set Json = JsonConverter.ParseJson(PrTxt)
 
