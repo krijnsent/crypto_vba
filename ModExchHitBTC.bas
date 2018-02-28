@@ -29,6 +29,18 @@ Debug.Print PrivateHitBTC("balance", apikey, secretkey)
 Debug.Print PrivateHitBTC("cancel_orders", apikey, secretkey, "&symbol=BTCUSD")
 '{"ExecutionReport":[]} -> or a list of all cancelled trade numbers
 
+Debug.Print PublicHitBTC2("symbol")
+'[{"id":"BCNBTC","baseCurrency":"BCN","quoteCurrency":"BTC","quantityIncrement":"100","tickSize":"0.0000000001","takeLiquidityR etc...
+Debug.Print PublicHitBTC2("ticker", "/BCHUSD")
+'{"ask":"1228.13454","bid":"1225.62444","last":"1227.17775","open":"1269.12060","low":"1 etc...
+
+Debug.Print PrivateHitBTC2("account/balance", "GET", apikey, secretkey)
+'[{"currency":"DOGE","available":"0.00000000","reserved":"0.00000000"},{" etc...
+Debug.Print PrivateHitBTC2("history/trades", "GET", apikey, secretkey, "?symbol=BTCUSD")
+'e.g. []
+Debug.Print PrivateHitBTC2("order", "DELETE", apikey, secretkey, "?symbol=BTCUSD")
+'e.g. []
+
 End Sub
 
 Function PublicHitBTC(Method As String, Optional MethodOptions As String) As String
@@ -80,3 +92,43 @@ Set objHTTP = Nothing
 
 End Function
 
+Function PublicHitBTC2(Method As String, Optional MethodOptions As String) As String
+
+'https://api.hitbtc.com/api/2/explore/
+Dim Url As String
+PublicApiSite = "https://api.hitbtc.com"
+urlPath = "/api/2/public/" & Method & MethodOptions
+Url = PublicApiSite & urlPath
+
+PublicHitBTC2 = GetDataFromURL(Url, "GET")
+
+End Function
+
+Function PrivateHitBTC2(Method As String, HTTPMethod As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+
+'https://api.hitbtc.com/api/2/explore/
+'Authorisation: https://stackoverflow.com/questions/34637034/curl-u-equivalent-in-http-request
+
+Dim NonceUnique As String
+Dim postdata As String
+
+'HitBTC nonce
+NonceUnique = CreateNonce(10)
+
+TradeApiSite = "http://api.hitbtc.com"
+urlPath = "/api/2/" & Method & MethodOptions
+Url = TradeApiSite & urlPath
+
+' Instantiate a WinHttpRequest object and open it
+Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+objHTTP.Open HTTPMethod, Url, False
+objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+objHTTP.setRequestHeader "Content-Type", "application/json"
+objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apikey & ":" & secretkey)
+objHTTP.Send ("")
+
+objHTTP.WaitForResponse
+PrivateHitBTC2 = objHTTP.ResponseText
+Set objHTTP = Nothing
+
+End Function
