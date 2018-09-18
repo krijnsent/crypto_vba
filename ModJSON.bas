@@ -257,7 +257,7 @@ Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional Node
     ElseIf TypeName(ObjIn) = "Dictionary" Then
         'objects ({}) to dictionaries, Objects have key:values
         Set DictIn = ObjIn
-        For Each k In DictIn.keys
+        For Each k In DictIn.Keys
             'item could be value, object or array, determine:
             iV = ""
             Set iO = Nothing
@@ -336,7 +336,7 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
     ElseIf TypeName(ObjIn) = "Dictionary" Then
         'objects ({}) to dictionaries, Objects have key:values
         Set DictIn = ObjIn
-        For Each k In DictIn.keys
+        For Each k In DictIn.Keys
             'item could be value, object or array, determine:
             iV = ""
             Set iO = Nothing
@@ -427,12 +427,12 @@ For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
         'Get result column
         Idx = 0
         If Val(ArrIn(3, rw)) > 0 Then
-            Idx = Application.Match("VAL_" & ArrIn(3, rw), TblHeaders.keys, 0)
+            Idx = Application.Match("VAL_" & ArrIn(3, rw), TblHeaders.Keys, 0)
             If ReturnHeader = True Then
                 ResArr(Idx, 1) = "VAL_" & ArrIn(3, rw)
             End If
         Else
-            Idx = Application.Match(ArrIn(3, rw), TblHeaders.keys, 0)
+            Idx = Application.Match(ArrIn(3, rw), TblHeaders.Keys, 0)
             If ReturnHeader = True Then
                 ResArr(Idx, 1) = ArrIn(3, rw)
             End If

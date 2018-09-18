@@ -122,8 +122,8 @@ Url = TradeApiSite & urlPath
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open HTTPMethod, Url, False
-objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "Content-Type", "application/json"
+objHTTP.setRequestHeader "Accept", "application/json"
+objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apikey & ":" & secretkey)
 objHTTP.Send ("")
 

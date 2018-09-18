@@ -14,6 +14,7 @@ secretkey = "your secret key here"
 apikey = apikey_binance
 secretkey = secretkey_binance
 
+
 Debug.Print PublicBinance("time", "")
 '{"serverTime":1513605418615}
 Debug.Print PublicBinance("ticker/24hr", "?symbol=ETHBTC")

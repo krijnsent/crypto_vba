@@ -7,14 +7,39 @@ Attribute VB_Name = "ModFunctions"
 'Source: https://github.com/krijnsent/crypto_vba
 Sub TestFunctions()
 
-Debug.Print CreateNonce()
+Debug.Print "TestFunctions"
+
+TestResult = CreateNonce()
 '151802369827
-Debug.Print CreateNonce("10")
+If Len(TestResult) = 12 And TestResult > 151802369827# Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
+
+TestResult = CreateNonce("10")
 '1518023698
-Debug.Print CreateNonce(3)
+If Len(TestResult) = 10 And TestResult > 1518023698 Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
+
+TestResult = CreateNonce(3)
 '151
-Debug.Print CreateNonce(15)
+If Len(TestResult) = 3 And TestResult >= 151 Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
+
+TestResult = CreateNonce(15)
 '151802369828000
+If Len(TestResult) = 15 And TestResult >= 151802369828000# Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
 
 Debug.Print DateToUnixTime(#4/26/2017#)
 '1493164800

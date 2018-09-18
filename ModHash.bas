@@ -1,17 +1,33 @@
 Attribute VB_Name = "ModHash"
 Sub TestHash()
 
+Debug.Print "TestHash"
 'Check hashes e.g. here: https://www.freeformatter.com/sha256-generator.html
 'Or here: http://hash.online-convert.com/sha512-generator
 
-Debug.Print ComputeHash_C("SHA256", "input_string", "", "STRHEX")
+TestResult = ComputeHash_C("SHA256", "input_string", "", "STRHEX")
 '9f54d278014e50f71c789e6fba09c6cfb0945d9253eb8dc5f91ecf52e9996ab9
+If Len(TestResult) = 64 And Left(TestResult, 4) = "9f54" Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
 
-Debug.Print ComputeHash_C("SHA512", "input_string", "my_key", "STR64")
+TestResult = ComputeHash_C("SHA512", "input_string", "my_key", "STR64")
 '9DsHyKCMZmDa5+y2I4v9ErMAa4rTWXVZVqDA5HOuScHFJBjUJeJW11B6CojHJHQHIzXJc8tkneRLRCqaZfV05A==
+If Len(TestResult) = 88 And Left(TestResult, 4) = "9DsH" Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
 
-Debug.Print ComputeHash_C("SHA384", "input_string", "", "RAW")
-'ŸTÒxNP÷xoº   ÆÏ°”]’SëÅùÏRé™j¹
+TestResult = ComputeHash_C("SHA384", "input_string", "", "RAW")
+'2¥9uDê{S¨Ñ¢9™KúË­“SÕ©†Œkğğ¬46g‘¡yRşæ‰e¶®òúß
+If Len(TestResult) = 48 And Left(TestResult, 4) = "2¥9u" Then
+    Debug.Print "OK"
+Else
+    Debug.Print "ERROR"
+End If
 
 End Sub
 
