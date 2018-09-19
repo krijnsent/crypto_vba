@@ -3,7 +3,7 @@ Attribute VB_Name = "ModWeb"
 'Remember to create a new API key for excel/VBA
 'Based on http://www.808.dk/?code-simplewinhttprequest
 
-Sub TestGetData()
+Sub TestWeb()
 
 'Testing error catching and replies
 Debug.Print GetDataFromURL("myURL", "myMethod")

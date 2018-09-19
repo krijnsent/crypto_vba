@@ -1,33 +1,45 @@
 Attribute VB_Name = "ModHash"
+'Public Function Suite() As TestSuite
+'  Set Suite = New TestSuite
+'  Suite.Description = "..."
+'
+'  ' Create reporter and attach it to these specs
+'  Dim Reporter As New ImmediateReporter
+'  Reporter.ListenTo Suite
+'
+'
+'  ' -> Reporter will now output results as they are generated
+'End Function
+
 Sub TestHash()
 
-Debug.Print "TestHash"
-'Check hashes e.g. here: https://www.freeformatter.com/sha256-generator.html
-'Or here: http://hash.online-convert.com/sha512-generator
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModHash"
 
-TestResult = ComputeHash_C("SHA256", "input_string", "", "STRHEX")
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+  
+' Create a new test
+Dim Test As TestCase
+Set Test = Suite.Test("TestHashes")
+
 '9f54d278014e50f71c789e6fba09c6cfb0945d9253eb8dc5f91ecf52e9996ab9
-If Len(TestResult) = 64 And Left(TestResult, 4) = "9f54" Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+TestResult = ComputeHash_C("SHA256", "input_string", "", "STRHEX")
+Test.IsEqual Len(TestResult), 64
+Test.IsEqual TestResult, "9f54d278014e50f71c789e6fba09c6cfb0945d9253eb8dc5f91ecf52e9996ab9"
 
-TestResult = ComputeHash_C("SHA512", "input_string", "my_key", "STR64")
 '9DsHyKCMZmDa5+y2I4v9ErMAa4rTWXVZVqDA5HOuScHFJBjUJeJW11B6CojHJHQHIzXJc8tkneRLRCqaZfV05A==
-If Len(TestResult) = 88 And Left(TestResult, 4) = "9DsH" Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+TestResult = ComputeHash_C("SHA512", "input_string", "my_key", "STR64")
+Test.IsEqual Len(TestResult), 88
+Test.IsEqual TestResult, "9DsHyKCMZmDa5+y2I4v9ErMAa4rTWXVZVqDA5HOuScHFJBjUJeJW11B6CojHJHQHIzXJc8tkneRLRCqaZfV05A=="
 
-TestResult = ComputeHash_C("SHA384", "input_string", "", "RAW")
 '2•9uêDÍ{S®—¢9ôK˙À≠ìS’©Üåk¨46gë°yR˛Êâe∂ÆÚû˙ﬂ
-If Len(TestResult) = 48 And Left(TestResult, 4) = "2•9u" Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+TestResult = ComputeHash_C("SHA384", "input_string", "", "RAW")
+'If Len(TestResult) = 48 And Left(TestResult, 4) = "2•9u" Then
+Test.IsEqual Len(TestResult), 48
+Test.IsEqual Left(TestResult, 4), "2•9u"
 
 End Sub
 

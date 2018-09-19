@@ -7,51 +7,56 @@ Attribute VB_Name = "ModFunctions"
 'Source: https://github.com/krijnsent/crypto_vba
 Sub TestFunctions()
 
-Debug.Print "TestFunctions"
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModFunctions"
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+' Create a new test
+Dim Test As TestCase
 
+
+Set Test = Suite.Test("CreateNonce")
 TestResult = CreateNonce()
-'151802369827
-If Len(TestResult) = 12 And TestResult > 151802369827# Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+Test.IsOk TestResult > 151802369827#
+Test.IsEqual Len(TestResult), 12
 
 TestResult = CreateNonce("10")
-'1518023698
-If Len(TestResult) = 10 And TestResult > 1518023698 Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+Test.IsOk TestResult > 1518023698
+Test.IsEqual Len(TestResult), 10
 
 TestResult = CreateNonce(3)
-'151
-If Len(TestResult) = 3 And TestResult >= 151 Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+Test.IsOk TestResult >= 151
+Test.IsEqual Len(TestResult), 3
 
 TestResult = CreateNonce(15)
-'151802369828000
-If Len(TestResult) = 15 And TestResult >= 151802369828000# Then
-    Debug.Print "OK"
-Else
-    Debug.Print "ERROR"
-End If
+Test.IsOk TestResult > 151802369827000#
+Test.IsEqual Len(TestResult), 15
 
-Debug.Print DateToUnixTime(#4/26/2017#)
-'1493164800
-Debug.Print DateToUnixTime(Now)
-'e.g. 1511958343
-Debug.Print UnixTimeToDate(1493164800)
-'26-4-2017
-Debug.Print UnixTimeToDate(1511958343)
-'29-11-2017 12:25:43
 
-' Declare a two dimensional array
-' Fill the array with text made up of i and j values
+Set Test = Suite.Test("DateToUnixTime")
+TestResult = DateToUnixTime(#4/26/2017#)
+Test.IsEqual TestResult, 1493164800
+Test.IsEqual Len(TestResult), 10
+
+TestResult = DateToUnixTime(Now)
+Test.IsOk TestResult > 1511958343
+Test.IsEqual Len(TestResult), 10
+
+
+Set Test = Suite.Test("UnixTimeToDate")
+TestResult = UnixTimeToDate(1493164800)
+Test.IsEqual TestResult, #4/26/2017#
+Test.IsEqual Len(TestResult), 9
+
+TestResult = UnixTimeToDate(1511958343)
+Test.IsEqual TestResult, #11/29/2017 12:25:43 PM#
+Test.IsEqual Len(TestResult), 19
+
+
+Set Test = Suite.Test("TransposeArr")
+' Declare a two dimensional array, Fill the array with text made up of i and j values
 Dim TestArr(1 To 3, 1 To 2) As Variant
 Dim i As Long, j As Long
 For i = LBound(TestArr) To UBound(TestArr)
@@ -60,13 +65,17 @@ For i = LBound(TestArr) To UBound(TestArr)
     Next j
 Next i
 FlipArr = TransposeArr(TestArr)
-Debug.Print TestArr(1, 2)
-Debug.Print FlipArr(2, 1)
+Test.IsEqual TestArr(1, 2), "1:2"
+Test.IsEqual TestArr(1, 2), FlipArr(2, 1)
 
-Debug.Print URLEncode("http://www.github.com/")
-'http%3A%2F%2Fwww.github.com%2F
-Debug.Print URLEncode("https://github.com/search?q=crypto_vba&type=")
-'https%3A%2F%2Fgithub.com%2Fsearch%3Fq%3Dcrypto_vba%26type%3D
+
+Set Test = Suite.Test("URLEncode")
+TestResult = URLEncode("http://www.github.com/")
+Test.IsEqual TestResult, "http%3A%2F%2Fwww.github.com%2F"
+
+TestResult = URLEncode("https://github.com/search?q=crypto_vba&type=")
+Test.IsEqual TestResult, "https%3A%2F%2Fgithub.com%2Fsearch%3Fq%3Dcrypto_vba%26type%3D"
+
 
 End Sub
 
@@ -128,7 +137,7 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
   Dim StringLen As Long: StringLen = Len(StringVal)
 
   If StringLen > 0 Then
-    ReDim result(StringLen) As String
+    ReDim Result(StringLen) As String
     Dim i As Long, CharCode As Integer
     Dim Char As String, Space As String
 
@@ -139,16 +148,16 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
       CharCode = Asc(Char)
       Select Case CharCode
         Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
-          result(i) = Char
+          Result(i) = Char
         Case 32
-          result(i) = Space
+          Result(i) = Space
         Case 0 To 15
-          result(i) = "%0" & Hex(CharCode)
+          Result(i) = "%0" & Hex(CharCode)
         Case Else
-          result(i) = "%" & Hex(CharCode)
+          Result(i) = "%" & Hex(CharCode)
       End Select
     Next i
-    URLEncode = Join(result, "")
+    URLEncode = Join(Result, "")
   End If
 End Function
 

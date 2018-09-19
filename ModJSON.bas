@@ -5,229 +5,185 @@ Attribute VB_Name = "ModJSON"
 'ArrayTable - transforms JsonToArray (internal tree) into a flat table for output
 'Source: https://github.com/krijnsent/crypto_vba
 
-Sub TestDepth()
+Sub TestJSON()
 
 Dim JsonResponse As String
-Dim Json As Dictionary
+Dim Json As Object 'Can be dictionary - json starting {} or collection - json starting []
 Dim JsonRes As Dictionary
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModJSON"
 
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+  
+' Create a new test
+Dim Test As TestCase
+Set Test = Suite.Test("TestDepth")
 'Kraken Time
 JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""Mon, 22 May 17 12:23:51 +0000""}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
-Debug.Print MaxDepth(JsonRes)
-'1
+TestResult = MaxDepth(JsonRes)
+Test.IsEqual TestResult, 1
 
 'Poloniex returnTicker
 JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
-Debug.Print MaxDepth(Json)
-'2
+TestResult = MaxDepth(Json)
+Test.IsEqual TestResult, 2
 
 'Kraken OHLC
 JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
-Debug.Print MaxDepth(JsonRes)
-'3
+TestResult = MaxDepth(JsonRes)
+Test.IsEqual TestResult, 3
+
+'WEXnz depth
+JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+TestResult = MaxDepth(Json)
+Test.IsEqual TestResult, 4
+
+
+'TestJsonToArray
+Set Test = Suite.Test("TestJsonToArray")
+'Kraken Time
+JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""Mon, 22 May 17 12:23:51 +0000""}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+Set JsonRes = Json("result")
+TestResult = JsonToArray(JsonRes)
+Test.IsEqual UBound(TestResult, 1), 5
+Test.IsEqual UBound(TestResult, 2), 3
+Test.IsEqual TestResult(3, 2), "unixtime"
+Test.IsEqual TestResult(3, 3), "rfc1123"
+
+'Poloniex returnTicker
+JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+TestResult = JsonToArray(Json)
+Test.IsEqual UBound(TestResult, 1), 5
+Test.IsEqual UBound(TestResult, 2), 23
+Test.IsEqual TestResult(3, 11), "high24hr"
+Test.IsEqual TestResult(4, 14), 24
+
+'Kraken OHLC
+JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+Set JsonRes = Json("result")
+TestResult = JsonToArray(JsonRes)
+Test.IsEqual UBound(TestResult, 1), 5
+Test.IsEqual UBound(TestResult, 2), 57
+Test.IsEqual TestResult(3, 11), 8
+Test.IsEqual TestResult(4, 14), "1124.499"
 
 'BTCe depth
 JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
-Debug.Print MaxDepth(Json)
-'4
+TestResult = JsonToArray(Json)
+Test.IsEqual UBound(TestResult, 1), 5
+Test.IsEqual UBound(TestResult, 2), 15
+Test.IsEqual TestResult(3, 11), 1
+Test.IsEqual TestResult(4, 14), 1924.41522
 
-End Sub
 
-Sub TestJsonToArray()
-
-Dim JsonResponse As String
-Dim Json As Dictionary
-Dim JsonRes As Dictionary
+'TestArrayTable
+Set Test = Suite.Test("TestArrayTable")
 
 'Kraken Time
 JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""Mon, 22 May 17 12:23:51 +0000""}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
 ResArr = JsonToArray(JsonRes)
-For rw = LBound(ResArr, 2) To UBound(ResArr, 2)
-    TempStr = ""
-    For col = LBound(ResArr, 1) To UBound(ResArr, 1)
-        If TempStr = "" Then
-            TempStr = ResArr(col, rw)
-        Else
-            TempStr = TempStr & " -- " & ResArr(col, rw)
-        End If
-    Next
-    Debug.Print TempStr
-Next
-'NODE_LVL -- PARENT -- KEY -- VALUE -- TYPE
-'1 -- MAIN -- unixtime -- 1495455831 -- VAL
-'1 -- MAIN -- rfc1123 -- Mon, 22 May 17 12:23:51 +0000 -- VAL
-
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 2
+Test.IsEqual UBound(TestResult, 2), 2
+Test.IsEqual TestResult(1, 1), "unixtime"
+Test.IsEqual TestResult(2, 2), "Mon, 22 May 17 12:23:51 +0000"
 
 'Poloniex returnTicker
 JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-For rw = LBound(ResArr, 2) To UBound(ResArr, 2)
-    TempStr = ""
-    For col = LBound(ResArr, 1) To UBound(ResArr, 1)
-        If TempStr = "" Then
-            TempStr = ResArr(col, rw)
-        Else
-            TempStr = TempStr & " -- " & ResArr(col, rw)
-        End If
-    Next
-    If InStr(TempStr, "percentChange") Then Debug.Print TempStr
-Next
-'2 -- BTC_BCN -- percentChange -- 0.73553719 -- VAL
-'2 -- BTC_DASH -- percentChange -- 0.00446825 -- VAL
-
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 11
+Test.IsEqual UBound(TestResult, 2), 3
+Test.IsEqual TestResult(1, 2), "BTC_BCN"
+Test.IsEqual TestResult(3, 3), "0.04775443"
 
 'Kraken OHLC
 JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 Set JsonRes = Json("result")
 ResArr = JsonToArray(Json)
-For rw = LBound(ResArr, 2) To UBound(ResArr, 2)
-    TempStr = ""
-    For col = LBound(ResArr, 1) To UBound(ResArr, 1)
-        If TempStr = "" Then
-            TempStr = ResArr(col, rw)
-        Else
-            TempStr = TempStr & " -- " & ResArr(col, rw)
-        End If
-    Next
-    If InStr(TempStr, "result") Then Debug.Print TempStr
-Next
-'1 -- MAIN -- result -- 2 -- OBJ
-'2 -- result -- XXBTZEUR -- 6 -- OBJ
-'2 -- result -- last -- 1495191600 -- VAL
-
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 11
+Test.IsEqual UBound(TestResult, 2), 7
+Test.IsEqual TestResult(1, 2), "result"
+Test.IsEqual TestResult(4, 4), 1492614000
 
 'BTCe depth
 JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-For rw = LBound(ResArr, 2) To UBound(ResArr, 2)
-    TempStr = ""
-    For col = LBound(ResArr, 1) To UBound(ResArr, 1)
-        If TempStr = "" Then
-            TempStr = ResArr(col, rw)
-        Else
-            TempStr = TempStr & " -- " & ResArr(col, rw)
-        End If
-    Next
-    If InStr(TempStr, "1924") Then Debug.Print TempStr
-Next
-'4 --  3 -- 1 -- 1924,41 -- VAL
-'4 --  4 -- 1 -- 1924,41522 -- VAL
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 5
+Test.IsEqual UBound(TestResult, 2), 5
+Test.IsEqual TestResult(1, 2), "btc_eur"
+Test.IsEqual TestResult(4, 4), 1924.41
 
-End Sub
+'Poloniex deposit/withdrawal, no header output
+JsonResponse = "{""deposits"":[{""currency"":""BTC"",""address"":""DEP1"",""amount"":""0.01006132"",""confirmations"":10,""txid"":""17f819a91369a9ff6c4a34216d434597cfc1b4a3d0489b46bd6f924137a47701"",""timestamp"":1399305798,""status"":""COMPLETE""},{""currency"":""BTC"",""address"":""DEP2"",""amount"":""0.00404104"",""confirmations"":10,""txid"":""7acb90965b252e55a894b535ef0b0b65f45821f2899e4a379d3e43799604695c"",""timestamp"":1399245916,""status"":""COMPLETE""}],""withdrawals"":[{""withdrawalNumber"":134933,""currency"":""BTC"",""address"":""1N2i5n8DwTGzUq2Vmn9TUL8J1vdr1XBDFg"",""amount"":""5.00010000"", ""timestamp"":1399267904,""status"":""COMPLETE: 36e483efa6aff9fd53a235177579d98451c4eb237c210e66cd2b9a2d4a988f8e"",""ipAddress"":""IP192""}]}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+TestResult = ArrayTable(ResArr, False)
+Test.IsEqual UBound(TestResult, 1), 11
+Test.IsEqual UBound(TestResult, 2), 3
+Test.IsEqual TestResult(1, 2), "deposits"
+Test.IsEqual TestResult(4, 2), "DEP2"
 
-Sub TestArrayTable()
+'Test no header reply
+JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+Set JsonRes = Json("result")
+ResArr = JsonToArray(Json)
+TestResult = ArrayTable(ResArr, False)
+Test.IsEqual UBound(TestResult, 1), 11
+Test.IsEqual UBound(TestResult, 2), 6
+Test.IsEqual TestResult(1, 2), "result"
+Test.IsEqual TestResult(4, 2), 1492610400
 
-Dim JsonResponse As String
-Dim Json As Dictionary
-Dim JsonRes As Dictionary
+'Empty data set returned 1
+JsonResponse = "{""success"":true,""message"":"""",""result"":[]}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 3
+Test.IsEqual UBound(TestResult, 2), 2
+Test.IsEqual TestResult(1, 2), True
+Test.IsEqual TestResult(3, 2), 0
 
-''Set Sht = Worksheets("TEST")
-''Sht.Cells.ClearContents
-'
-''Kraken Time
-'JsonResponse = "{""error"":[],""result"":{""unixtime"":1495455831,""rfc1123"":""Mon, 22 May 17 12:23:51 +0000""}}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'Set JsonRes = Json("result")
-'ResArr = JsonToArray(JsonRes)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 1)
-'Debug.Print tbl(2, 2)
-''unixtime
-''Mon, 22 May 17 12:23:51 +0000
-''Sht.Range("B2").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
-'
-''Poloniex returnTicker
-'JsonResponse = "{""BTC_BCN"":{""id"":7,""last"":""0.00000210"",""lowestAsk"":""0.00000210"",""highestBid"":""0.00000208"",""percentChange"":""0.73553719"",""baseVolume"":""26784.80209760"",""quoteVolume"":""13894501407.13100815"",""isFrozen"":""0"",""high24hr"":""0.00000280"",""low24hr"":""0.00000118""},""BTC_DASH"":{""id"":24,""last"":""0.04775443"",""lowestAsk"":""0.04781078"",""highestBid"":""0.04775443"",""percentChange"":""0.00446825"",""baseVolume"":""2884.45152468"",""quoteVolume"":""60634.59565660"",""isFrozen"":""0"",""high24hr"":""0.05035290"",""low24hr"":""0.04430738""}}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(3, 3)
-''BTC_BCN
-''0.04775443
-''Sht.Range("B6").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
-'
-''Kraken OHLC
-'JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'Set JsonRes = Json("result")
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(4, 4)
-''result
-''1492614000
-''Sht.Range("B11").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
-'
-''BTCe depth
-'JsonResponse = "{""btc_eur"":{""asks"":[[1919.99999,0.1111724],[1920,0.30236723],[1924.41,0.00601202],[1924.41522,0.009536]]}}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(4, 4)
-''btc_eur
-''1924,41
-''Sht.Range("B21").Resize(UBound(Tbl, 2), UBound(Tbl, 1)) = WorksheetFunction.Transpose(Tbl)
-'
-''Poloniex deposit/withdrawal, no header output
-'JsonResponse = "{""deposits"":[{""currency"":""BTC"",""address"":""DEP1"",""amount"":""0.01006132"",""confirmations"":10,""txid"":""17f819a91369a9ff6c4a34216d434597cfc1b4a3d0489b46bd6f924137a47701"",""timestamp"":1399305798,""status"":""COMPLETE""},{""currency"":""BTC"",""address"":""DEP2"",""amount"":""0.00404104"",""confirmations"":10,""txid"":""7acb90965b252e55a894b535ef0b0b65f45821f2899e4a379d3e43799604695c"",""timestamp"":1399245916,""status"":""COMPLETE""}],""withdrawals"":[{""withdrawalNumber"":134933,""currency"":""BTC"",""address"":""1N2i5n8DwTGzUq2Vmn9TUL8J1vdr1XBDFg"",""amount"":""5.00010000"", ""timestamp"":1399267904,""status"":""COMPLETE: 36e483efa6aff9fd53a235177579d98451c4eb237c210e66cd2b9a2d4a988f8e"",""ipAddress"":""IP192""}]}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, False)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(4, 2)
-''deposits
-''DEP2
-'
-''Test no header reply
-'JsonResponse = "{""error"":[],""result"":{""XXBTZEUR"":[[1492606800,""1121.990"",""1124.912"",""1119.680"",""1124.912"",""1122.345"",""352.76808800"",602],[1492610400,""1124.499"",""1124.980"",""1119.680"",""1122.000"",""1122.194"",""218.62127780"",713],[1492614000,""1121.311"",""1122.900"",""1120.501"",""1122.899"",""1122.266"",""445.46426003"",851],[1492617600,""1122.894"",""1124.499"",""1120.710"",""1123.291"",""1123.068"",""253.55336370"",860],[1492621200,""1124.406"",""1126.000"",""1123.017"",""1125.990"",""1124.775"",""234.27612705"",918],[1492624800,""1125.610"",""1126.231"",""1123.010"",""1126.229"",""1125.453"",""243.42246123"",772]],""last"":1495191600}}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'Set JsonRes = Json("result")
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, False)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(4, 4)
-''result
-''1492617600
-'
-''Empty data set returned 1
-'JsonResponse = "{""success"":true,""message"":"""",""result"":[]}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(3, 2)
-''Waar
-''0
-'
-''Empty data set returned 2
-'JsonResponse = "{""success"":false,""message"":""APISIGN_NOT_PROVIDED"",""result"":null}"
-'Set Json = JsonConverter.ParseJson(JsonResponse)
-'ResArr = JsonToArray(Json)
-'tbl = ArrayTable(ResArr, True)
-'Debug.Print tbl(1, 2)
-'Debug.Print tbl(2, 2)
-''Onwaar
-''APISIGN_NOT_PROVIDED
+'Empty data set returned 2
+JsonResponse = "{""success"":false,""message"":""APISIGN_NOT_PROVIDED"",""result"":null}"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+ResArr = JsonToArray(Json)
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 3
+Test.IsEqual UBound(TestResult, 2), 2
+Test.IsEqual TestResult(1, 2), False
+Test.IsEqual TestResult(2, 2), "APISIGN_NOT_PROVIDED"
 
-'Error set?
+'Error set - only if Json is defined as Dictionary, as Object is okay
 JsonResponse = "[{""balance"":0,""pendingFunds"":0,""currency"":""BCH""},{""balance"":41,""pendingFunds"":0,""currency"":""AUD""},{""balance"":145,""pendingFunds"":0,""currency"":""BTC""},{""balance"":0,""pendingFunds"":0,""currency"":""LTC""}]"
 Set Json = JsonConverter.ParseJson(JsonResponse)
 ResArr = JsonToArray(Json)
-tbl = ArrayTable(ResArr, True)
-
+TestResult = ArrayTable(ResArr, True)
+Test.IsEqual UBound(TestResult, 1), 4
+Test.IsEqual UBound(TestResult, 2), 5
+Test.IsEqual TestResult(2, 3), 41
+Test.IsEqual TestResult(4, 4), "BTC"
 
 End Sub
 
