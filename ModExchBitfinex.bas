@@ -35,7 +35,7 @@ PublicApiSite = "https://api.bitfinex.com"
 urlPath = "/v1/" & Method & "/" & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicBitfinex = GetDataFromURL(Url, "GET")
+PublicBitfinex = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateBitfinex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As Collection)

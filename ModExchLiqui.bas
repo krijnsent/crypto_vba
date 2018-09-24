@@ -39,7 +39,7 @@ PublicApiSite = "https://api.liqui.io"
 urlPath = "/api/3/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicLiqui = GetDataFromURL(Url, "GET")
+PublicLiqui = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateLiqui(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

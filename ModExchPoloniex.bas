@@ -39,7 +39,7 @@ PublicApiSite = "https://poloniex.com"
 urlPath = "/public?command=" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicPoloniex = GetDataFromURL(Url, "GET")
+PublicPoloniex = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivatePoloniex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

@@ -40,7 +40,7 @@ PublicApiSite = "https://api.kraken.com"
 urlPath = "/0/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicKraken = GetDataFromURL(Url, "GET")
+PublicKraken = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateKraken(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

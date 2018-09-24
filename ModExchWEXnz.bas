@@ -40,7 +40,7 @@ PublicApiSite = "https://wex.nz"
 urlPath = "/api/3/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicWEXnz = GetDataFromURL(Url, "GET")
+PublicWEXnz = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateWEXnz(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

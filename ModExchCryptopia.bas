@@ -38,7 +38,7 @@ PublicApiSite = "https://www.cryptopia.co.nz"
 urlPath = "/api/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicCryptopia = GetDataFromURL(Url, "GET")
+PublicCryptopia = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateCryptopia(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

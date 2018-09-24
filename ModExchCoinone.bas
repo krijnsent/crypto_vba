@@ -38,7 +38,7 @@ PublicApiSite = "https://api.coinone.co.kr/"
 urlPath = Method & "/" & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicCoinone = GetDataFromURL(Url, "GET")
+PublicCoinone = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateCoinone(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

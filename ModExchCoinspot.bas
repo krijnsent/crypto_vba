@@ -38,7 +38,7 @@ PublicApiSite = "https://www.coinspot.com.au"
 urlPath = "/pubapi/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicCoinspot = GetDataFromURL(Url, "GET")
+PublicCoinspot = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateCoinspot(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

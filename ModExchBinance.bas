@@ -41,7 +41,7 @@ PublicApiSite = "https://api.binance.com"
 urlPath = "/api/v1/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicBinance = GetDataFromURL(Url, "GET")
+PublicBinance = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateBinance(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

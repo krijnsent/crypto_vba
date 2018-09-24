@@ -51,7 +51,7 @@ PublicApiSite = "https://api.hitbtc.com"
 urlPath = "/api/1/public/" & MethodOptions & Method
 Url = PublicApiSite & urlPath
 
-PublicHitBTC = GetDataFromURL(Url, "GET")
+PublicHitBTC = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateHitBTC(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
@@ -100,7 +100,7 @@ PublicApiSite = "https://api.hitbtc.com"
 urlPath = "/api/2/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicHitBTC2 = GetDataFromURL(Url, "GET")
+PublicHitBTC2 = WebRequestURL(Url, "GET")
 
 End Function
 

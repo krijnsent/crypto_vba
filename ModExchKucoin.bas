@@ -41,7 +41,7 @@ PublicApiSite = "https://api.kucoin.com"
 urlPath = "/v1/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicKucoin = GetDataFromURL(Url, "GET")
+PublicKucoin = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateKucoin(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String

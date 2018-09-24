@@ -14,19 +14,63 @@ secretkey = "your secret key here"
 apikey = apikey_bittrex
 secretkey = secretkey_bittrex
 
-Debug.Print PublicBittrex("getmarketsummary", "?market=btc-DOGE")
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModExchBittrex"
+
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+  
+' Create a new test
+Dim Test As TestCase
+Set Test = Suite.Test("TestBittrex")
+
+'Testing error catching and replies
+TestResult = PublicBittrex("getmarketsummary", "?market=btc-DOGE")
 '{"success":true,"message":"","result":[{"MarketName":"BTC-LTC","High":0.01250680,"Low":0.01132497,"Volume":222923.75389408,"Last":0.01218025,"BaseVolume":2639.03223291,"TimeStamp":"2017-06-15T20:49:50.27","Bid":0.01218026,"Ask":0.01224870,"OpenBuyOrders":1439,"OpenSellOrders":2785,"PrevDay":0.01137500,"Created":"2014-02-13T00:00:00"}]}
-Debug.Print PublicBittrex("getmarkethistory", "?market=BTC-DOGE")
+Test.IsEqual Left(TestResult, 40), "{""success"":true,""message"":"""",""result"":[{"
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), True
+Test.IsEqual JsonResult("message"), ""
+Test.IsEqual JsonResult("result")(1)("MarketName"), "BTC-DOGE"
+Test.IsOk JsonResult("result")(1)("TimeStamp") > 151
+
+
+TestResult = PublicBittrex("getmarkethistory", "?market=BTC-DOGE")
 '{"success":true,"message":"","result":[{"Id":6313536,"TimeStamp":"2017-06-15T20:49:05.46","Quantity":84553.23767320,etc.
+Test.IsEqual Left(TestResult, 40), "{""success"":true,""message"":"""",""result"":[{"
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), True
+Test.IsEqual JsonResult("message"), ""
+Test.IsEqual JsonResult("result")(1).Count, 7
+Test.IsOk JsonResult("result")(1)("Id") > 151
+
 
 'Unix time period:
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateBittrex("account/getbalances", apikey, secretkey)
+TestResult = PrivateBittrex("account/getbalances", apikey, secretkey)
 '{"success":true,"message":"","result":[{"Currency":"BTC","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"},{"Currency":"XMR","Balance":0.00000000,"Available":0.00000000,"Pending":0.00000000,"CryptoAddress":etc...
-Debug.Print PrivateBittrex("account/getbalance", apikey, secretkey, "&currency=ETH")
-'{"success":true,"message":"","result":{"Currency":"BTC","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"}}
+Test.IsEqual Left(TestResult, 40), "{""success"":true,""message"":"""",""result"":[{"
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), True
+Test.IsEqual JsonResult("message"), ""
+Test.IsEqual JsonResult("result")(1).Count, 5
+Test.IsOk Len(JsonResult("result")(1)("Currency")) > 0
+Test.IsOk JsonResult("result")(1)("Balance") >= 0
+
+
+TestResult = PrivateBittrex("account/getbalance", apikey, secretkey, "&currency=ETH")
+'{"success":true,"message":"","result":{"Currency":"ETH","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"}}
+Test.IsEqual Left(TestResult, 39), "{""success"":true,""message"":"""",""result"":{"
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), True
+Test.IsEqual JsonResult("message"), ""
+Test.IsOk JsonResult("result").Count > 0
+Test.IsOk Len(JsonResult("result")("Currency")) > 0
+
 
 End Sub
 
@@ -38,12 +82,14 @@ PublicApiSite = "https://bittrex.com"
 urlPath = "/api/v1.1/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicBittrex = GetDataFromURL(Url, "GET")
+PublicBittrex = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateBittrex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
+Dim postdata As String
+Dim Url As String
 'https://bittrex.com/home/api
 
 'Get a 10-digit Nonce
@@ -53,18 +99,13 @@ TradeApiSite = "https://bittrex.com/api/v1.1/"
 postdata = Method & "?apikey=" & apikey & MethodOptions & "&nonce=" & NonceUnique
 APIsign = ComputeHash_C("SHA512", TradeApiSite & postdata, secretkey, "STRHEX")
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-'Debug.Print "POST: " & TradeApiSite & postdata
-objHTTP.Open "POST", TradeApiSite & postdata, False
-objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "apisign", APIsign
-objHTTP.Send (postdata)
+Dim headerDict As New Dictionary
+headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
+headerDict.Add "apisign", APIsign
 
-objHTTP.WaitForResponse
-PrivateBittrex = objHTTP.ResponseText
-Set objHTTP = Nothing
+Url = TradeApiSite & postdata
+PrivateBittrex = WebRequestURL(Url, "POST", headerDict)
 
 End Function
 

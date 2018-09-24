@@ -41,7 +41,7 @@ PublicApiSite = "https://api.gdax.com"
 urlPath = "/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicGDAX = GetDataFromURL(Url, "GET")
+PublicGDAX = WebRequestURL(Url, "GET")
 
 End Function
 Function PrivateGDAX(Method As String, HTTPMethod As String, apikey As String, secretkey As String, passphrase As String, Optional MethodOptions As String) As String

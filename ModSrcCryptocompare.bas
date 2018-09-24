@@ -114,7 +114,7 @@ PublicApiSite = "https://min-api.cryptocompare.com/data"
 urlPath = "/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicCryptoCompareData = GetDataFromURL(Url, "GET")
+PublicCryptoCompareData = WebRequestURL(Url, "GET")
 
 Set objHTTP = Nothing
 
