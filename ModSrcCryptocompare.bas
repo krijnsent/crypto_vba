@@ -1,10 +1,14 @@
 Attribute VB_Name = "ModSrcCryptocompare"
 'For historical prices, include https://www.cryptocompare.com/api/
+'CacheTime: the nr of seconds before the cache value is refreshed
+'ToDo: include caching - https://fastexcel.wordpress.com/2012/12/05/writing-efficient-udfs-part-12-getting-used-range-fast-using-application-events-and-a-cache/
+'And https://www.experts-exchange.com/articles/1135/Use-Excel's-hidden-data-store-to-share-data-across-VBA-projects.html
+'And https://github.com/jbaurle/PMStockQuote/blob/master/PMStockQuote/UserDefinedFunctions.cs
+Public Const CacheTime = 1000
 
 'Functions to use in a sheet
 'Source: https://github.com/krijnsent/crypto_vba
 'Note: the functions currently slow down the sheets massively, use max 10 functions per workbook, otherwise your workbook might CRASH
-'ToDo: include caching - https://fastexcel.wordpress.com/2012/12/05/writing-efficient-udfs-part-12-getting-used-range-fast-using-application-events-and-a-cache/
 'ToDo: better error catching
 
 'Functions:
@@ -13,94 +17,144 @@ Attribute VB_Name = "ModSrcCryptocompare"
 'C_DAY_AVG_PRICE - dayAvg?fsym=BTC&tsym=USD&toTs=1487116800&e=Bitfinex
 'C_ARR_OHLCV - histoday?fsym=GBP&tsym=USD&limit=30&aggregate=1&e=CCCAGG
 
-Sub GetCryptoCompareFunctionsTest()
+
+Sub TestSrcCryptocompare()
+
+
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModSrcCryptocompare"
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+' Create a new test
+Dim Test As TestCase
+
+
+Set Test = Suite.Test("TestPublicCryptoCompareData")
 
 'Test for errors first
-Set Json = JsonConverter.ParseJson(PublicCryptoCompareData("unknown_command", ""))
-Debug.Print Json("Response") & "--" & Json("Message") & "--" & Json("Path")
-'Error----/data/unknown_command
-Set Json = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", ""))
-Debug.Print Json("Response") & "--" & Json("Message") & "--" & Json("Path")
+Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("unknown_command", ""))
+Test.IsEqual JsonResult("Response"), "Error"
+Test.IsEqual JsonResult("Message"), ""
+Test.IsEqual JsonResult("Path"), "/data/unknown_command"
+
+Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", ""))
+Test.IsEqual JsonResult("Response"), "Error"
+Test.IsEqual JsonResult("Message"), "fsym param seems to be missing."
+Test.IsEqual JsonResult("Path"), ""
+
 'Error--fsym param seems to be missing.--
-Set Json = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "fsym=BTC"))
-Debug.Print Json("Response") & "--" & Json("Message") & "--" & Json("Path")
-'Error----/data/histodayfsym=BTC
-Set Json = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "?fsym=BTC&tsym=BLABLA"))
-Debug.Print Json("Response") & "--" & Json("Message") & "--" & Json("Path")
-'Error--There is no data for the toSymbol BLABLA .--
-Set Json = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "?fsym=BTC&tsym=XMR"))
-Debug.Print Json("Response") & "--" & Json("Message") & "--" & Json("Path")
-'Success----
+Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "fsym=BTC"))
+Test.IsEqual JsonResult("Response"), "Error"
+Test.IsEqual JsonResult("Message"), ""
+Test.IsEqual JsonResult("Path"), "/data/histodayfsym=BTC"
 
-Debug.Print C_LAST_PRICE("MYCOIN1", "BLABLA")
-'ERROR There is no data for the symbol MYCOIN1 .
-Debug.Print C_LAST_PRICE("BTC", "BLABLA")
-'ERROR There is no data for any of the toSymbols BLABLA .
-Debug.Print C_LAST_PRICE("BTC", "EUR", "An_Unknown_Exchange")
-'ERROR an_unknown_exchange market does not exist for this coin pair (BTC-EUR)
-Debug.Print C_LAST_PRICE("BTC", "EUR")
-'e.g. 8092,80
-Debug.Print C_LAST_PRICE("BTC", "EUR", "Kraken")
-'e.g. 8055,90
+Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "?fsym=BTC&tsym=BLABLA"))
+Test.IsEqual JsonResult("Response"), "Error"
+Test.IsEqual JsonResult("Message"), "There is no data for the toSymbol BLABLA ."
+Test.IsEqual JsonResult("Path"), ""
+
+Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "?fsym=BTC&tsym=XMR"))
+Test.IsEqual JsonResult("Response"), "Success"
+Test.IsEqual JsonResult("Message"), ""
+Test.IsEqual JsonResult("Path"), ""
 
 
-Debug.Print C_HIST_PRICE("ETH", "USD", "2018-01-01 20:00")
-'1056,75
-Debug.Print C_HIST_PRICE("ETH", "USD", #1/1/2018#, "Bittrex")
-'1111,2
+Set Test = Suite.Test("TestC_LAST_PRICE")
+JsonResult = C_LAST_PRICE("MYCOIN1", "BLABLA")
+Test.IsEqual JsonResult, "ERROR There is no data for the symbol MYCOIN1 ."
 
-Debug.Print C_DAY_AVG_PRICE("LTC", "BTC", #1/1/2017#)
-'0,00452
-Debug.Print C_DAY_AVG_PRICE("LTC", "BTC", #1/1/2017#, "Poloniex")
-'0,004513
+JsonResult = C_LAST_PRICE("BTC", "BLABLA")
+Test.IsEqual JsonResult, "ERROR There is no data for any of the toSymbols BLABLA ."
 
+JsonResult = C_LAST_PRICE("BTC", "EUR", "An_Unknown_Exchange")
+Test.IsEqual JsonResult, "ERROR an_unknown_exchange market does not exist for this coin pair (BTC-EUR)"
+
+JsonResult = C_LAST_PRICE("BTC", "EUR")
+Test.IsOk JsonResult > 0
+
+JsonResult = C_LAST_PRICE("BTC", "EUR", "Kraken")
+Test.IsOk JsonResult > 0
+
+
+Set Test = Suite.Test("TestC_HIST_PRICE")
+
+JsonResult = C_HIST_PRICE("ETH", "USD", "2018-01-01 20:00")
+Test.IsOk JsonResult > 0
+JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2018#, "Bittrex")
+Test.IsOk JsonResult > 0
+
+
+Set Test = Suite.Test("TestC_DAY_AVG_PRICE")
+
+JsonResult = C_DAY_AVG_PRICE("ETH", "BTC", #1/1/2017#)
+Test.IsOk JsonResult > 0
+JsonResult = C_DAY_AVG_PRICE("ETH", "BTC", #1/1/2017#, "Poloniex")
+Test.IsOk JsonResult > 0
+
+
+Set Test = Suite.Test("TestC_ARR_OHLCV")
 'Function C_ARR_OHLCV(
 'DayHour as String, CurrBuy As String, CurrSell As String, ReturnColumns As String -> ETCHLOFV, Optional NrHours As Long,
 'Optional MaxTimeDate As Date, Optional Exchange As String) As Variant()
-ResArr = C_ARR_OHLCV("H", "BTC", "EUR", "TECV", 48, #1/1/2018#, "Kraken")
-Debug.Print ResArr(1, 1), ResArr(1, 2), ResArr(1, 3), ResArr(1, 4)
-'time          time          close         volumeto
-Debug.Print ResArr(2, 1), ResArr(2, 2), ResArr(2, 3), ResArr(2, 4)
-' 1514592000   30-12-2017     12164,33      10076523,28
+TestArr = C_ARR_OHLCV("H", "BTC", "EUR", "TECV", 48, #1/1/2018#, "Kraken")
+Test.IsEqual UBound(TestArr, 1), 50
+Test.IsEqual UBound(TestArr, 2), 4
+Test.IsEqual TestArr(1, 1), "time"
+Test.IsEqual TestArr(1, 2), "time"
+Test.IsEqual TestArr(1, 3), "close"
+Test.IsEqual TestArr(1, 4), "volumeto"
+Test.IsEqual TestArr(2, 1), "1514592000"
+Test.IsEqual TestArr(2, 2), #12/30/2017#
+Test.IsOk TestArr(2, 3) > 1
+Test.IsOk TestArr(2, 4) > 1
 
-ResArr = C_ARR_OHLCV("H", "BTC", "EUR", "EC", 24, , "Kraken")
-Debug.Print ResArr(1, 1), ResArr(1, 2)
-'time          close
-Debug.Print ResArr(2, 1), ResArr(2, 2)
-'e.g.  31-1-2018 09:00:00           8117
 
-ResArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 48, DateSerial(2018, 1, 1), "Kraken")
-Debug.Print ResArr(1, 1)
-'time
+TestArr = C_ARR_OHLCV("H", "BTC", "EUR", "EC", 24, , "Kraken")
+Test.IsEqual UBound(TestArr, 1), 26
+Test.IsEqual UBound(TestArr, 2), 2
+Test.IsEqual TestArr(1, 1), "time"
+Test.IsEqual TestArr(1, 2), "close"
+Test.IsOk TestArr(2, 1) > #12/30/2017#
+Test.IsOk TestArr(2, 2) > 1
 
-'Test DayHourMin variable
-ResArr = C_ARR_OHLCV("4H", "XMR", "BTC", "EC", 48)
-Debug.Print ResArr(1, 1)
-'time
 
-ResArr = C_ARR_OHLCV("BLA", "XLM", "EUR", "EC", 48)
-Debug.Print ResArr(1, 1)
-'ERROR, DayHourMin must end with D, H or M
+TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 48, DateSerial(2018, 1, 1), "Kraken")
+Test.IsEqual UBound(TestArr, 1), 50
+Test.IsEqual UBound(TestArr, 2), 8
+Test.IsEqual TestArr(1, 1), "time"
+Test.IsEqual TestArr(1, 8), "volumeto"
+Test.IsEqual TestArr(50, 2), #1/1/2018#
+Test.IsEqual TestArr(50, 3), 0.01447
 
-ResArr = C_ARR_OHLCV("99H", "XMR", "BTC", "EC", 48)
-Debug.Print ResArr(1, 1)
-'ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M
+TestArr = C_ARR_OHLCV("4H", "XMR", "BTC", "EC", 48)
+Test.IsEqual UBound(TestArr, 1), 50
+Test.IsEqual UBound(TestArr, 2), 2
+Test.IsEqual TestArr(1, 1), "time"
+Test.IsEqual TestArr(1, 2), "close"
+Test.IsOk TestArr(50, 1) > #1/1/2018#
+Test.IsOk TestArr(50, 2) > 0
 
-ResArr = C_ARR_OHLCV("HH", "XMR", "BTC", "EC", 48)
-Debug.Print ResArr(1, 1)
-'ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M
+TestArr = C_ARR_OHLCV("BLA", "XLM", "EUR", "EC", 48)
+Test.IsEqual TestArr(1, 1), "ERROR, DayHourMin must end with D, H or M"
 
-ResArr = C_ARR_OHLCV("H", "BTC", "EUR", "ABD")
-Debug.Print ResArr(1, 1), ResArr(1, 2), ResArr(1, 3)
-'unknown ReturnColumn unknown ReturnColumn unknown ReturnColumn
+TestArr = C_ARR_OHLCV("99H", "XMR", "BTC", "EC", 48)
+Test.IsEqual TestArr(1, 1), "ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M"
 
-ResArr = C_ARR_OHLCV("H", "2FA", "EUR", "ECV")
-Debug.Print ResArr(1, 1)
-'ERROR There is no data for the symbol 2FA .
+TestArr = C_ARR_OHLCV("HH", "XMR", "BTC", "EC", 48)
+Test.IsEqual TestArr(1, 1), "ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M"
 
-ResArr = C_ARR_OHLCV("H", "ETH", "EUR", "")
-Debug.Print ResArr(1, 1)
-'ERROR ReturnColumns, use the letters ETCHLOFV
+TestArr = C_ARR_OHLCV("H", "BTC", "EUR", "ABD")
+Test.IsEqual TestArr(1, 1), "unknown ReturnColumn"
+Test.IsEqual TestArr(1, 2), "unknown ReturnColumn"
+Test.IsEqual TestArr(1, 3), "unknown ReturnColumn"
+
+TestArr = C_ARR_OHLCV("H", "2FA", "EUR", "ECV")
+Test.IsEqual TestArr(1, 1), "ERROR There is no data for the symbol 2FA ."
+
+TestArr = C_ARR_OHLCV("H", "ETH", "EUR", "")
+Test.IsEqual TestArr(1, 1), "ERROR ReturnColumns, use the letters ETCHLOFV"
 
 
 End Sub

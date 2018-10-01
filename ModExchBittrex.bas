@@ -24,7 +24,7 @@ Reporter.ListenTo Suite
   
 ' Create a new test
 Dim Test As TestCase
-Set Test = Suite.Test("TestBittrex")
+Set Test = Suite.Test("TestBittrexPublic")
 
 'Testing error catching and replies
 TestResult = PublicBittrex("getmarketsummary", "?market=btc-DOGE")
@@ -48,6 +48,7 @@ Test.IsOk JsonResult("result")(1)("Id") > 151
 
 
 'Unix time period:
+Set Test = Suite.Test("TestBittrexPrivate")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 

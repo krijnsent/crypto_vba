@@ -23,6 +23,7 @@ TestResult = WebRequestURL("myURL", "myMethod")
 Test.IsEqual Len(TestResult), 62
 Test.IsEqual TestResult, "{""error_nr"":27,""error_txt"":""invalid method for WebRequestURL""}"
 
+
 TestResult = WebRequestURL("myURL", "GET")
 '{"error_nr":-2147012796,"error_txt":"VBA-WinHttp.WinHttpRequest  etc.
 Test.IsEqual Left(TestResult, 36), "{""error_nr"":-2147012796,""error_txt"":"
@@ -33,10 +34,23 @@ TestResult = WebRequestURL("https://github.com/empty_url_not_there", "GET")
 Test.IsEqual Len(TestResult), 45
 Test.IsEqual TestResult, "{""error_nr"":404,""error_txt"":""HTTP-Not Found""}"
 
+
 TestResult = WebRequestURL("https://api.kraken.com/0/public/Time", "GET")
 '{"error":[],"result":{"unixtime":1511954132,"rfc1123":"Wed, 29 Nov 17 11:15:32 +0000"}}
 Test.IsEqual Len(TestResult), 87
 Test.IsEqual Left(TestResult, 21), "{""error"":[],""result"":"
+
+
+Dim headerDict As New Dictionary
+headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
+headerDict.Add "Customheader", "MyCustomHeader"
+TestResult = WebRequestURL("http://httpbin.org/get", "GET", headerDict)
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("url"), "http://httpbin.org/get"
+Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
+Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
+
 
 'TEST POST
 TestResult = WebRequestURL("http://httpbin.org/post", "POST")
@@ -44,8 +58,7 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "http://httpbin.org/post"
 Test.IsEqual JsonResult("headers").Count, 5
 
-
-Dim headerDict As New Dictionary
+Set headerDict = Nothing
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "Customheader", "MyCustomHeader"
 TestResult = WebRequestURL("http://httpbin.org/post", "POST", headerDict)
@@ -82,6 +95,15 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 If strMethod = "GET" Then
     On Error Resume Next
     objHTTP.Open "GET", strURL
+    If Not objHeaders Is Nothing Then
+        For Each Key In objHeaders.Keys()
+            'e.g. objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+            objHTTP.setRequestHeader Key, objHeaders(Key)
+        Next Key
+    Else
+        'No headers
+    End If
+    
     objHTTP.Send
     If Err.Number = 0 Then
         If objHTTP.Status = "200" Then
