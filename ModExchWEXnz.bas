@@ -5,14 +5,14 @@ Sub TestWEXnz()
 'Remember to create a new API key for excel/VBA
 'WEXnz will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_WEXnz = "the key to use everywhere" etc )
-apikey = apikey_wexnz
+apiKey = apikey_wexnz
 secretkey = secretkey_wexnz
 
 Debug.Print PublicWEXnz("depth", "/btc_eur")
@@ -25,9 +25,9 @@ t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
 'Debug.Print t1, t2
-Debug.Print PrivateWEXnz("getInfo", apikey, secretkey)
+Debug.Print PrivateWEXnz("getInfo", apiKey, secretkey)
 '{"success":1,"return":{"funds":{"usd":0,"btc":0.14,"ltc":0,"nmc":0, etc...
-Debug.Print PrivateWEXnz("TradeHistory", apikey, secretkey, "&since=" & t1 & "&end=" & t2)
+Debug.Print PrivateWEXnz("TradeHistory", apiKey, secretkey, "&since=" & t1 & "&end=" & t2)
 '{"success":1,"return":{"101927904":{"pair":"btc_eur","type":"sell","amount":0.01061285,"rate":1509 etc...
 
 End Sub
@@ -43,7 +43,7 @@ Url = PublicApiSite & urlPath
 PublicWEXnz = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateWEXnz(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateWEXnz(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 'https://wex.nz/tapi/docs
 Dim NonceUnique As String
@@ -60,7 +60,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", TradeApiSite, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "Key", apikey
+objHTTP.setRequestHeader "Key", apiKey
 objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 

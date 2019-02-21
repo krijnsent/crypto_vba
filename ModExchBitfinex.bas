@@ -4,14 +4,14 @@ Sub TestBitfinex()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apikey = apikey_bitfinex
+apiKey = apikey_bitfinex
 secretkey = secretkey_bitfinex
 
 Debug.Print PublicBitfinex("symbols", "")
@@ -23,7 +23,7 @@ Debug.Print PublicBitfinex("pubticker", "ltcbtc")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateBitfinex("balances", apikey, secretkey)
+Debug.Print PrivateBitfinex("balances", apiKey, secretkey)
 
 End Sub
 
@@ -38,7 +38,7 @@ Url = PublicApiSite & urlPath
 PublicBitfinex = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateBitfinex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As Collection)
+Function PrivateBitfinex(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As Collection)
 
 Dim NonceUnique As String
 Dim Json As String
@@ -71,7 +71,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open HTTPMethod, Url, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "X-BFX-APIKEY", apikey
+objHTTP.setRequestHeader "X-BFX-APIKEY", apiKey
 objHTTP.setRequestHeader "X-BFX-PAYLOAD", Payload
 objHTTP.setRequestHeader "X-BFX-SIGNATURE", signature
 objHTTP.Send get_url

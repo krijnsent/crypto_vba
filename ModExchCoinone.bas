@@ -4,14 +4,14 @@ Sub TestCoinone()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apikey = apikey_coinone
+apiKey = apikey_coinone
 secretkey = secretkey_coinone
 
 Debug.Print PublicCoinone("ticker", "")
@@ -23,9 +23,9 @@ Debug.Print PublicCoinone("trades", "?currency=btc&period=hour")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateCoinone("account/balance", apikey, secretkey)
+Debug.Print PrivateCoinone("account/balance", apiKey, secretkey)
 '{"errorCode":"0","result":"success","btc":{"avail":"0.00000000","balance":"0.00000000"},"normalWallets":[],"bch":{"avail":"0.00000000","balance":"0.00000000"},"qtum":{"avail":"0.00000000","balance":"0.00000000"},"krw":{"avail":"0","balance":"0"},"ltc":{"avail":"0.00000000","balance":"0.00000000"},"etc":{"avail":"0.00000000","balance":"0.00000000"},"eth":{"avail":"0.00000000","balance":"0.00000000"},"xrp":{"avail":"0.00000000","balance":"0.00000000"}} etc...
-Debug.Print PrivateCoinone("order/complete_orders", apikey, secretkey, "&currency=eth")
+Debug.Print PrivateCoinone("order/complete_orders", apiKey, secretkey, "&currency=eth")
 '{"errorCode":"0","completeOrders":[],"result":"success"}
 
 End Sub
@@ -41,7 +41,7 @@ Url = PublicApiSite & urlPath
 PublicCoinone = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateCoinone(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateCoinone(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'http://doc.coinone.co.kr/
@@ -53,7 +53,7 @@ TradeApiSite = "https://api.coinone.co.kr/v2/"
 
 Url = TradeApiSite & Method
 
-postdata = "access_token=" & apikey & "&" & "nonce=" & NonceUnique
+postdata = "access_token=" & apiKey & "&" & "nonce=" & NonceUnique
 If MethodOptions <> "" Then
     postdata = postdata & MethodOptions
 End If

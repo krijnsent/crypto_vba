@@ -17,9 +17,7 @@ Public Const CacheTime = 1000
 'C_DAY_AVG_PRICE - dayAvg?fsym=BTC&tsym=USD&toTs=1487116800&e=Bitfinex
 'C_ARR_OHLCV - histoday?fsym=GBP&tsym=USD&limit=30&aggregate=1&e=CCCAGG
 
-
 Sub TestSrcCryptocompare()
-
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -36,8 +34,8 @@ Set Test = Suite.Test("TestPublicCryptoCompareData")
 'Test for errors first
 Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("unknown_command", ""))
 Test.IsEqual JsonResult("Response"), "Error"
-Test.IsEqual JsonResult("Message"), ""
-Test.IsEqual JsonResult("Path"), "/data/unknown_command"
+Test.IsEqual JsonResult("Message"), "Path does not exist"
+Test.IsEqual JsonResult("Path"), ""
 
 Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", ""))
 Test.IsEqual JsonResult("Response"), "Error"
@@ -47,8 +45,8 @@ Test.IsEqual JsonResult("Path"), ""
 'Error--fsym param seems to be missing.--
 Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "fsym=BTC"))
 Test.IsEqual JsonResult("Response"), "Error"
-Test.IsEqual JsonResult("Message"), ""
-Test.IsEqual JsonResult("Path"), "/data/histodayfsym=BTC"
+Test.IsEqual JsonResult("Message"), "Path does not exist"
+Test.IsEqual JsonResult("Path"), ""
 
 Set JsonResult = JsonConverter.ParseJson(PublicCryptoCompareData("histoday", "?fsym=BTC&tsym=BLABLA"))
 Test.IsEqual JsonResult("Response"), "Error"
@@ -173,14 +171,14 @@ PublicCryptoCompareData = WebRequestURL(Url, "GET")
 Set objHTTP = Nothing
 
 End Function
-Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional Exchange As String)
+Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String)
 
 Dim PrTxt As String
 Dim Json As Object
 Application.Volatile
 
-If Len(Exchange) > 2 Then
-    ExchangeTxt = "&e=" & Exchange
+If Len(exchange) > 2 Then
+    ExchangeTxt = "&e=" & exchange
 Else
     ExchangeTxt = ""
 End If
@@ -199,15 +197,15 @@ Set Json = Nothing
 
 End Function
 
-Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional Exchange As String)
+Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String)
 
 Dim PrTxt As String
 Dim Json As Object
 Application.Volatile
 
 dt = DateToUnixTime(DateRates)
-If Len(Exchange) > 2 Then
-    ExchangeTxt = "&e=" & Exchange
+If Len(exchange) > 2 Then
+    ExchangeTxt = "&e=" & exchange
 Else
     ExchangeTxt = ""
 End If
@@ -226,15 +224,15 @@ Set Json = Nothing
 
 End Function
 
-Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional Exchange As String)
+Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String)
 
 Dim PrTxt As String
 Dim Json As Object
 Application.Volatile
 
 dt = DateToUnixTime(DateRates)
-If Len(Exchange) > 2 Then
-    ExchangeTxt = "&e=" & Exchange
+If Len(exchange) > 2 Then
+    ExchangeTxt = "&e=" & exchange
 Else
     ExchangeTxt = ""
 End If
@@ -253,7 +251,7 @@ Set Json = Nothing
 
 End Function
 
-Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional Exchange As String) As Variant()
+Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String) As Variant()
 
 'ReturnColumns: variable "TEOHLCFV" -> select columns you want back in the order you want them back, no spaces
 'T = timestamp (unixtime)
@@ -310,8 +308,8 @@ Else
     TimeTxt = ""
 End If
 
-If Len(Exchange) > 2 Then
-    ExchangeTxt = "&e=" & Exchange
+If Len(exchange) > 2 Then
+    ExchangeTxt = "&e=" & exchange
 Else
     ExchangeTxt = ""
 End If
@@ -347,8 +345,8 @@ Else
     If Len(ReturnColumns) > 0 Then
         ReDim TempArr(1 To UBound(ResTbl, 2), 1 To Len(ReturnColumns))
         For i = 1 To Len(ReturnColumns)
-            itm = Mid(ReturnColumns, i, 1)
-            itmnr = InStr(ColumnOptions, itm) + 1
+            Itm = Mid(ReturnColumns, i, 1)
+            itmnr = InStr(ColumnOptions, Itm) + 1
             'Checked for valid column types, move the data to the TempArr
             If itmnr > 1 Then
                 For j = 1 To UBound(ResTbl, 2)

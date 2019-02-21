@@ -4,16 +4,16 @@ Sub TestGDAX()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 Dim passphrase As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 passphrase = "your passphrase here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-apikey = apikey_gdax
+apiKey = apikey_gdax
 secretkey = secretkey_gdax
 passphrase = passphrase_gdax
 
@@ -26,9 +26,9 @@ Debug.Print PublicGDAX("products", "/BTC-USD/book?level=2")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateGDAX("accounts", "GET", apikey, secretkey, passphrase)
+Debug.Print PrivateGDAX("accounts", "GET", apiKey, secretkey, passphrase)
 '[{"id":"8a06fcff-f233-4b2a-b333-ec2ccd727956","currency":"BTC","balance":"0.0000000000000000","available":"0 etc...
-Debug.Print PrivateGDAX("orders", "DELETE", apikey, secretkey, passphrase, "?product_id=BTC-USD")
+Debug.Print PrivateGDAX("orders", "DELETE", apiKey, secretkey, passphrase, "?product_id=BTC-USD")
 '[]
 
 End Sub
@@ -44,7 +44,7 @@ Url = PublicApiSite & urlPath
 PublicGDAX = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateGDAX(Method As String, HTTPMethod As String, apikey As String, secretkey As String, passphrase As String, Optional MethodOptions As String) As String
+Function PrivateGDAX(Method As String, HTTPMethod As String, apiKey As String, secretkey As String, passphrase As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'https://docs.gdax.com/?php#api
@@ -61,7 +61,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open UCase(HTTPMethod), TradeApiSite & "/" & Method, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "CB-ACCESS-KEY", apikey
+objHTTP.setRequestHeader "CB-ACCESS-KEY", apiKey
 objHTTP.setRequestHeader "CB-ACCESS-SIGN", APIsign
 objHTTP.setRequestHeader "CB-ACCESS-TIMESTAMP", NonceUnique
 objHTTP.setRequestHeader "CB-ACCESS-PASSPHRASE", passphrase

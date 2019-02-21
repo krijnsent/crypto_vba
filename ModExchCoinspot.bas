@@ -4,14 +4,14 @@ Sub TestCoinspot()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apikey = apikey_coinspot
+apiKey = apikey_coinspot
 secretkey = secretkey_coinspot
 
 Debug.Print PublicCoinspot("latest", "")
@@ -21,9 +21,9 @@ Debug.Print PublicCoinspot("latest", "")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateCoinspot("my/balances", apikey, secretkey)
+Debug.Print PrivateCoinspot("my/balances", apiKey, secretkey)
 '{"status":"invalid"} / {"status":"no nonce"}
-Debug.Print PrivateCoinspot("orders/history", apikey, secretkey, "&cointype=LTC")
+Debug.Print PrivateCoinspot("orders/history", apiKey, secretkey, "&cointype=LTC")
 '{"status":"invalid"} / {"status":"no nonce"}
 'ERROR: https://stackoverflow.com/questions/47799323/coinspot-api-with-powershell
 
@@ -41,7 +41,7 @@ Url = PublicApiSite & urlPath
 PublicCoinspot = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateCoinspot(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateCoinspot(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'https://Coinspot.com/home/api
@@ -59,7 +59,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 'Debug.Print "POST: " & TradeApiSite & postdata
 objHTTP.Open "POST", TradeApiSite & postpath, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "key", apikey
+objHTTP.setRequestHeader "key", apiKey
 objHTTP.setRequestHeader "sign", APIsign
 objHTTP.Send (postdata)
 

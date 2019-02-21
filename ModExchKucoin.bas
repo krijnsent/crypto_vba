@@ -5,14 +5,14 @@ Sub TestKucoin()
 'Remember to create a new API key for excel/VBA
 'Kucoin will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
-apikey = apikey_kucoin
+apiKey = apikey_kucoin
 secretkey = secretkey_kucoin
 
 ' Create a new test suite
@@ -56,7 +56,7 @@ Set Test = Suite.Test("TestKucoinPrivate")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-TestResult = PrivateKucoin("user/info", apikey, secretkey)
+TestResult = PrivateKucoin("user/info", apiKey, secretkey)
 '{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516564519087,"data":{"referrer_code":"", etc...
 'Debug.Print TestResult
 Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -65,7 +65,7 @@ Test.IsEqual JsonResult("msg"), "Operation succeeded."
 Test.NotUndefined JsonResult("data")("referrer_code")
 
 
-TestResult = PrivateKucoin("account/TFL/wallet/records", apikey, secretkey, "type=DEPOSIT")
+TestResult = PrivateKucoin("account/TFL/wallet/records", apiKey, secretkey, "type=DEPOSIT")
 '{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516564519402,"data":{"total":1,"firstPage":true,"lastPage":false,"datas":[{"coinType":" etc...
 'Debug.Print TestResult
 Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -87,7 +87,7 @@ Url = PublicApiSite & urlPath
 PublicKucoin = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateKucoin(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateKucoin(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 'https://kucoinapidocs.docs.apiary.io/
 Dim NonceUnique As String
@@ -108,7 +108,7 @@ Url = TradeApiSite & ApiEndpoint & "?" & MethodOptions
 
 Dim headerDict As New Dictionary
 headerDict.Add "KC-API-SIGNATURE", APIsign
-headerDict.Add "KC-API-KEY", apikey
+headerDict.Add "KC-API-KEY", apiKey
 headerDict.Add "KC-API-NONCE", NonceUnique
 headerDict.Add "Content-Type", "application/json"
 

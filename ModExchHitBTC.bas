@@ -5,14 +5,14 @@ Sub TestHitBTC()
 'Remember to create a new API key for excel/VBA
 'HitBTC will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_HitBTC = "the key to use everywhere" etc )
-apikey = apikey_hitbtc
+apiKey = apikey_hitbtc
 secretkey = secretkey_hitbtc
 
 Debug.Print PublicHitBTC("time")
@@ -24,9 +24,9 @@ Debug.Print PublicHitBTC("ticker", "BTCUSD/")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateHitBTC("balance", apikey, secretkey)
+Debug.Print PrivateHitBTC("balance", apiKey, secretkey)
 '{"balance":[{"currency_code":"1ST","cash":"0","reserved":"0"},{"currency_code":"8BT","cash":"0","reserved":"0"}, etc...
-Debug.Print PrivateHitBTC("cancel_orders", apikey, secretkey, "&symbol=BTCUSD")
+Debug.Print PrivateHitBTC("cancel_orders", apiKey, secretkey, "&symbol=BTCUSD")
 '{"ExecutionReport":[]} -> or a list of all cancelled trade numbers
 
 Debug.Print PublicHitBTC2("symbol")
@@ -34,11 +34,11 @@ Debug.Print PublicHitBTC2("symbol")
 Debug.Print PublicHitBTC2("ticker", "/BCHUSD")
 '{"ask":"1228.13454","bid":"1225.62444","last":"1227.17775","open":"1269.12060","low":"1 etc...
 
-Debug.Print PrivateHitBTC2("account/balance", "GET", apikey, secretkey)
+Debug.Print PrivateHitBTC2("account/balance", "GET", apiKey, secretkey)
 '[{"currency":"DOGE","available":"0.00000000","reserved":"0.00000000"},{" etc...
-Debug.Print PrivateHitBTC2("history/trades", "GET", apikey, secretkey, "?symbol=BTCUSD")
+Debug.Print PrivateHitBTC2("history/trades", "GET", apiKey, secretkey, "?symbol=BTCUSD")
 'e.g. []
-Debug.Print PrivateHitBTC2("order", "DELETE", apikey, secretkey, "?symbol=BTCUSD")
+Debug.Print PrivateHitBTC2("order", "DELETE", apiKey, secretkey, "?symbol=BTCUSD")
 'e.g. []
 
 End Sub
@@ -54,7 +54,7 @@ Url = PublicApiSite & urlPath
 PublicHitBTC = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateHitBTC(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateHitBTC(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 
@@ -65,7 +65,7 @@ Dim postdata As String
 NonceUnique = CreateNonce(10)
 
 TradeApiSite = "http://api.hitbtc.com"
-urlPath = "/api/1/trading/" & Method & "?nonce=" & NonceUnique & "&apikey=" & apikey
+urlPath = "/api/1/trading/" & Method & "?nonce=" & NonceUnique & "&apikey=" & apiKey
 postdata = MethodOptions
 
 Url = TradeApiSite & urlPath
@@ -104,7 +104,7 @@ PublicHitBTC2 = WebRequestURL(Url, "GET")
 
 End Function
 
-Function PrivateHitBTC2(Method As String, HTTPMethod As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateHitBTC2(Method As String, HTTPMethod As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 'https://api.hitbtc.com/api/2/explore/
 'Authorisation: https://stackoverflow.com/questions/34637034/curl-u-equivalent-in-http-request
@@ -124,7 +124,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open HTTPMethod, Url, False
 objHTTP.setRequestHeader "Accept", "application/json"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apikey & ":" & secretkey)
+objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apiKey & ":" & secretkey)
 objHTTP.Send ("")
 
 objHTTP.WaitForResponse

@@ -4,14 +4,14 @@ Sub TestBinance()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apikey = apikey_binance
+apiKey = apikey_binance
 secretkey = secretkey_binance
 
 
@@ -26,9 +26,9 @@ Debug.Print GetBinanceTime()
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateBinance("account", apikey, secretkey)
+Debug.Print PrivateBinance("account", apiKey, secretkey)
 '{"makerCommission":10,"takerCommission":10,"buyerCommission":0,"sellerCommission":0,"canTra etc...
-Debug.Print PrivateBinance("order/test", apikey, secretkey, "symbol=LTCBTC&side=BUY&type=LIMIT&price=0.01&quantity=1&timeInForce=GTC")
+Debug.Print PrivateBinance("order/test", apiKey, secretkey, "symbol=LTCBTC&side=BUY&type=LIMIT&price=0.01&quantity=1&timeInForce=GTC")
 '{} -> test orders return empty JSON
 
 End Sub
@@ -44,7 +44,7 @@ Url = PublicApiSite & urlPath
 PublicBinance = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateBinance(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateBinance(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 Dim TimeCorrection As Long
@@ -70,7 +70,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open HTTPMethod, Url, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "X-MBX-APIKEY", apikey
+objHTTP.setRequestHeader "X-MBX-APIKEY", apiKey
 objHTTP.Send get_url
 
 objHTTP.WaitForResponse

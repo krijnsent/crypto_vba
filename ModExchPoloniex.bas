@@ -5,14 +5,14 @@ Sub TestPoloniex()
 'Remember to create a new API key for excel/VBA
 'Poloniex will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_poloniex = "the key to use everywhere" etc )
-apikey = apikey_poloniex
+apiKey = apikey_poloniex
 secretkey = secretkey_poloniex
 
 Debug.Print PublicPoloniex("returnTicker")
@@ -24,9 +24,9 @@ Debug.Print PublicPoloniex("returnOrderBook", "&currencyPair=BTC_ETH&depth=10")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivatePoloniex("returnBalances", apikey, secretkey)
+Debug.Print PrivatePoloniex("returnBalances", apiKey, secretkey)
 '{"1CR":"0.00000000","ABY":"0.00000000","AC":"0.00000000","ACH":"0.00000000","ADN":"0.00000000","AEON":"0.00000000" etc...
-Debug.Print PrivatePoloniex("returnTradeHistory", apikey, secretkey, "&currencyPair=all&start=" & t1 & "&end=" & t2)
+Debug.Print PrivatePoloniex("returnTradeHistory", apiKey, secretkey, "&currencyPair=all&start=" & t1 & "&end=" & t2)
 '{"BTC_ETH":[{"globalTradeID":108848981,"tradeID":"22880801","date":"2017-04-19 23:26:55","rate":"0.03900000","amount":"65.35644222","total":"2.54890124", etc...
 
 End Sub
@@ -42,7 +42,7 @@ Url = PublicApiSite & urlPath
 PublicPoloniex = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivatePoloniex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivatePoloniex(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 Dim postdata As String
@@ -64,7 +64,7 @@ Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 objHTTP.Open "POST", Url, False
 objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "Key", apikey
+objHTTP.setRequestHeader "Key", apiKey
 objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 

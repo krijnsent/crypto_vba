@@ -4,14 +4,14 @@ Sub TestCryptopia()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Cryptopia = "the key to use everywhere" etc )
-apikey = apikey_cryptopia
+apiKey = apikey_cryptopia
 secretkey = secretkey_cryptopia
 
 Debug.Print PublicCryptopia("GetCurrencies")
@@ -23,9 +23,9 @@ Debug.Print PublicCryptopia("GetMarket", "/DOT_BTC")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateCryptopia("GetBalance", apikey, secretkey, "Currency=")
+Debug.Print PrivateCryptopia("GetBalance", apiKey, secretkey, "Currency=")
 '{"Success":true,"Error":null,"Data":[{"CurrencyId":331,"Symbol":"1337","Total":0.00000000,"Available":0.00000000, etc...
-Debug.Print PrivateCryptopia("GetTradeHistory", apikey, secretkey, "Market=DOT/BTC")
+Debug.Print PrivateCryptopia("GetTradeHistory", apiKey, secretkey, "Market=DOT/BTC")
 '{"Success":true,"Error":null,"Data":[ etc...
 
 End Sub
@@ -41,7 +41,7 @@ Url = PublicApiSite & urlPath
 PublicCryptopia = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateCryptopia(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateCryptopia(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 'https://www.cryptopia.co.nz/forum/Thread/256
 
@@ -63,9 +63,9 @@ postdataJsonTxt = Replace(postdataJsonTxt, "&", Chr(34) & "," & Chr(34))
 postdataJsonTxt = "{" & Chr(34) & postdataJsonTxt & Chr(34) & "}"
 req64 = ComputeHash_C("MD5", postdataJsonTxt, "", "STR64")
 
-signature = apikey & "POST" & UrlEnc & NonceUnique & req64
+signature = apiKey & "POST" & UrlEnc & NonceUnique & req64
 hmacSignature = ComputeHash_C("SHA256", signature, Base64Decode(secretkey), "STR64")
-HeaderValue = "amx " & apikey & ":" & hmacSignature & ":" & NonceUnique
+HeaderValue = "amx " & apiKey & ":" & hmacSignature & ":" & NonceUnique
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")

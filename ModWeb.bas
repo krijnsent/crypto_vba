@@ -1,5 +1,5 @@
 Attribute VB_Name = "ModWeb"
-'Source: https://github.com/krijnsent/crypto_vba
+    'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 'Based on http://www.808.dk/?code-simplewinhttprequest
 
@@ -44,43 +44,43 @@ Test.IsEqual Left(TestResult, 21), "{""error"":[],""result"":"
 Dim headerDict As New Dictionary
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "Customheader", "MyCustomHeader"
-TestResult = WebRequestURL("http://httpbin.org/get", "GET", headerDict)
+TestResult = WebRequestURL("https://httpbin.org/get", "GET", headerDict)
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("url"), "http://httpbin.org/get"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("url"), "https://httpbin.org/get"
+Test.IsEqual JsonResult("headers").Count, 5
 Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 
 'TEST POST
-TestResult = WebRequestURL("http://httpbin.org/post", "POST")
+TestResult = WebRequestURL("https://httpbin.org/post", "POST")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("url"), "http://httpbin.org/post"
-Test.IsEqual JsonResult("headers").Count, 5
+Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
+Test.IsEqual JsonResult("headers").Count, 4
 
 Set headerDict = Nothing
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "Customheader", "MyCustomHeader"
-TestResult = WebRequestURL("http://httpbin.org/post", "POST", headerDict)
+TestResult = WebRequestURL("https://httpbin.org/post", "POST", headerDict)
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("url"), "http://httpbin.org/post"
-Test.IsEqual JsonResult("headers").Count, 7
+Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
+Test.IsEqual JsonResult("headers").Count, 6
 Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 
-TestResult = WebRequestURL("http://httpbin.org/post", "POST", , "my_post_message")
+TestResult = WebRequestURL("https://httpbin.org/post", "POST", , "my_post_message")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("url"), "http://httpbin.org/post"
+Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
 Test.IsEqual JsonResult("data"), "my_post_message"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers").Count, 5
 
 
-TestResult = WebRequestURL("http://httpbin.org/post", "POST", headerDict, "my_post_message_2=msg")
+TestResult = WebRequestURL("https://httpbin.org/post", "POST", headerDict, "my_post_message_2=msg")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("url"), "http://httpbin.org/post"
+Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
 Test.IsEqual JsonResult("form")("my_post_message_2"), "msg"
-Test.IsEqual JsonResult("headers").Count, 7
+Test.IsEqual JsonResult("headers").Count, 6
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 

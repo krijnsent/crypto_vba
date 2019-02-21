@@ -4,14 +4,14 @@ Sub TestBittrex()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apikey As String
+Dim apiKey As String
 Dim secretkey As String
 
-apikey = "your api key here"
+apiKey = "your api key here"
 secretkey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apikey = apikey_bittrex
+apiKey = apikey_bittrex
 secretkey = secretkey_bittrex
 
 ' Create a new test suite
@@ -52,7 +52,7 @@ Set Test = Suite.Test("TestBittrexPrivate")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-TestResult = PrivateBittrex("account/getbalances", apikey, secretkey)
+TestResult = PrivateBittrex("account/getbalances", apiKey, secretkey)
 '{"success":true,"message":"","result":[{"Currency":"BTC","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"},{"Currency":"XMR","Balance":0.00000000,"Available":0.00000000,"Pending":0.00000000,"CryptoAddress":etc...
 Test.IsEqual Left(TestResult, 40), "{""success"":true,""message"":"""",""result"":[{"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -63,7 +63,7 @@ Test.IsOk Len(JsonResult("result")(1)("Currency")) > 0
 Test.IsOk JsonResult("result")(1)("Balance") >= 0
 
 
-TestResult = PrivateBittrex("account/getbalance", apikey, secretkey, "&currency=ETH")
+TestResult = PrivateBittrex("account/getbalance", apiKey, secretkey, "&currency=ETH")
 '{"success":true,"message":"","result":{"Currency":"ETH","Balance":1.65740000,"Available":1.65740000,"Pending":0.00000000,"CryptoAddress":"1DNFF9y3dDMLNURpgdT3wXmFpmGBsQRyPa"}}
 Test.IsEqual Left(TestResult, 39), "{""success"":true,""message"":"""",""result"":{"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -86,7 +86,7 @@ Url = PublicApiSite & urlPath
 PublicBittrex = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateBittrex(Method As String, apikey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateBittrex(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 Dim postdata As String
@@ -97,7 +97,7 @@ Dim Url As String
 NonceUnique = CreateNonce(10)
 TradeApiSite = "https://bittrex.com/api/v1.1/"
 
-postdata = Method & "?apikey=" & apikey & MethodOptions & "&nonce=" & NonceUnique
+postdata = Method & "?apikey=" & apiKey & MethodOptions & "&nonce=" & NonceUnique
 APIsign = ComputeHash_C("SHA512", TradeApiSite & postdata, secretkey, "STRHEX")
 
 Dim headerDict As New Dictionary
