@@ -6,14 +6,14 @@ Sub TestWEXnz()
 'WEXnz will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_WEXnz = "the key to use everywhere" etc )
 apiKey = apikey_wexnz
-secretkey = secretkey_wexnz
+secretKey = secretkey_wexnz
 
 Debug.Print PublicWEXnz("depth", "/btc_eur")
 '{"btc_eur":{"asks":[[1615,1.69215502],[1615.93,0.13653712],[1615.95753,0.00989219],
@@ -25,9 +25,9 @@ t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
 'Debug.Print t1, t2
-Debug.Print PrivateWEXnz("getInfo", apiKey, secretkey)
+Debug.Print PrivateWEXnz("getInfo", apiKey, secretKey)
 '{"success":1,"return":{"funds":{"usd":0,"btc":0.14,"ltc":0,"nmc":0, etc...
-Debug.Print PrivateWEXnz("TradeHistory", apiKey, secretkey, "&since=" & t1 & "&end=" & t2)
+Debug.Print PrivateWEXnz("TradeHistory", apiKey, secretKey, "&since=" & t1 & "&end=" & t2)
 '{"success":1,"return":{"101927904":{"pair":"btc_eur","type":"sell","amount":0.01061285,"rate":1509 etc...
 
 End Sub
@@ -43,7 +43,7 @@ Url = PublicApiSite & urlPath
 PublicWEXnz = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateWEXnz(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateWEXnz(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 'https://wex.nz/tapi/docs
 Dim NonceUnique As String
@@ -53,7 +53,7 @@ NonceUnique = CreateNonce(10)
 TradeApiSite = "https://wex.nz/tapi/"
 
 postdata = "method=" & Method & MethodOptions & "&nonce=" & NonceUnique
-APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
+APIsign = ComputeHash_C("SHA512", postdata, secretKey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")

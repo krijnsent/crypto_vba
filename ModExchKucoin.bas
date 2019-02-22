@@ -6,14 +6,14 @@ Sub TestKucoin()
 'Kucoin will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
 apiKey = apikey_kucoin
-secretkey = secretkey_kucoin
+secretKey = secretkey_kucoin
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -27,69 +27,119 @@ Reporter.ListenTo Suite
 Dim Test As TestCase
 Set Test = Suite.Test("TestKucoinPublic")
 
-'Testing error catching and replies
-TestResult = PublicKucoin("open/tick", "")
-'Debug.Print TestResult
-'{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516555225011,"data":[{"coinType":"KCS","trading":true,"symbol":"KCS-BCH","lastDealPrice":0.0055,"buy":0.005425,"sell":0.0055,"change":-0.00014795,"coinTypePair":"BCH","sort":0,"feeRate":0.001,"volValue":90.38840317,"high":0.0059999,"datetime":1516555216000,"vol":16009.2128,"low":0.0053999,"changeRate":-0.0262},{"coinType":"KCS","trading":true,"sym etc...Test.IsEqual Left(TestResult, 40), "{""success"":true,""message"":"""",""result"":[{"
+'Error, unknown command
+TestResult = PublicKucoin("AnUnknownCommand")
+Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), True
-Test.IsEqual JsonResult("msg"), "Operation succeeded."
-Test.IsOk JsonResult("data")(1)("volValue") > 0
-Test.IsOk JsonResult("data")(1)("lastDealPrice") > 0
+Test.IsEqual JsonResult("error_nr"), 404
 
-TestResult = PublicKucoin("open/orders-buy", "?symbol=kcs-btc")
-'{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516555225897,"data":[[8.3879E-4,50 etc...
-'Debug.Print TestResult
+'Error, missing parameters
+TestResult = PublicKucoin("market/orderbook/level1")
+Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), True
-Test.IsEqual JsonResult("msg"), "Operation succeeded."
-Test.IsOk JsonResult("data")(1)(1) > 0
+Test.IsEqual JsonResult("error_nr"), 400
 
+
+TestResult = PublicKucoin("market/allTickers", "")
+'Debug.Print TestResult
+'{"code":"200000","data":{"ticker":[{"symbol":"LOOM-BTC","high":"0.00001204","vol":"39738.31683935","last":"0.00001187","low":"0.00001151","buy":"0.00001172","sell":"0.00001187","changePrice":"0.00000025","changeRate":"0.0215"},etc...
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "changePrice") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("code") * 1, 200000
+Test.IsOk JsonResult("data")("ticker").Count > 100
+Test.IsOk Len(JsonResult("data")("ticker")(9)("symbol")) > 0
+Test.IsOk JsonResult("data")("ticker")(3)("vol") > 0
+
+TestResult = PublicKucoin("market/orderbook/level2_20", "?symbol=KCS-BTC")
+'Debug.Print TestResult
+'{"code":"200000","data":{"sequence":"1550467431550","asks":[["0.00011794","184.4706"],["0.00011795","48.7387"],["0.00011796","154.9647"],
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "sequence") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("code") * 1, 200000
+Test.IsOk JsonResult("data")("time") > 1500000000000#
+Test.IsEqual JsonResult("data")("asks").Count, 20
+Test.IsEqual JsonResult("data")("bids").Count, 20
+Test.IsOk JsonResult("data")("asks")(1)(1) > 0
+Test.IsOk JsonResult("data")("asks")(1)(2) > 0
+
+' Create a new test
+Set Test = Suite.Test("TestKucoinTime")
 TestResult = GetKucoinTime()
-'{}
 Test.IsOk TestResult > 1500000000000#
 Test.IsOk TestResult < 1600000000000#
 
 
-'Unix time period:
 Set Test = Suite.Test("TestKucoinPrivate")
+
+'Unix time period:
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-TestResult = PrivateKucoin("user/info", apiKey, secretkey)
-'{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516564519087,"data":{"referrer_code":"", etc...
+TestResult = PrivateKucoin("accounts", "GET", apiKey, secretKey, passphrase_kucoin)
 'Debug.Print TestResult
+'{"code":"200000","data":[{"balance":"15.827819","available":"15.827819","holds":"0","currency":"KCS","id":"5c6a4a1d81a34e1da97","type":"trade"},{"balance":"2.12058951","available":"2.12058951",", etc...
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), True
-Test.IsEqual JsonResult("msg"), "Operation succeeded."
-Test.NotUndefined JsonResult("data")("referrer_code")
+Test.IsEqual JsonResult("code") * 1, 200000
+Test.IsOk JsonResult("data").Count > 20
+Test.IsOk JsonResult("data")(1)("balance") > 0
 
-
-TestResult = PrivateKucoin("account/TFL/wallet/records", apiKey, secretkey, "type=DEPOSIT")
-'{"success":true,"code":"OK","msg":"Operation succeeded.","timestamp":1516564519402,"data":{"total":1,"firstPage":true,"lastPage":false,"datas":[{"coinType":" etc...
+'Get only KCS account amount
+Dim OptDict As New Dictionary
+OptDict.Add "currency", "KCS"
+TestResult = PrivateKucoin("accounts", "GET", apiKey, secretKey, passphrase_kucoin, OptDict)
 'Debug.Print TestResult
+'{"code":"200000","data":[{"balance":"15.82887819","available":"15.82887819","holds":"0","currency":"KCS","id":"5c6a4a1d81a34e1da97","type":"trade"}]}
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), True
-Test.IsEqual JsonResult("msg"), "Operation succeeded."
-Test.IsOk JsonResult("data")("total") > 0
+Test.IsEqual JsonResult("code") * 1, 200000
+Test.IsEqual JsonResult("data").Count, 1
+Test.IsOk JsonResult("data")(1)("balance") > 0
+
+'Create a main LTC account (if it doesn't exist)
+Dim OptDict2 As New Dictionary
+OptDict2.Add "currency", "LTC"
+TestResult = PrivateKucoin("accounts", "POST", apiKey, secretKey, passphrase_kucoin, OptDict2)
+'Debug.Print TestResult
+'{"code":"400100","msg":"type can not be empty"}
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "msg") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("code") * 1, 400100
+Test.IsEqual JsonResult("msg"), "type can not be empty"
+
+OptDict2.Add "type", "main"
+TestResult = PrivateKucoin("accounts", "POST", apiKey, secretKey, passphrase_kucoin, OptDict2)
+'Debug.Print TestResult
+'FIRST TIME RESULT: {"code":"200000","data":{"id":"5c7556e3cbfc7b24adada1a9"}}
+'NEXT RESULT: {"code":"230005","msg":"account already exists"}
+Test.IsOk InStr(TestResult, "code") > 0
+Test.IsOk InStr(TestResult, "msg") + InStr(TestResult, "data") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk JsonResult("code") * 1 >= 200000
+Test.IsOk JsonResult("code") * 1 <= 230005
 
 
 End Sub
 
 Function PublicKucoin(Method As String, Optional MethodOptions As String) As String
 
-'https://kucoinapidocs.docs.apiary.io/
+'https://docs.kucoin.com/
 Dim Url As String
-PublicApiSite = "https://api.kucoin.com"
+PublicApiSite = "https://openapi-v2.kucoin.com/api"
 urlPath = "/v1/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
 PublicKucoin = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateKucoin(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateKucoin(Method As String, ReqType As String, apiKey As String, secretKey As String, Passphrase As String, Optional OptionsDict As Dictionary) As String
 
-'https://kucoinapidocs.docs.apiary.io/
+'https://docs.kucoin.com/
 Dim NonceUnique As String
 Dim Url As String
 Dim postdata As String
@@ -97,40 +147,53 @@ Dim postdata As String
 'Kucoin wants a 13-digit Nonce, use time correction if needed
 NonceUnique = GetKucoinTime()
 
-'Arrange the MethodOptions parameters in ascending alphabetical order (lower cases first), then combine them with & (don't urlencode them, don't add ?, don't add extra &), e.g. amount=10&price=1.1&type=BUY
-TradeApiSite = "https://api.kucoin.com"
-ApiEndpoint = "/v1/" & Method
-ApiForSign = ApiEndpoint & "/" & NonceUnique & "/" & MethodOptions
-Base64ForSign = Base64Encode(ApiForSign)
-APIsign = ComputeHash_C("SHA256", Base64ForSign, secretkey, "STRHEX")
+TradeApiSite = "https://openapi-v2.kucoin.com"
+ApiEndPoint = "/api/v1/" & Method
+'e.g. /api/v1/deposit-addresses?currency=BTC
 
-Url = TradeApiSite & ApiEndpoint & "?" & MethodOptions
+If ReqType = "GET" Or ReqType = "DELETE" Then
+    'For GET, DELETE request, all query parameters need to be included in the request url. (e.g. /api/v1/accounts?currency=BTC)
+    MethodTxt = DictToString(OptionsDict, "URLENC")
+    If MethodTxt <> "" Then ApiEndPoint = ApiEndPoint & "?" & MethodTxt
+    ReqBody = ""
+Else
+    'For POST, PUT request, all query parameters need to be included in the request body with JSON. (e.g. {"currency":"BTC"}). Do not include extra spaces in JSON strings.
+    MethodTxt = ""
+    ReqBody = DictToString(OptionsDict, "JSON")
+    postdata = ReqBody
+End If
+
+ApiForSign = NonceUnique & ReqType & ApiEndPoint & ReqBody
+APIsign = ComputeHash_C("SHA256", ApiForSign, secretKey, "STR64")
+
+Url = TradeApiSite & ApiEndPoint
 
 Dim headerDict As New Dictionary
-headerDict.Add "KC-API-SIGNATURE", APIsign
 headerDict.Add "KC-API-KEY", apiKey
-headerDict.Add "KC-API-NONCE", NonceUnique
+headerDict.Add "KC-API-SIGN", APIsign
+headerDict.Add "KC-API-TIMESTAMP", NonceUnique
+headerDict.Add "KC-API-PASSPHRASE", Passphrase
 headerDict.Add "Content-Type", "application/json"
 
-PrivateKucoin = WebRequestURL(Url, "GET", headerDict, postdata)
+PrivateKucoin = WebRequestURL(Url, ReqType, headerDict, postdata)
 
 End Function
 
 Function GetKucoinTime() As Double
 
 Dim JsonResponse As String
-Dim Json As Object
+Dim json As Object
 
 'PublicKucoin time
-JsonResponse = PublicKucoin("open/tick", "")
-Set Json = JsonConverter.ParseJson(JsonResponse)
-GetKucoinTime = Json("timestamp")
+JsonResponse = PublicKucoin("timestamp", "")
+Set json = JsonConverter.ParseJson(JsonResponse)
+GetKucoinTime = json("data")
 If GetKucoinTime = 0 Then
     TimeCorrection = -3600
     GetKucoinTime = DateDiff("s", "1/1/1970", Now)
     GetKucoinTime = Trim(Str((Val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function

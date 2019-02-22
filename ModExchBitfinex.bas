@@ -5,14 +5,14 @@ Sub TestBitfinex()
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
 apiKey = apikey_bitfinex
-secretkey = secretkey_bitfinex
+secretKey = secretkey_bitfinex
 
 Debug.Print PublicBitfinex("symbols", "")
 '["btcusd","ltcusd","ltcbtc","ethusd","ethbtc","etcbtc","etcusd","rrtusd"...
@@ -23,7 +23,7 @@ Debug.Print PublicBitfinex("pubticker", "ltcbtc")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateBitfinex("balances", apiKey, secretkey)
+Debug.Print PrivateBitfinex("balances", apiKey, secretKey)
 
 End Sub
 
@@ -38,10 +38,10 @@ Url = PublicApiSite & urlPath
 PublicBitfinex = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateBitfinex(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As Collection)
+Function PrivateBitfinex(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As Collection)
 
 Dim NonceUnique As String
-Dim Json As String
+Dim json As String
 Dim PayloadDict As Scripting.Dictionary
 
 NonceUnique = CreateNonce(15)
@@ -56,12 +56,12 @@ If Not MethodOptions Is Nothing Then
     Set PayloadDict("options") = MethodOptions
 End If
 
-Json = Replace(ConvertToJson(PayloadDict), "/", "\/")
-Payload = Base64Encode(Json)
+json = Replace(ConvertToJson(PayloadDict), "/", "\/")
+Payload = Base64Encode(json)
 
 'signature = HMAC-SHA384(payload, api-secret).digest('hex')
 ApiSite = "https://api.bitfinex.com"
-signature = ComputeHash_C("SHA384", Payload, secretkey, "STRHEX")
+signature = ComputeHash_C("SHA384", Payload, secretKey, "STRHEX")
 
 Url = ApiSite & "/v1/" & Method
 HTTPMethod = "POST"

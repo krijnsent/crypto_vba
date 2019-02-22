@@ -5,17 +5,17 @@ Sub TestGDAX()
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
-Dim secretkey As String
-Dim passphrase As String
+Dim secretKey As String
+Dim Passphrase As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
-passphrase = "your passphrase here"
+secretKey = "your secret key here"
+Passphrase = "your passphrase here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
 apiKey = apikey_gdax
-secretkey = secretkey_gdax
-passphrase = passphrase_gdax
+secretKey = secretkey_gdax
+Passphrase = passphrase_gdax
 
 Debug.Print PublicGDAX("time", "")
 '{"iso":"2018-01-10T14:24:13.611Z","epoch":1515594253.611}
@@ -26,9 +26,9 @@ Debug.Print PublicGDAX("products", "/BTC-USD/book?level=2")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateGDAX("accounts", "GET", apiKey, secretkey, passphrase)
+Debug.Print PrivateGDAX("accounts", "GET", apiKey, secretKey, Passphrase)
 '[{"id":"8a06fcff-f233-4b2a-b333-ec2ccd727956","currency":"BTC","balance":"0.0000000000000000","available":"0 etc...
-Debug.Print PrivateGDAX("orders", "DELETE", apiKey, secretkey, passphrase, "?product_id=BTC-USD")
+Debug.Print PrivateGDAX("orders", "DELETE", apiKey, secretKey, Passphrase, "?product_id=BTC-USD")
 '[]
 
 End Sub
@@ -44,7 +44,7 @@ Url = PublicApiSite & urlPath
 PublicGDAX = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateGDAX(Method As String, HTTPMethod As String, apiKey As String, secretkey As String, passphrase As String, Optional MethodOptions As String) As String
+Function PrivateGDAX(Method As String, HTTPMethod As String, apiKey As String, secretKey As String, Passphrase As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'https://docs.gdax.com/?php#api
@@ -54,7 +54,7 @@ NonceUnique = GetGDAXTime
 TradeApiSite = "https://api.gdax.com"
 
 SignMsg = NonceUnique & UCase(HTTPMethod) & "/" & Method & ""
-APIsign = Base64Encode(ComputeHash_C("SHA256", SignMsg, Base64Decode(secretkey), "RAW"))
+APIsign = Base64Encode(ComputeHash_C("SHA256", SignMsg, Base64Decode(secretKey), "RAW"))
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
@@ -64,7 +64,7 @@ objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
 objHTTP.setRequestHeader "CB-ACCESS-KEY", apiKey
 objHTTP.setRequestHeader "CB-ACCESS-SIGN", APIsign
 objHTTP.setRequestHeader "CB-ACCESS-TIMESTAMP", NonceUnique
-objHTTP.setRequestHeader "CB-ACCESS-PASSPHRASE", passphrase
+objHTTP.setRequestHeader "CB-ACCESS-PASSPHRASE", Passphrase
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
@@ -76,19 +76,19 @@ End Function
 Function GetGDAXTime() As Double
 
 Dim JsonResponse As String
-Dim Json As Object
+Dim json As Object
 
 'PublicGDAX time
 JsonResponse = PublicGDAX("time", "")
-Set Json = JsonConverter.ParseJson(JsonResponse)
-GetGDAXTime = Int(Json("epoch"))
+Set json = JsonConverter.ParseJson(JsonResponse)
+GetGDAXTime = Int(json("epoch"))
 If GetGDAXTime = 0 Then
     TimeCorrection = -3600
     GetGDAXTime = CreateNonce(10)
     GetGDAXTime = Trim(Str((Val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 

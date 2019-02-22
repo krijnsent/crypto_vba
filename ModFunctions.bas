@@ -68,7 +68,7 @@ FlipArr = TransposeArr(TestArr)
 Test.IsEqual TestArr(1, 2), "1:2"
 Test.IsEqual TestArr(1, 2), FlipArr(2, 1)
 
-
+'Test URLEncode
 Set Test = Suite.Test("URLEncode")
 TestResult = URLEncode("http://www.github.com/")
 Test.IsEqual TestResult, "http%3A%2F%2Fwww.github.com%2F"
@@ -76,6 +76,30 @@ Test.IsEqual TestResult, "http%3A%2F%2Fwww.github.com%2F"
 TestResult = URLEncode("https://github.com/search?q=crypto_vba&type=")
 Test.IsEqual TestResult, "https%3A%2F%2Fgithub.com%2Fsearch%3Fq%3Dcrypto_vba%26type%3D"
 
+
+'TestDictToString
+Set Test = Suite.Test("TestDictToString")
+Dim testDict As New Dictionary
+
+'Empty Dict
+TestResult = DictToString(testDict, "JSON")
+Test.IsEqual TestResult, "{}"
+
+'Unknown type
+TestResult = DictToString(testDict, "-")
+Test.IsEqual TestResult, "UNKNOWN_TYPE"
+
+'Fill dictionary
+testDict.Add "option1", "BTC-ETH"
+testDict.Add "another_option", "16"
+JsonTxt = "{""option1"":""BTC-ETH"",""another_option"":""16""}"
+
+TestResult = DictToString(testDict, "JSON")
+Test.IsEqual TestResult, JsonTxt
+
+UrlTxt = "option1=BTC-ETH&another_option=16"
+TestResult = DictToString(testDict, "URLENC")
+Test.IsEqual TestResult, UrlTxt
 
 End Sub
 
@@ -161,5 +185,37 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
   End If
 End Function
 
+
+Function DictToString(DictIn As Dictionary, OutputType As String) As String
+
+Dim OutputTxt As String
+
+If DictIn Is Nothing Then
+    DictToString = ""
+    Exit Function
+End If
+
+If OutputType = "JSON" Then
+    OutputTxt = "{"
+    For Each Opt In DictIn.Keys()
+        If OutputTxt <> "{" Then OutputTxt = OutputTxt & ","
+        OutputTxt = OutputTxt & """" & Opt & """" & ":" & """" & DictIn(Opt) & """"
+        'Debug.Print Opt, DictIn(Opt)
+    Next
+    OutputTxt = OutputTxt & "}"
+ElseIf OutputType = "URLENC" Then
+    OutputTxt = ""
+    For Each Opt In DictIn.Keys()
+        If OutputTxt <> "" Then OutputTxt = OutputTxt & "&"
+        OutputTxt = OutputTxt & Opt & "=" & DictIn(Opt)
+        'Debug.Print Opt, DictIn(Opt)
+    Next
+Else
+    OutputTxt = "UNKNOWN_TYPE"
+End If
+
+DictToString = OutputTxt
+
+End Function
 
 

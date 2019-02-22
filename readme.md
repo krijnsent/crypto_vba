@@ -6,7 +6,6 @@ Get information from/send information to:
 - [Kraken](https://www.kraken.com/)
 - [Poloniex](https://www.poloniex.com/) 
 - [Bittrex](https://www.bittrex.com/) 
-- [Liqui](https://liqui.io/)
 - [WEXnz](https://wex.nz/)
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
@@ -26,9 +25,9 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 
 # ToDo
 - Expand the XLSM file with working examples
-- Better testing
-- Better error handling
+- Better testing, automated testing of all exchanges with the test suite
 - Later: place/cancel orders
+- Better error handling
 
 # Done
 - For historical prices, include https://www.cryptocompare.com/api/
@@ -45,7 +44,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the WEXnz API connector (used to be BTCe)
 - Build the Poloniex API connector
 - Build the Kraken API connector
-- Build the Liqui API connector
+- Build the Liqui API connector - and removed it
 - Build the Coinone API connector
 - Build the Cryptopia API connector
 - Build the Binance API connector

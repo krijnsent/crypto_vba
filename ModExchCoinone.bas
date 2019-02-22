@@ -5,14 +5,14 @@ Sub TestCoinone()
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
 apiKey = apikey_coinone
-secretkey = secretkey_coinone
+secretKey = secretkey_coinone
 
 Debug.Print PublicCoinone("ticker", "")
 '{"result":"success","volume":"5448.8622","last":"8135000","yesterday_last":"8133500","timestamp":"1510072143","yesterday_low":"8026000","high":"8330000","currency":"btc","low":"8026000","errorCode":"0","yesterday_first":"8297000","yesterday_volume":"5809.1167","yesterday_high":"8330000","first":"8230000"}
@@ -23,9 +23,9 @@ Debug.Print PublicCoinone("trades", "?currency=btc&period=hour")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateCoinone("account/balance", apiKey, secretkey)
+Debug.Print PrivateCoinone("account/balance", apiKey, secretKey)
 '{"errorCode":"0","result":"success","btc":{"avail":"0.00000000","balance":"0.00000000"},"normalWallets":[],"bch":{"avail":"0.00000000","balance":"0.00000000"},"qtum":{"avail":"0.00000000","balance":"0.00000000"},"krw":{"avail":"0","balance":"0"},"ltc":{"avail":"0.00000000","balance":"0.00000000"},"etc":{"avail":"0.00000000","balance":"0.00000000"},"eth":{"avail":"0.00000000","balance":"0.00000000"},"xrp":{"avail":"0.00000000","balance":"0.00000000"}} etc...
-Debug.Print PrivateCoinone("order/complete_orders", apiKey, secretkey, "&currency=eth")
+Debug.Print PrivateCoinone("order/complete_orders", apiKey, secretKey, "&currency=eth")
 '{"errorCode":"0","completeOrders":[],"result":"success"}
 
 End Sub
@@ -41,7 +41,7 @@ Url = PublicApiSite & urlPath
 PublicCoinone = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateCoinone(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateCoinone(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'http://doc.coinone.co.kr/
@@ -63,7 +63,7 @@ postdata_json_txt = Replace(postdata_json_txt, "&", Chr(34) & "," & Chr(34))
 postdata_json_txt = "{" & Chr(34) & postdata_json_txt & Chr(34) & "}"
 postdata64 = Base64Encode(postdata_json_txt)
 
-APIsign = ComputeHash_C("SHA512", Base64Encode(postdata_json_txt), secretkey, "STRHEX")
+APIsign = ComputeHash_C("SHA512", Base64Encode(postdata_json_txt), secretKey, "STRHEX")
 
 '' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")

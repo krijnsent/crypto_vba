@@ -6,14 +6,14 @@ Sub TestKraken()
 'Kraken will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_kraken = "the key to use everywhere" etc )
 apiKey = apikey_kraken
-secretkey = secretkey_kraken
+secretKey = secretkey_kraken
 
 Debug.Print PublicKraken("Time")
 'Example: {"error":[],"result":{"unixtime":1494849819,"rfc1123":"Mon, 15 May 17 12:03:39 +0000"}}
@@ -24,9 +24,9 @@ Debug.Print PublicKraken("OHLC", "?pair=XXBTZEUR")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateKraken("Balance", apiKey, secretkey)
+Debug.Print PrivateKraken("Balance", apiKey, secretKey)
 '{"error":[],"result":{"ZEUR":"15.35","KFEE":"935","XXBT": etc...
-Debug.Print PrivateKraken("TradesHistory", apiKey, secretkey, "start=" & t1 & "&end=" & t2 & "&")
+Debug.Print PrivateKraken("TradesHistory", apiKey, secretKey, "start=" & t1 & "&end=" & t2 & "&")
 '{"error":[],"result":{"trades":{"TBSI6I-EO4KN-MLU4AI":{"ordertxid":"O7AERY-NCNDR-6WKLMU","pair":"XXMRZEUR","time":1493715960.4854,"type":"buy","ordertype":"limit","price": etc...
 
 
@@ -43,7 +43,7 @@ Url = PublicApiSite & urlPath
 PublicKraken = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateKraken(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateKraken(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 'https://www.kraken.com/help/api#private-user-data
 
@@ -58,7 +58,7 @@ urlPath = "/0/private/" & Method
 postdata = MethodOptions & "nonce=" & NonceUnique
 
 Url = TradeApiSite & urlPath
-APIsign = ComputeHash_C("SHA512", urlPath & ComputeHash_C("SHA256", NonceUnique & postdata, "", "RAW"), Base64Decode(secretkey), "STR64")
+APIsign = ComputeHash_C("SHA512", urlPath & ComputeHash_C("SHA256", NonceUnique & postdata, "", "RAW"), Base64Decode(secretKey), "STR64")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")

@@ -5,14 +5,14 @@ Sub TestCoinspot()
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
 apiKey = apikey_coinspot
-secretkey = secretkey_coinspot
+secretKey = secretkey_coinspot
 
 Debug.Print PublicCoinspot("latest", "")
 '{"status":"ok","prices":{"btc":{"bid":"23000","ask":"23888.86","last":"23200"},"ltc":{"bid":"438","ask":"469.98","last":"440"},"doge":{"bid":"0.00700001","ask":"0.0089","last":"0.008"}}}
@@ -21,9 +21,9 @@ Debug.Print PublicCoinspot("latest", "")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateCoinspot("my/balances", apiKey, secretkey)
+Debug.Print PrivateCoinspot("my/balances", apiKey, secretKey)
 '{"status":"invalid"} / {"status":"no nonce"}
-Debug.Print PrivateCoinspot("orders/history", apiKey, secretkey, "&cointype=LTC")
+Debug.Print PrivateCoinspot("orders/history", apiKey, secretKey, "&cointype=LTC")
 '{"status":"invalid"} / {"status":"no nonce"}
 'ERROR: https://stackoverflow.com/questions/47799323/coinspot-api-with-powershell
 
@@ -41,7 +41,7 @@ Url = PublicApiSite & urlPath
 PublicCoinspot = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateCoinspot(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateCoinspot(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 'https://Coinspot.com/home/api
@@ -52,7 +52,7 @@ TradeApiSite = "https://www.coinspot.com.au"
 
 postpath = "/api/" & Method
 postdata = "nonce=" & NonceUnique & MethodOptions
-APIsign = ComputeHash_C("SHA512", postdata, secretkey, "STRHEX")
+APIsign = ComputeHash_C("SHA512", postdata, secretKey, "STRHEX")
 
 ' Instantiate a WinHttpRequest object and open it
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")

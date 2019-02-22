@@ -5,14 +5,14 @@ Sub TestBinance()
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
-Dim secretkey As String
+Dim secretKey As String
 
 apiKey = "your api key here"
-secretkey = "your secret key here"
+secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
 apiKey = apikey_binance
-secretkey = secretkey_binance
+secretKey = secretkey_binance
 
 
 Debug.Print PublicBinance("time", "")
@@ -26,9 +26,9 @@ Debug.Print GetBinanceTime()
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
-Debug.Print PrivateBinance("account", apiKey, secretkey)
+Debug.Print PrivateBinance("account", apiKey, secretKey)
 '{"makerCommission":10,"takerCommission":10,"buyerCommission":0,"sellerCommission":0,"canTra etc...
-Debug.Print PrivateBinance("order/test", apiKey, secretkey, "symbol=LTCBTC&side=BUY&type=LIMIT&price=0.01&quantity=1&timeInForce=GTC")
+Debug.Print PrivateBinance("order/test", apiKey, secretKey, "symbol=LTCBTC&side=BUY&type=LIMIT&price=0.01&quantity=1&timeInForce=GTC")
 '{} -> test orders return empty JSON
 
 End Sub
@@ -44,7 +44,7 @@ Url = PublicApiSite & urlPath
 PublicBinance = WebRequestURL(Url, "GET")
 
 End Function
-Function PrivateBinance(Method As String, apiKey As String, secretkey As String, Optional MethodOptions As String) As String
+Function PrivateBinance(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 Dim NonceUnique As String
 Dim TimeCorrection As Long
@@ -55,7 +55,7 @@ NonceUnique = GetBinanceTime() + 1000
 TradeApiSite = "https://api.binance.com/api/v3/"
 
 postdata = MethodOptions & "&timestamp=" & NonceUnique
-APIsign = ComputeHash_C("SHA256", postdata, secretkey, "STRHEX")
+APIsign = ComputeHash_C("SHA256", postdata, secretKey, "STRHEX")
 Url = TradeApiSite & Method & "?" & postdata & "&signature=" & APIsign
 
 'Binance requires a POST for orders, other commands are GETs
@@ -82,14 +82,14 @@ End Function
 Function GetBinanceTime() As Double
 
 Dim JsonResponse As String
-Dim Json As Object
+Dim json As Object
 
 'PublicBinance time
 JsonResponse = PublicBinance("time", "")
-Set Json = JsonConverter.ParseJson(JsonResponse)
-GetBinanceTime = Json("serverTime")
+Set json = JsonConverter.ParseJson(JsonResponse)
+GetBinanceTime = json("serverTime")
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 

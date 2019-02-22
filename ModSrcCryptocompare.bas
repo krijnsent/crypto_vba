@@ -174,7 +174,7 @@ End Function
 Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String)
 
 Dim PrTxt As String
-Dim Json As Object
+Dim json As Object
 Application.Volatile
 
 If Len(exchange) > 2 Then
@@ -184,23 +184,23 @@ Else
 End If
 
 PrTxt = PublicCryptoCompareData("price", "?fsym=" & CurrBuy & "&tsyms=" & CurrSell & ExchangeTxt)
-Set Json = JsonConverter.ParseJson(PrTxt)
+Set json = JsonConverter.ParseJson(PrTxt)
 
-If Json("Response") = "Error" Then
+If json("Response") = "Error" Then
     'Error
-    C_LAST_PRICE = "ERROR " & Json("Message")
+    C_LAST_PRICE = "ERROR " & json("Message")
 Else
-    C_LAST_PRICE = Json(CurrSell)
+    C_LAST_PRICE = json(CurrSell)
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 
 Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String)
 
 Dim PrTxt As String
-Dim Json As Object
+Dim json As Object
 Application.Volatile
 
 dt = DateToUnixTime(DateRates)
@@ -211,23 +211,23 @@ Else
 End If
 
 PrTxt = PublicCryptoCompareData("pricehistorical", "?fsym=" & CurrBuy & "&tsyms=" & CurrSell & "&ts=" & dt & ExchangeTxt)
-Set Json = JsonConverter.ParseJson(PrTxt)
+Set json = JsonConverter.ParseJson(PrTxt)
 
-If Json("Response") = "Error" Then
+If json("Response") = "Error" Then
     'Error
-    C_HIST_PRICE = "ERROR " & Json("Message")
+    C_HIST_PRICE = "ERROR " & json("Message")
 Else
-    C_HIST_PRICE = Json(CurrBuy)(CurrSell)
+    C_HIST_PRICE = json(CurrBuy)(CurrSell)
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 
 Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String)
 
 Dim PrTxt As String
-Dim Json As Object
+Dim json As Object
 Application.Volatile
 
 dt = DateToUnixTime(DateRates)
@@ -238,16 +238,16 @@ Else
 End If
 
 PrTxt = PublicCryptoCompareData("dayAvg", "?fsym=" & CurrBuy & "&tsym=" & CurrSell & "&toTs=" & dt & ExchangeTxt)
-Set Json = JsonConverter.ParseJson(PrTxt)
+Set json = JsonConverter.ParseJson(PrTxt)
 
-If Json("Response") = "Error" Then
+If json("Response") = "Error" Then
     'Error
-    C_DAY_AVG_PRICE = "ERROR " & Json("Message")
+    C_DAY_AVG_PRICE = "ERROR " & json("Message")
 Else
-    C_DAY_AVG_PRICE = Json(CurrSell)
+    C_DAY_AVG_PRICE = json(CurrSell)
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 
@@ -268,7 +268,7 @@ Dim PrTxt As String
 Dim AggrVal As String
 Dim cmd As String
 Dim utime As Long
-Dim Json As Object
+Dim json As Object
 Dim TempArr As Variant
 ColumnOptions = "ETCHLOFV"
 Application.Volatile
@@ -322,12 +322,12 @@ End If
 PrTxt = PublicCryptoCompareData(cmd, "?fsym=" & CurrBuy & "&tsym=" & CurrSell & AggrTxt & TimeTxt & NrLinesTxt & ExchangeTxt)
 'Debug.Print cmd & "?fsym=" & CurrBuy & "&tsym=" & CurrSell & AggrTxt & TimeTxt & NrLinesTxt & ExchangeTxt
 'Debug.Print PrTxt
-Set Json = JsonConverter.ParseJson(PrTxt)
+Set json = JsonConverter.ParseJson(PrTxt)
 
-If Json("Response") = "Error" Then
+If json("Response") = "Error" Then
     'Error
     ReDim TempArr(1 To 1, 1 To 1)
-    TempArr(1, 1) = "ERROR " & Json("Message")
+    TempArr(1, 1) = "ERROR " & json("Message")
     C_ARR_OHLCV = TempArr
 Else
     If InStr(PrTxt, """Data"":[]") > 0 Then
@@ -337,7 +337,7 @@ Else
         C_ARR_OHLCV = TempArr
         Exit Function
     End If
-    ResArr = JsonToArray(Json)
+    ResArr = JsonToArray(json)
     ResTbl = ArrayTable(ResArr, True)
     
     ReturnColumns = UCase(Trim(ReturnColumns))
@@ -377,7 +377,7 @@ Else
     End If
 End If
 
-Set Json = Nothing
+Set json = Nothing
 
 End Function
 
