@@ -93,13 +93,25 @@ Test.IsEqual TestResult, "UNKNOWN_TYPE"
 testDict.Add "option1", "BTC-ETH"
 testDict.Add "another_option", "16"
 JsonTxt = "{""option1"":""BTC-ETH"",""another_option"":""16""}"
-
 TestResult = DictToString(testDict, "JSON")
 Test.IsEqual TestResult, JsonTxt
-
 UrlTxt = "option1=BTC-ETH&another_option=16"
 TestResult = DictToString(testDict, "URLENC")
 Test.IsEqual TestResult, UrlTxt
+
+Dim testDict2 As New Dictionary
+'Fill dictionary
+testDict2.Add "value1", 9
+testDict2.Add "value_2", 0.154
+testDict2.Add "value_as_string", "1.87"
+testDict2.Add "commaval_as_str", "2,16"
+TestResult = DictToString(testDict2, "JSON")
+JsonTxt = "{""value1"":9,""value_2"":0.154,""value_as_string"":""1.87"",""commaval_as_str"":""2,16""}"
+Test.IsEqual TestResult, JsonTxt
+TestResult = DictToString(testDict2, "URLENC")
+UrlTxt = "value1=9&value_2=0.154&value_as_string=1.87&commaval_as_str=2,16"
+Test.IsEqual TestResult, UrlTxt
+
 
 End Sub
 
@@ -189,6 +201,7 @@ End Function
 Function DictToString(DictIn As Dictionary, OutputType As String) As String
 
 Dim OutputTxt As String
+Dim ValStr As String
 
 If DictIn Is Nothing Then
     DictToString = ""
@@ -199,16 +212,25 @@ If OutputType = "JSON" Then
     OutputTxt = "{"
     For Each Opt In DictIn.Keys()
         If OutputTxt <> "{" Then OutputTxt = OutputTxt & ","
-        OutputTxt = OutputTxt & """" & Opt & """" & ":" & """" & DictIn(Opt) & """"
-        'Debug.Print Opt, DictIn(Opt)
+        'If a string came in, put double quotes around it
+        ValD = DictIn(Opt)
+        Separ = ""
+        If VarType(ValD) = vbString Then Separ = """"
+        
+        'Value: correct for comma decimal system if a value was supplied
+        ValStr = ValD
+        If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
+        OutputTxt = OutputTxt & """" & Opt & """" & ":" & Separ & ValStr & Separ
     Next
     OutputTxt = OutputTxt & "}"
 ElseIf OutputType = "URLENC" Then
     OutputTxt = ""
     For Each Opt In DictIn.Keys()
         If OutputTxt <> "" Then OutputTxt = OutputTxt & "&"
-        OutputTxt = OutputTxt & Opt & "=" & DictIn(Opt)
-        'Debug.Print Opt, DictIn(Opt)
+        ValD = DictIn(Opt)
+        ValStr = ValD
+        If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
+        OutputTxt = OutputTxt & Opt & "=" & ValStr
     Next
 Else
     OutputTxt = "UNKNOWN_TYPE"

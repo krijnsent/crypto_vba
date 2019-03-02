@@ -15,6 +15,9 @@ secretKey = "your secret key here"
 apiKey = apikey_kraken
 secretKey = secretkey_kraken
 
+
+
+
 Debug.Print PublicKraken("Time")
 'Example: {"error":[],"result":{"unixtime":1494849819,"rfc1123":"Mon, 15 May 17 12:03:39 +0000"}}
 Debug.Print PublicKraken("OHLC", "?pair=XXBTZEUR")
@@ -70,7 +73,7 @@ objHTTP.setRequestHeader "API-Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateKraken = objHTTP.ResponseText
+PrivateKraken = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

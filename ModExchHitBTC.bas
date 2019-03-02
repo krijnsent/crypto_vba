@@ -87,7 +87,7 @@ objHTTP.setRequestHeader "X-Signature", APIsign
 objHTTP.Send ("")
 
 objHTTP.WaitForResponse
-PrivateHitBTC = objHTTP.ResponseText
+PrivateHitBTC = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function
@@ -128,7 +128,7 @@ objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apiKey & ":" &
 objHTTP.Send ("")
 
 objHTTP.WaitForResponse
-PrivateHitBTC2 = objHTTP.ResponseText
+PrivateHitBTC2 = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

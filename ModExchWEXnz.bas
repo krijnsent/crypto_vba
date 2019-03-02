@@ -65,7 +65,7 @@ objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateWEXnz = objHTTP.ResponseText
+PrivateWEXnz = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

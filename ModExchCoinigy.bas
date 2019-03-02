@@ -55,7 +55,7 @@ objHTTP.setRequestHeader "X-API-SECRET", secretKey
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateCoinigy = objHTTP.ResponseText
+PrivateCoinigy = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

@@ -76,7 +76,7 @@ objHTTP.setRequestHeader "Authorization", HeaderValue
 objHTTP.Send (postdataJsonTxt)
 
 objHTTP.WaitForResponse
-PrivateCryptopia = objHTTP.ResponseText
+PrivateCryptopia = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

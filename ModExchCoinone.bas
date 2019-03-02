@@ -74,7 +74,7 @@ objHTTP.setRequestHeader "X-COINONE-SIGNATURE", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateCoinone = objHTTP.ResponseText
+PrivateCoinone = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

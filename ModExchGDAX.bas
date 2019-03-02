@@ -68,7 +68,7 @@ objHTTP.setRequestHeader "CB-ACCESS-PASSPHRASE", Passphrase
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateGDAX = objHTTP.ResponseText
+PrivateGDAX = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

@@ -61,8 +61,10 @@ Set Test = Suite.Test("TestPoloniexPrivate")
 t1 = DateToUnixTime("1/1/2014")
 t2 = DateToUnixTime("1/1/2018")
 
+TestResult = PrivatePoloniex("returnBalances", apiKey, secretKey)
 'Debug.Print PrivatePoloniex("returnBalances", apiKey, secretkey)
 ''{"1CR":"0.00000000","ABY":"0.00000000","AC":"0.00000000","ACH":"0.00000000","ADN":"0.00000000","AEON":"0.00000000" etc...
+
 'Debug.Print PrivatePoloniex("returnTradeHistory", apiKey, secretkey, "&currencyPair=all&start=" & t1 & "&end=" & t2)
 ''{"BTC_ETH":[{"globalTradeID":108848981,"tradeID":"22880801","date":"2017-04-19 23:26:55","rate":"0.03900000","amount":"65.35644222","total":"2.54890124", etc...
 
@@ -106,7 +108,7 @@ objHTTP.setRequestHeader "Sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivatePoloniex = objHTTP.ResponseText
+PrivatePoloniex = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

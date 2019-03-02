@@ -64,7 +64,7 @@ objHTTP.setRequestHeader "sign", APIsign
 objHTTP.Send (postdata)
 
 objHTTP.WaitForResponse
-PrivateCoinspot = objHTTP.ResponseText
+PrivateCoinspot = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function
