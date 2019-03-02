@@ -3,19 +3,19 @@ An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. 
 
 # Exchanges:
 Get information from/send information to:
+- [Binance](http://binance.com/)
+- [Bitfinex](https://www.bitfinex.com/)
+- [Bittrex](https://www.bittrex.com/) 
 - [Kraken](https://www.kraken.com/)
 - [Poloniex](https://www.poloniex.com/) 
-- [Bittrex](https://www.bittrex.com/) 
 - [WEXnz](https://wex.nz/)
 - [Coinone](https://coinone.co.kr/)
 - [Cryptopia](https://www.cryptopia.co.nz/)
-- [Binance](http://binance.com/)
 - [Kucoin](https://www.kucoin.com/)
 - [HitBTC](https://hitbtc.com/)
 - [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee
 - [Coinspot](https://www.coinspot.com.au/) - seems to have back end issues 20171220
 - [GDAX](https://www.gdax.com/) - first setup, public api works. Private method doesn't work due to missing account validation by GDAX
-- [Bitfinex](https://www.bitfinex.com/) - untested, giving the same output as the PHP API, no account to test privateAPI yet
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
@@ -24,8 +24,9 @@ As this is my first Git experiment and Excel/VBA and git don't work that well to
 Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you.
 
 # ToDo
-- Expand the XLSM file with working examples
+- Improve all code for better testing, following the example of Binance, Bitfinex and Bittrex
 - Better testing, automated testing of all exchanges with the test suite
+- Expand the XLSM file with working examples
 - Later: place/cancel orders
 - Better error handling
 
@@ -44,18 +45,19 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the WEXnz API connector (used to be BTCe)
 - Build the Poloniex API connector
 - Build the Kraken API connector
-- Build the Liqui API connector - and removed it
 - Build the Coinone API connector
 - Build the Cryptopia API connector
 - Build the Binance API connector
 - Build the Coinigy API connector
 - Build the Kucoin API connector
 - Build the HitBTC API connector
+- Build the Bitfinex API connector
 - Build the Coinspot API connector - not finished
 - Build the GDAX API connector - not finished
-- Build the Bitfinex API connector - not finished
 - Build a working and tested VBA hash function
+- Build a function to transform Dictionaries into JSON and URLencode
 - Added the UrlEncode function for Cryptopia (and Excel versions before 2016)
+- Build the Liqui API connector - and removed it
 
 # Donate
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>
