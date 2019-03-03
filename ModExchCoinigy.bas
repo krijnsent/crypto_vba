@@ -29,7 +29,7 @@ Debug.Print PrivateCoinigy("markets", apiKey, secretKey, "{""exchange_code"":""B
 End Sub
 
 Function PublicCoinigy(Method As String, Optional MethodOptions As String) As String
-'Put here for consitency, does not exist
+'Put here for consistency, does not exist
 
 PublicCoinigy = "{""error_nr"":ERR_NR,""error_txt"":""ERR_TXT""}"
 PublicCoinigy = Replace(Replace(PublicCoinigy, "ERR_NR", 999), "ERR_TXT", "PublicCoinigy does not exist on Coinigy")
