@@ -5,6 +5,7 @@ An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. 
 Get information from/send information to:
 - [Binance](http://binance.com/)
 - [Bitfinex](https://www.bitfinex.com/)
+- [Bitstamp](https://www.bitstamp.net/)
 - [Bittrex](https://www.bittrex.com/) 
 - [Kraken](https://www.kraken.com/)
 - [Poloniex](https://www.poloniex.com/) 
@@ -21,7 +22,7 @@ The API response is pure JSON, for which I included https://github.com/VBA-tools
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
 
 # How to use?
-Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you.
+Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you. The project uses quite some Dictionaries in VBA, check out e.g. https://excelmacromastery.com/vba-dictionary/ if you want to know a bit more about them.
 
 # ToDo
 - Improve all code for better testing, following the example of Binance, Bitfinex and Bittrex
@@ -52,11 +53,12 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Kucoin API connector
 - Build the HitBTC API connector
 - Build the Bitfinex API connector
-- Build the Coinspot API connector - not finished
+- Build the Bitstamp API connector
+- Build the Coinspot API connector
 - Build the GDAX API connector - not finished
 - Build a working and tested VBA hash function
 - Build a function to transform Dictionaries into JSON and URLencode
-- Added the UrlEncode function for Cryptopia (and Excel versions before 2016)
+- Added the UrlEncode function for e.g. Cryptopia (and Excel versions before 2016)
 - Build the Liqui API connector - and removed it
 
 # Donate

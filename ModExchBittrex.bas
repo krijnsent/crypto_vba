@@ -127,7 +127,7 @@ headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "apisign", APIsign
 
 Url = TradeApiSite & postdata
-PrivateBittrex = WebRequestURL(Url, "POST", headerDict)
+PrivateBittrex = WebRequestURL(Url, ReqType, headerDict)
 
 End Function
 
