@@ -110,9 +110,9 @@ Params4.Add "symbol", "LTCBTC"
 Params4.Add "orderId", 987654
 Params4.Add "timestamp", GetBinanceTime()
 TestResult = PrivateBinance("order", "DELETE", Cred, Params4)
-'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"code":-2011,"msg":"UNKNOWN_ORDER"}}
+'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"code":-2011,"msg":"Unknown order sent."}}
 Test.IsOk InStr(TestResult, "code") > 0
-Test.IsOk InStr(TestResult, "UNKNOWN_ORDER") > 0
+Test.IsOk InStr(TestResult, "Unknown order") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("response_txt")("code"), -2011
 
@@ -121,7 +121,6 @@ End Sub
 
 Function PublicBinance(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-'https://binance.com/home/api
 Dim Url As String
 PublicApiSite = "https://api.binance.com"
 

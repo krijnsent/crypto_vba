@@ -3,6 +3,7 @@ Sub TestHitBTC()
 
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
+'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 'HitBTC will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
 Dim apiKey As String
@@ -15,35 +16,68 @@ secretKey = "your secret key here"
 apiKey = apikey_hitbtc
 secretKey = secretkey_hitbtc
 
-Debug.Print PublicHitBTC("time")
+'Put the credentials in a dictionary
+Dim Cred As New Dictionary
+Cred.Add "apiKey", apiKey
+Cred.Add "secretKey", secretKey
+
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModExchHitBTC"
+
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+  
+' Create a new test
+Dim Test As TestCase
+Set Test = Suite.Test("TestHitBTCPublic 1")
+
+'Error, unknown command
+TestResult = PublicHitBTCv1("AnUnknownCommand", "GET")
+'{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
+Test.IsOk InStr(TestResult, "error") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("error_nr"), 404
+
+'Error, parameter missing
+TestResult = PublicHitBTCv1("getticker", "GET")
+'{"success":false,"message":"MARKET_NOT_PROVIDED","result":null}
+Test.IsOk InStr(TestResult, "message") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), False
+Test.IsEqual JsonResult("message"), "MARKET_NOT_PROVIDED"
+
+
+'Debug.Print PublicHitBTCv1("time")
 'Example: {"timestamp":1516023792943}
-Debug.Print PublicHitBTC("ticker", "BTCUSD/")
+'Debug.Print PublicHitBTCv1("ticker", "BTCUSD/")
 '{"ask":"14199.91","bid":"14191.39","last":"14199.98","low":"12900.00","high":"14200.00","open":"13382.15", etc..
-
+'
 'Unix time period:
-t1 = DateToUnixTime("1/1/2014")
-t2 = DateToUnixTime("1/1/2018")
-
-Debug.Print PrivateHitBTC("balance", apiKey, secretKey)
+'t1 = DateToUnixTime("1/1/2014")
+'t2 = DateToUnixTime("1/1/2018")
+'
+'Debug.Print PrivateHitBTCv1("balance", apiKey, secretKey)
 '{"balance":[{"currency_code":"1ST","cash":"0","reserved":"0"},{"currency_code":"8BT","cash":"0","reserved":"0"}, etc...
-Debug.Print PrivateHitBTC("cancel_orders", apiKey, secretKey, "&symbol=BTCUSD")
+'Debug.Print PrivateHitBTCv1("cancel_orders", apiKey, secretKey, "&symbol=BTCUSD")
 '{"ExecutionReport":[]} -> or a list of all cancelled trade numbers
-
-Debug.Print PublicHitBTC2("symbol")
+'
+'Debug.Print PublicHitBTCv2("symbol")
 '[{"id":"BCNBTC","baseCurrency":"BCN","quoteCurrency":"BTC","quantityIncrement":"100","tickSize":"0.0000000001","takeLiquidityR etc...
-Debug.Print PublicHitBTC2("ticker", "/BCHUSD")
+'Debug.Print PublicHitBTCv2("ticker", "/BCHUSD")
 '{"ask":"1228.13454","bid":"1225.62444","last":"1227.17775","open":"1269.12060","low":"1 etc...
-
-Debug.Print PrivateHitBTC2("account/balance", "GET", apiKey, secretKey)
+'
+'Debug.Print PrivateHitBTCv2("account/balance", "GET", apiKey, secretKey)
 '[{"currency":"DOGE","available":"0.00000000","reserved":"0.00000000"},{" etc...
-Debug.Print PrivateHitBTC2("history/trades", "GET", apiKey, secretKey, "?symbol=BTCUSD")
-'e.g. []
-Debug.Print PrivateHitBTC2("order", "DELETE", apiKey, secretKey, "?symbol=BTCUSD")
-'e.g. []
+'Debug.Print PrivateHitBTCv2("history/trades", "GET", apiKey, secretKey, "?symbol=BTCUSD")
+'e.g.[]
+'Debug.Print PrivateHitBTCv2("order", "DELETE", apiKey, secretKey, "?symbol=BTCUSD")
+'e.g.[]
 
 End Sub
 
-Function PublicHitBTC(Method As String, Optional MethodOptions As String) As String
+Function PublicHitBTCv1(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
 'https://api.hitbtc.com/api/2/explore/
 Dim Url As String
@@ -51,10 +85,24 @@ PublicApiSite = "https://api.hitbtc.com"
 urlPath = "/api/1/public/" & MethodOptions & Method
 Url = PublicApiSite & urlPath
 
-PublicHitBTC = WebRequestURL(Url, "GET")
+PublicHitBTCv1 = WebRequestURL(Url, "GET")
+
+
+
+Dim Url As String
+PublicApiSite = "https://api.hitbtc.com"
+
+MethodParams = DictToString(ParamDict, "URLENC")
+If MethodParams <> "" Then MethodParams = "?" & MethodParams
+urlPath = "/api/1/public/" & Method & MethodParams
+Url = PublicApiSite & urlPath
+
+PublicHitBTCv1 = WebRequestURL(Url, ReqType)
+
+
 
 End Function
-Function PrivateHitBTC(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
+Function PrivateHitBTCv1(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 
@@ -87,12 +135,12 @@ objHTTP.setRequestHeader "X-Signature", APIsign
 objHTTP.Send ("")
 
 objHTTP.WaitForResponse
-PrivateHitBTC = objHTTP.responseText
+PrivateHitBTCv1 = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function
 
-Function PublicHitBTC2(Method As String, Optional MethodOptions As String) As String
+Function PublicHitBTCv2(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
 'https://api.hitbtc.com/api/2/explore/
 Dim Url As String
@@ -100,11 +148,11 @@ PublicApiSite = "https://api.hitbtc.com"
 urlPath = "/api/2/public/" & Method & MethodOptions
 Url = PublicApiSite & urlPath
 
-PublicHitBTC2 = WebRequestURL(Url, "GET")
+PublicHitBTCv2 = WebRequestURL(Url, "GET")
 
 End Function
 
-Function PrivateHitBTC2(Method As String, HTTPMethod As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
+Function PrivateHitBTCv2(Method As String, HTTPMethod As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
 
 'https://api.hitbtc.com/api/2/explore/
 'Authorisation: https://stackoverflow.com/questions/34637034/curl-u-equivalent-in-http-request
@@ -128,7 +176,7 @@ objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apiKey & ":" &
 objHTTP.Send ("")
 
 objHTTP.WaitForResponse
-PrivateHitBTC2 = objHTTP.responseText
+PrivateHitBTCv2 = objHTTP.responseText
 Set objHTTP = Nothing
 
 End Function

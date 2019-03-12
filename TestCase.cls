@@ -47,10 +47,10 @@ Public Property Get Result() As TestResultType
 End Property
 
 Public Property Get Failures() As Collection
-    Dim Total As Long
-    Total = Me.Successes + pFailures.Count
+    Dim total As Long
+    total = Me.Successes + pFailures.Count
     
-    If Me.Planned > 0 And Me.Planned <> Total Then
+    If Me.Planned > 0 And Me.Planned <> total Then
         Dim Message As String
         Dim Failure As Variant
         
@@ -60,7 +60,7 @@ Public Property Get Failures() As Collection
         Next Failure
         
         Message = "Total assertions, ${1}, does not equal planned, ${2}"
-        Failures.Add FormatMessage(Message, Total, Me.Planned)
+        Failures.Add FormatMessage(Message, total, Me.Planned)
     Else
         Set Failures = pFailures
     End If

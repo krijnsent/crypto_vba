@@ -67,7 +67,6 @@ Test.IsEqual JsonResult("success"), True
 Test.IsEqual JsonResult("result")(1)("MarketName"), "BTC-DOGE"
 Test.IsOk JsonResult("result")(1)("Volume") > 0
 
-'Unix time period:
 Set Test = Suite.Test("TestBittrexPrivate")
 
 TestResult = PrivateBittrex("account/getbalances", "GET", Cred)

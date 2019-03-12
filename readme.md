@@ -7,16 +7,19 @@ Get information from/send information to:
 - [Bitfinex](https://www.bitfinex.com/)
 - [Bitstamp](https://www.bitstamp.net/)
 - [Bittrex](https://www.bittrex.com/) 
-- [Kraken](https://www.kraken.com/)
-- [Poloniex](https://www.poloniex.com/) 
-- [WEXnz](https://wex.nz/)
+- [Coinbase](https://www.coinbase.com)
+- [CoinbasePro](https://pro.coinbase.com/)
 - [Coinone](https://coinone.co.kr/)
-- [Cryptopia](https://www.cryptopia.co.nz/)
-- [Kucoin](https://www.kucoin.com/)
+- [Coinspot](https://www.coinspot.com.au/)
 - [HitBTC](https://hitbtc.com/)
-- [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee
-- [Coinspot](https://www.coinspot.com.au/) - seems to have back end issues 20171220
-- [GDAX](https://www.gdax.com/) - first setup, public api works. Private method doesn't work due to missing account validation by GDAX
+- [Kraken](https://www.kraken.com/)
+- [Kucoin](https://www.kucoin.com/)
+- [Poloniex](https://www.poloniex.com/) 
+- [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee - not actively maintained
+- [Cryptopia](https://www.cryptopia.co.nz/) - WARNING: exchange suspended following a hack
+- [GDAX] -> see CoinbasePro
+- [Liqui] -> exchange closed
+- [WEXnz](https://wex.nz/) - exchange closed, removed
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
 As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
@@ -25,14 +28,14 @@ As this is my first Git experiment and Excel/VBA and git don't work that well to
 Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you. The project uses quite some Dictionaries in VBA, check out e.g. https://excelmacromastery.com/vba-dictionary/ if you want to know a bit more about them.
 
 # ToDo
-- Improve all code for better testing, following the example of Binance, Bitfinex and Bittrex
+- Improve all code for better testing, todo: HitBTC, Kucoin, Coinone
 - Better testing, automated testing of all exchanges with the test suite
 - Expand the XLSM file with working examples
 - Later: place/cancel orders
 - Better error handling
 
 # Done
-- For historical prices, include https://www.cryptocompare.com/api/
+- For historical prices, included https://www.cryptocompare.com/api/ (now https://min-api.cryptocompare.com/ )
 - Build excel functions to get the information directly to a sheet - TEST PHASE
 - Working examples of several exchanges in the example file
 - Created a basic XLSM sample file
@@ -42,24 +45,22 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build a function to transform the JSON to an Array
 - Build tests for all modules/functions
 - Integrate VBA-JSON into the project
-- Build the Bittrex API connector
-- Build the WEXnz API connector (used to be BTCe)
-- Build the Poloniex API connector
-- Build the Kraken API connector
-- Build the Coinone API connector
-- Build the Cryptopia API connector
 - Build the Binance API connector
-- Build the Coinigy API connector
-- Build the Kucoin API connector
-- Build the HitBTC API connector
 - Build the Bitfinex API connector
 - Build the Bitstamp API connector
+- Build the Bittrex API connector
+- Build the Coinbase/GDAX/CoinbasePro API connector
+- Build the Coinone API connector
 - Build the Coinspot API connector
-- Build the GDAX API connector - not finished
+- Build the Cryptopia API connector
+- Build the HitBTC API connector
+- Build the Kraken API connector
+- Build the Kucoin API connector
+- Build the Poloniex API connector
 - Build a working and tested VBA hash function
 - Build a function to transform Dictionaries into JSON and URLencode
 - Added the UrlEncode function for e.g. Cryptopia (and Excel versions before 2016)
-- Build the Liqui API connector - and removed it
+- Removed inactive exchanges: Liqui, WEXnz/BTCe (nostalgia, that was the first exchange i got working in excel)
 
 # Donate
 If this project/the Excel saves you a lot of programming time, consider sending me a coffee or a beer:<br/>

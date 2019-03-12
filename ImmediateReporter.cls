@@ -74,13 +74,13 @@ Private Function ResultTypeToString(ResultType As TestResultType) As String
 End Function
 
 Private Function Summary() As String
-    Dim Total As Long
+    Dim total As Long
     Dim Passed As Long
     Dim Failed As Long
     Dim Pending As Long
     Dim Skipped As Long
     
-    Total = pSuite.Tests.Count
+    total = pSuite.Tests.Count
     Passed = pSuite.PassedTests.Count
     Failed = pSuite.FailedTests.Count
     Pending = pSuite.PendingTests.Count
@@ -88,9 +88,9 @@ Private Function Summary() As String
     
     Dim SummaryMessage As String
     If Failed > 0 Then
-        SummaryMessage = "FAIL (" & Failed & " of " & Total & " failed"
+        SummaryMessage = "FAIL (" & Failed & " of " & total & " failed"
     Else
-        SummaryMessage = "PASS (" & Passed & " of " & Total & " passed"
+        SummaryMessage = "PASS (" & Passed & " of " & total & " passed"
     End If
     If Pending > 0 Then
         SummaryMessage = SummaryMessage & ", " & Pending & " pending"
