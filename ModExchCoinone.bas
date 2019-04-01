@@ -2,6 +2,7 @@ Attribute VB_Name = "ModExchCoinone"
 Sub TestCoinone()
 
 'Source: https://github.com/krijnsent/crypto_vba
+'https://doc.coinone.co.kr/#section/V2-version
 'Remember to create a new API key for excel/VBA
 
 Dim apiKey As String
@@ -14,67 +15,152 @@ secretKey = "your secret key here"
 apiKey = apikey_coinone
 secretKey = secretkey_coinone
 
-Debug.Print PublicCoinone("ticker", "")
-'{"result":"success","volume":"5448.8622","last":"8135000","yesterday_last":"8133500","timestamp":"1510072143","yesterday_low":"8026000","high":"8330000","currency":"btc","low":"8026000","errorCode":"0","yesterday_first":"8297000","yesterday_volume":"5809.1167","yesterday_high":"8330000","first":"8230000"}
-Debug.Print PublicCoinone("trades", "?currency=btc&period=hour")
-'{"errorCode":"0","timestamp":"1510072144","completeOrders":[{"timestamp":"1510068569","price":"8153000","qty":"0.1722"},{"timestamp":"1510068576","price":"8153000","qty":"0.0765"},{"timestamp":"1510068669","price":"8149000","qty":"0.0764"},{"timestamp":"1510068687","price":"8155000","qty":"0.2067"},{"timestamp":"1510068687","price":"8155000","qty":"0.8763"},{"timestamp":"1510068688","price":"8155500","qty":"0.1476"}, etc.
+'Put the credentials in a dictionary
+Dim Cred As New Dictionary
+Cred.Add "apiKey", apiKey
+Cred.Add "secretKey", secretKey
 
-'Unix time period:
-t1 = DateToUnixTime("1/1/2014")
-t2 = DateToUnixTime("1/1/2018")
+' Create a new test suite
+Dim Suite As New TestSuite
+Suite.Description = "ModExchCoinone"
 
-Debug.Print PrivateCoinone("account/balance", apiKey, secretKey)
-'{"errorCode":"0","result":"success","btc":{"avail":"0.00000000","balance":"0.00000000"},"normalWallets":[],"bch":{"avail":"0.00000000","balance":"0.00000000"},"qtum":{"avail":"0.00000000","balance":"0.00000000"},"krw":{"avail":"0","balance":"0"},"ltc":{"avail":"0.00000000","balance":"0.00000000"},"etc":{"avail":"0.00000000","balance":"0.00000000"},"eth":{"avail":"0.00000000","balance":"0.00000000"},"xrp":{"avail":"0.00000000","balance":"0.00000000"}} etc...
-Debug.Print PrivateCoinone("order/complete_orders", apiKey, secretKey, "&currency=eth")
-'{"errorCode":"0","completeOrders":[],"result":"success"}
+' Create reporter and attach it to these specs
+Dim Reporter As New ImmediateReporter
+Reporter.ListenTo Suite
+  
+' Create a new test
+Dim Test As TestCase
+Set Test = Suite.Test("TestCoinonePublic")
+
+'Error, unknown command
+TestResult = PublicCoinone("AnUnknownCommand", "GET")
+'{"error_nr":200,"error_txt":"NO JSON BUT HTML RETURNED","response_txt":0}
+Test.IsOk InStr(TestResult, "error") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("error_txt"), "NO JSON BUT HTML RETURNED"
+
+'OK request
+TestResult = PublicCoinone("ticker", "GET")
+'e.g. {"currency":"btc","volume":"633.1048","last":"4684000.0","yesterday_last":"4636000.0","timestamp":"1554107620","yesterday_low":"4592000.0","errorCode":"0","yesterday_volume":"395.8966","high":"4720000.0","result":"success","yesterday_first":"4615000.0","first":"4636000.0","yesterday_high":"4651000.0","low":"4630000.0"}
+Test.IsOk InStr(TestResult, "yesterday_last") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk Val(JsonResult("last")) > 0
+Test.IsEqual JsonResult("currency"), "btc"
+Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
+
+'Put parameters/options in a dictionary
+'If no parameters are provided, the defaults are used
+'If WRONG PARAMETERS are provided, the defaults will be used: the API fails "silently" and gives no error but default BTC data
+Dim Params As New Dictionary
+Params.Add "currency", "eth"
+Params.Add "period", "hour"
+TestResult = PublicCoinone("trades", "GET", Params)
+'e.g. {"errorCode":"0","timestamp":"1554107995","completeOrders":[{"is_ask":"0","timestamp":"1554107949","price":"161600.0","id":"395377","qty":"1.6044"},
+Test.IsOk InStr(TestResult, "completeOrders") > 0
+Test.IsOk InStr(TestResult, "timestamp") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
+Test.IsEqual JsonResult("errorCode"), "0"
+Test.IsEqual JsonResult("completeOrders").Count, 200
+Test.IsOk Val(JsonResult("completeOrders")(1)("id")) > 0
+Test.IsOk Val(JsonResult("completeOrders")(1)("qty")) > 0
+
+
+Set Test = Suite.Test("TestBittrexPrivate")
+
+TestResult = PrivateCoinone2("account/balance", "POST", Cred)
+'{"btt": {"avail": "0.0", "balance": "0.0"}, "edna": {"avail": "0.0", "balance": "0.0"},  etc.
+Test.IsOk InStr(TestResult, "avail") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("result"), "success"
+Test.IsEqual JsonResult("errorCode"), "0"
+Test.IsOk JsonResult("eos")("avail") >= 0
+Test.IsOk JsonResult("btc")("balance") >= 0
+
+Dim Params2 As New Dictionary
+Params2.Add "price", 100
+Params2.Add "qty", 3
+Params2.Add "currency", "EOS"
+TestResult = PrivateCoinone2("order/limit_buy", "POST", Cred, Params2)
+'{"errorCode":"103","errorMsg":"Lack of Balance","result":"error"}
+'{"errorCode":"113","errorMsg":"Quantity is too low","result":"error"}
+'{"result": "success","errorCode": "0","orderId": "8a82c561-40b4-4cb3-9bc0-9ac9ffc1d63b"}
+Test.IsOk InStr(TestResult, "errorCode") > 0
+Test.IsOk InStr(TestResult, "result") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+If Val(JsonResult("errorCode")) = 0 Then
+    'No error
+    Test.IsEqual JsonResult("result"), "success"
+    Test.IsEqual JsonResult("errorCode"), "0"
+    Test.IsOk Len(JsonResult("orderId")) > 10
+Else
+    'Error
+    Test.IsEqual JsonResult("result"), "error"
+    Test.IsOk Len(JsonResult("errorMsg")) > 0
+End If
+
+Dim Params3 As New Dictionary
+Params3.Add "currency", "ETH"
+TestResult = PrivateCoinone2("order/complete_orders", "POST", Cred, Params3)
+'{"errorCode": "0", "completeOrders": [], "result": "success"}
+'{"result": "success","errorCode": "0","completeOrders": [{"timestamp": "1416561032","price": "419000.0","type": "bid","qty": "0.001","feeRate": "-0.0015","fee": "-0.0000015","orderId": "E84A1AC2-8088-4FA0-B093-A3BCDB9B3C85"}]}
+Test.IsOk InStr(TestResult, "completeOrders") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("result"), "success"
+Test.IsEqual JsonResult("errorCode"), "0"
+Test.IsOk JsonResult("completeOrders").Count >= 0
 
 End Sub
 
-Function PublicCoinone(Method As String, Optional MethodOptions As String) As String
+Function PublicCoinone(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-'https://Coinone.com/home/api
 Dim Url As String
 PublicApiSite = "https://api.coinone.co.kr/"
-urlPath = Method & "/" & MethodOptions
+
+MethodParams = DictToString(ParamDict, "URLENC")
+If MethodParams <> "" Then MethodParams = "?" & MethodParams
+urlPath = Method & MethodParams
 Url = PublicApiSite & urlPath
 
-PublicCoinone = WebRequestURL(Url, "GET")
+PublicCoinone = WebRequestURL(Url, ReqType)
 
 End Function
-Function PrivateCoinone(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
+Function PrivateCoinone2(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-'http://doc.coinone.co.kr/
+Dim postdata As String
+Dim postdataUrl As String
+Dim postdataJSON As String
+Dim Url As String
 
 'Get a 14-digit Nonce
 NonceUnique = CreateNonce(14)
-'NonceUnique = "1510140617707865"
 TradeApiSite = "https://api.coinone.co.kr/v2/"
 
 Url = TradeApiSite & Method
 
-postdata = "access_token=" & apiKey & "&" & "nonce=" & NonceUnique
-If MethodOptions <> "" Then
-    postdata = postdata & MethodOptions
+Dim PostDict As New Dictionary
+PostDict.Add "access_token", Credentials("apiKey")
+PostDict.Add "nonce", NonceUnique
+If Not ParamDict Is Nothing Then
+    For Each Key In ParamDict.Keys
+        PostDict(Key) = ParamDict(Key)
+    Next Key
 End If
 
-postdata_json_txt = Replace(postdata, "=", Chr(34) & ":" & Chr(34))
-postdata_json_txt = Replace(postdata_json_txt, "&", Chr(34) & "," & Chr(34))
-postdata_json_txt = "{" & Chr(34) & postdata_json_txt & Chr(34) & "}"
-postdata64 = Base64Encode(postdata_json_txt)
+postdataUrl = DictToString(PostDict, "URLENC")
+postdataJSON = DictToString(PostDict, "JSON")
+postdata64 = Base64Encode(postdataJSON)
 
-APIsign = ComputeHash_C("SHA512", Base64Encode(postdata_json_txt), secretKey, "STRHEX")
+APIsign = ComputeHash_C("SHA512", postdata64, Credentials("secretKey"), "STRHEX")
 
-'' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open "POST", Url, False
-objHTTP.setRequestHeader "Content-Type", "application/json"
-objHTTP.setRequestHeader "X-COINONE-PAYLOAD", postdata64
-objHTTP.setRequestHeader "X-COINONE-SIGNATURE", APIsign
-objHTTP.Send (postdata)
+Dim headerDict As New Dictionary
+headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+headerDict.Add "Content-Type", "application/json"
+headerDict.Add "X-COINONE-PAYLOAD", postdata64
+headerDict.Add "X-COINONE-SIGNATURE", APIsign
 
-objHTTP.WaitForResponse
-PrivateCoinone = objHTTP.responseText
-Set objHTTP = Nothing
+Url = TradeApiSite & Method
+PrivateCoinone2 = WebRequestURL(Url, ReqType, headerDict, postdataUrl)
 
 End Function

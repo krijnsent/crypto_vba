@@ -3,6 +3,7 @@ Sub TestHitBTC()
 
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
+'https://api.hitbtc.com/api/2/explore/
 'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 'HitBTC will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
@@ -31,152 +32,185 @@ Reporter.ListenTo Suite
   
 ' Create a new test
 Dim Test As TestCase
-Set Test = Suite.Test("TestHitBTCPublic 1")
+Set Test = Suite.Test("TestHitBTCPublic v2")
 
 'Error, unknown command
-TestResult = PublicHitBTCv1("AnUnknownCommand", "GET")
+TestResult = PublicHitBTCv2("AnUnknownCommand", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 404
 
 'Error, parameter missing
-TestResult = PublicHitBTCv1("getticker", "GET")
-'{"success":false,"message":"MARKET_NOT_PROVIDED","result":null}
-Test.IsOk InStr(TestResult, "message") > 0
+TestResult = PublicHitBTCv2("trades", "GET")
+'{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
+Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), False
-Test.IsEqual JsonResult("message"), "MARKET_NOT_PROVIDED"
+Test.IsEqual JsonResult("error_nr"), 404
 
+'Error, wrong parameter
+Dim Params As New Dictionary
+Params.Add "symbol", "BLABLA"
+TestResult = PublicHitBTCv2("trades", "GET", Params)
+'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"error":{"code":2001,"message":"Symbol not found","description":"Try get /api/2/public/symbol, to get list of all available symbols."}}}
+Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "Symbol not found") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("error_nr"), 400
+Test.IsEqual JsonResult("response_txt")("error")("code"), 2001
 
-'Debug.Print PublicHitBTCv1("time")
-'Example: {"timestamp":1516023792943}
-'Debug.Print PublicHitBTCv1("ticker", "BTCUSD/")
-'{"ask":"14199.91","bid":"14191.39","last":"14199.98","low":"12900.00","high":"14200.00","open":"13382.15", etc..
-'
-'Unix time period:
-'t1 = DateToUnixTime("1/1/2014")
-'t2 = DateToUnixTime("1/1/2018")
-'
-'Debug.Print PrivateHitBTCv1("balance", apiKey, secretKey)
-'{"balance":[{"currency_code":"1ST","cash":"0","reserved":"0"},{"currency_code":"8BT","cash":"0","reserved":"0"}, etc...
-'Debug.Print PrivateHitBTCv1("cancel_orders", apiKey, secretKey, "&symbol=BTCUSD")
-'{"ExecutionReport":[]} -> or a list of all cancelled trade numbers
-'
-'Debug.Print PublicHitBTCv2("symbol")
-'[{"id":"BCNBTC","baseCurrency":"BCN","quoteCurrency":"BTC","quantityIncrement":"100","tickSize":"0.0000000001","takeLiquidityR etc...
-'Debug.Print PublicHitBTCv2("ticker", "/BCHUSD")
-'{"ask":"1228.13454","bid":"1225.62444","last":"1227.17775","open":"1269.12060","low":"1 etc...
-'
-'Debug.Print PrivateHitBTCv2("account/balance", "GET", apiKey, secretKey)
-'[{"currency":"DOGE","available":"0.00000000","reserved":"0.00000000"},{" etc...
-'Debug.Print PrivateHitBTCv2("history/trades", "GET", apiKey, secretKey, "?symbol=BTCUSD")
-'e.g.[]
-'Debug.Print PrivateHitBTCv2("order", "DELETE", apiKey, secretKey, "?symbol=BTCUSD")
-'e.g.[]
+'Simple request without parameters
+TestResult = PublicHitBTCv2("currency", "GET")
+'Example: [{"id":"DDF","fullName":"DDF","crypto":true,"payinEnabled":false,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"646"},{"id":"ZRX","fullName":"0x Protocol","crypto":true,"payinEnabled":true,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"26.45"},{"id":"ACO","fullName":"A!Coin","crypto":true etc...
+Test.IsOk InStr(TestResult, "payoutFee") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk JsonResult.Count >= 100
+Test.IsOk Len(JsonResult(1)("id")) >= 3
+
+'Request with parameter
+Dim Params2 As New Dictionary
+Params2.Add "currency", "ETH"
+TestResult = PublicHitBTCv2("currency", "GET", Params2)
+'{"id":"ETH","fullName":"Ethereum","crypto":true,"payinEnabled":true,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"0.0428"}
+Test.IsOk InStr(TestResult, "Ethereum") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("id"), "ETH"
+Test.IsEqual JsonResult("crypto"), True
+Test.IsEqual JsonResult("delisted"), False
+
+'Request with parameters
+Dim Params3 As New Dictionary
+Params3.Add "symbol", "ETHBTC"
+Params3.Add "sort", "ASC"
+Params3.Add "limit", 10
+TestResult = PublicHitBTCv2("trades", "GET", Params3)
+'[{"id":3462311,"price":"0.006000","quantity":"0.001","side":"buy","timestamp":"2015-08-20T19:01:23.764Z"},{"id":3462314,"price":"0.006000","quantity":"0.001","side":"buy","timestamp":"2018-07-10T16:11:35.511Z"},etc...
+Test.IsOk InStr(TestResult, "timestamp") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk JsonResult(1)("id") > 0
+Test.IsOk Val(JsonResult(1)("quantity")) > 0
+Test.IsEqual JsonResult(1)("side"), "buy"
+
+Set Test = Suite.Test("TestHitBTCPrivate v2")
+
+TestResult = PrivateHitBTCv2("trading/balance", "GET", Cred)
+'[{"currency":"1ST","available":"0","reserved":"0"},{"currency":"8BT","available":"0","reserved":"0"},{"currency":"ABA","available":"0","reserved":"0"},{"currency":"ABTC","available":"0","reserved":"0"},{"currency":"ABYSS","available":"0","reserved":"0"} etc...
+Test.IsOk InStr(TestResult, "available") > 0
+Test.IsOk InStr(TestResult, "reserved") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+'Loop through all coins
+For Each Coin In JsonResult
+    If Coin("available") + Coin("reserved") > 0 Then
+        'Debug.Print Coin("currency"), Coin("available") + Coin("reserved")
+        Test.IsOk Len(Coin("currency")) >= 3
+    End If
+Next Coin
+Test.IsOk Len(JsonResult(1)("currency")) > 0
+Test.IsOk Val(JsonResult(2)("available")) >= 0
+
+Dim Params4 As New Dictionary
+Params4.Add "symbol", "DOGEETH"
+TestResult = PrivateHitBTCv2("history/trades", "GET", Cred, Params4)
+'e.g. [{"id":215639995,"clientOrderId":"4ab37988ea9545aeb325fc60931fbaa3","orderId":19837911730,"symbol":"DOGEETH","side":"sell","quantity": etc.
+If TestResult = "[]" Then
+    Test.IsEqual TestResult, "[]"
+Else
+    Test.IsOk InStr(TestResult, "clientOrderId") > 0
+    Test.IsOk InStr(TestResult, "symbol") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsOk Len(JsonResult(1)("symbol")) >= 6
+    Test.IsOk JsonResult(2)("orderId") > 0
+End If
+
+'Delete all orders DOGE-ETH
+Dim Params5 As New Dictionary
+Params5.Add "symbol", "DOGEETH"
+TestResult = PrivateHitBTCv2("order", "DELETE", Cred, Params5)
+'e.g. [{"id": 0,"clientOrderId": "d8574207d9e3b16a4a5511753eeef175","symbol": "DOGEETH","side": "sell","status": "canceled","type": "limit", etc...
+If TestResult = "[]" Then
+    Test.IsEqual TestResult, "[]"
+Else
+    Test.IsOk InStr(TestResult, "clientOrderId") > 0
+    Test.IsOk InStr(TestResult, "symbol") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsEqual JsonResult(1)("symbol"), "DOGEETH"
+    Test.IsOk Len(JsonResult(1)("side")) >= 3
+End If
+
+'Create an order, but trigger an error
+Dim Params6 As New Dictionary
+Params6.Add "symbol", "ETHBTC"
+Params6.Add "side", "sell"
+Params6.Add "quantity", "0.000005"
+Params6.Add "price", "1"
+TestResult = PrivateHitBTCv2("order", "POST", Cred, Params6)
+'e.g. {"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"error":{"code":20001,"message":"Insufficient funds","description":"Check that the funds are sufficient, given commissions"}}}
+'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"error":{"code":2011,"message":"Quantity too low","description":"Minimum quantity 0.0001"}}}
+'if OK, e.g. {"id": 0,"clientOrderId": "d8574207d9e3b16a4a5511753eeef175","symbol": "ETHBTC","side": "sell","status": "new","type": "limit","timeInForce": "GTC","quantity": "0.063","price": "0.046016","cumQuantity": "0.000","postOnly": false,"createdAt": "2017-05-15T17:01:05.092Z","updatedAt": "2017-05-15T17:01:05.092Z"}
+If InStr(TestResult, "clientOrderId") > 0 Then
+    'Shouldn't happen with current test, for successfull orders
+    Test.IsOk InStr(TestResult, "symbol") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsEqual JsonResult(1)("symbol"), "ETHBTC"
+    Test.IsOk Len(JsonResult(1)("side")) >= 3
+Else
+    Test.IsOk InStr(TestResult, "message") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsEqual JsonResult("response_txt")("error")("code"), 2011
+    Test.IsEqual JsonResult("response_txt")("error")("message"), "Quantity too low"
+End If
 
 End Sub
 
-Function PublicHitBTCv1(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
-
-'https://api.hitbtc.com/api/2/explore/
-Dim Url As String
-PublicApiSite = "https://api.hitbtc.com"
-urlPath = "/api/1/public/" & MethodOptions & Method
-Url = PublicApiSite & urlPath
-
-PublicHitBTCv1 = WebRequestURL(Url, "GET")
-
-
-
-Dim Url As String
-PublicApiSite = "https://api.hitbtc.com"
-
-MethodParams = DictToString(ParamDict, "URLENC")
-If MethodParams <> "" Then MethodParams = "?" & MethodParams
-urlPath = "/api/1/public/" & Method & MethodParams
-Url = PublicApiSite & urlPath
-
-PublicHitBTCv1 = WebRequestURL(Url, ReqType)
-
-
-
-End Function
-Function PrivateHitBTCv1(Method As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
-
-'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
-
-Dim NonceUnique As String
-Dim postdata As String
-
-'HitBTC nonce
-NonceUnique = CreateNonce(10)
-
-TradeApiSite = "http://api.hitbtc.com"
-urlPath = "/api/1/trading/" & Method & "?nonce=" & NonceUnique & "&apikey=" & apiKey
-postdata = MethodOptions
-
-Url = TradeApiSite & urlPath
-APIsign = LCase(ComputeHash_C("SHA512", urlPath & postdata, secretKey, "STRHEX"))
-
-'HitBTC requires a POST for orders, other commands are GETs
-If InStr(Method, "_order") > 0 Then
-    HTTPMethod = "POST"
-Else
-    HTTPMethod = "GET"
-End If
-
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open HTTPMethod, Url & postdata, False
-objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "Content-Type", "application/json"
-objHTTP.setRequestHeader "X-Signature", APIsign
-objHTTP.Send ("")
-
-objHTTP.WaitForResponse
-PrivateHitBTCv1 = objHTTP.responseText
-Set objHTTP = Nothing
-
-End Function
-
 Function PublicHitBTCv2(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-'https://api.hitbtc.com/api/2/explore/
 Dim Url As String
+Dim PayloadDict As New Dictionary
+
 PublicApiSite = "https://api.hitbtc.com"
-urlPath = "/api/2/public/" & Method & MethodOptions
+
+'Get special parameters currency and symbol and add them to the URL
+If Not ParamDict Is Nothing Then
+    For Each Key In ParamDict.Keys
+        If LCase(Key) = "currency" Or LCase(Key) = "symbol" Then
+            Method = Method & "/" & ParamDict(Key)
+        Else
+            PayloadDict(Key) = ParamDict(Key)
+        End If
+    Next Key
+End If
+
+
+MethodParams = DictToString(PayloadDict, "URLENC")
+If MethodParams <> "" Then MethodParams = "?" & MethodParams
+urlPath = "/api/2/public/" & Method & MethodParams
 Url = PublicApiSite & urlPath
 
-PublicHitBTCv2 = WebRequestURL(Url, "GET")
+PublicHitBTCv2 = WebRequestURL(Url, ReqType)
 
 End Function
-
-Function PrivateHitBTCv2(Method As String, HTTPMethod As String, apiKey As String, secretKey As String, Optional MethodOptions As String) As String
-
-'https://api.hitbtc.com/api/2/explore/
-'Authorisation: https://stackoverflow.com/questions/34637034/curl-u-equivalent-in-http-request
+Function PrivateHitBTCv2(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
 Dim postdata As String
+Dim Url As String
+Dim MethodParams As String
 
-'HitBTC nonce
 NonceUnique = CreateNonce(10)
+TradeApiSite = "https://api.hitbtc.com"
+urlPath = "/api/2/" & Method
+MethodParams = DictToString(ParamDict, "URLENC")
+postdata = DictToString(ParamDict, "JSON")
+If MethodParams <> "" Then MethodParams = "?" & MethodParams
 
-TradeApiSite = "http://api.hitbtc.com"
-urlPath = "/api/2/" & Method & MethodOptions
 Url = TradeApiSite & urlPath
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-objHTTP.Open HTTPMethod, Url, False
-objHTTP.setRequestHeader "Accept", "application/json"
-objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "Authorization", "Basic " & Base64Encode(apiKey & ":" & secretKey)
-objHTTP.Send ("")
+Dim headerDict As New Dictionary
+headerDict.Add "Content-Type", "application/json"
+'Credentials in a special format
+headerDict.Add "Authorization", "Basic " & Base64Encode(Credentials("apiKey") & ":" & Credentials("secretKey"))
 
-objHTTP.WaitForResponse
-PrivateHitBTCv2 = objHTTP.responseText
-Set objHTTP = Nothing
+Url = TradeApiSite & urlPath & MethodParams
+PrivateHitBTCv2 = WebRequestURL(Url, ReqType, headerDict, postdata)
 
 End Function

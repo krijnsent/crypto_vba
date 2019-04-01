@@ -32,14 +32,13 @@ TestResult = WebRequestURL("https://github.com/empty_url_not_there", "GET")
 Test.IsEqual Len(TestResult), 62
 Test.IsEqual TestResult, "{""error_nr"":404,""error_txt"":""HTTP-Not Found"",""response_txt"":0}"
 
-
 TestResult = WebRequestURL("https://api.kraken.com/0/public/Time", "GET")
 '{"error":[],"result":{"unixtime":1511954132,"rfc1123":"Wed, 29 Nov 17 11:15:32 +0000"}}
 Test.IsEqual Len(TestResult), 87
 Test.IsEqual Left(TestResult, 21), "{""error"":[],""result"":"
 
 'Test POST command
-Set Test = Suite.Test("TestWebRequestURL POST")
+Set Test = Suite.Test("TestWebRequestURL HEAD")
 
 Dim headerDict As New Dictionary
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
@@ -51,6 +50,7 @@ Test.IsEqual JsonResult("headers").Count, 5
 Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
+Set Test = Suite.Test("TestWebRequestURL POST")
 'TEST POST
 TestResult = WebRequestURL("https://httpbin.org/post", "POST")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -124,9 +124,11 @@ Function WebRequestURL(strURL As String, strMethod As String, Optional objHeader
 ' Instantiate a WinHttpRequest object and open it
 ErrResp = "{""error_nr"":ERR_NR,""error_txt"":""ERR_TXT"",""response_txt"":RESP_TXT}"
 Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+
 If strMethod = "GET" Then
     On Error Resume Next
     objHTTP.Open "GET", strURL
+   
     If Not objHeaders Is Nothing Then
         For Each Key In objHeaders.Keys()
             'e.g. objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
@@ -141,6 +143,9 @@ If strMethod = "GET" Then
         If objHTTP.Status = "200" Then
             objHTTP.WaitForResponse
             WebRequestURL = objHTTP.responseText
+            If Left(WebRequestURL, 1) = "<" Then
+                WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "NO JSON BUT HTML RETURNED"), "RESP_TXT", 0)
+            End If
         Else
             If Left(objHTTP.responseText, 1) = "{" Or Left(objHTTP.responseText, 1) = "[" Then
                 WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "HTTP-" & objHTTP.StatusText), "RESP_TXT", objHTTP.responseText)
@@ -160,6 +165,7 @@ If strMethod = "GET" Then
 ElseIf strMethod = "POST" Or strMethod = "PUT" Or strMethod = "DELETE" Then
     On Error Resume Next
     objHTTP.Open strMethod, strURL
+    
     If Not objHeaders Is Nothing Then
         For Each Key In objHeaders.Keys()
             'e.g. objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"

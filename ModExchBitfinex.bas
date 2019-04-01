@@ -100,10 +100,10 @@ Set Test = Suite.Test("TestBitfinexPublic v2")
 
 'Error, unknown command
 TestResult = PublicBitfinex2("AnUnknownCommand", "GET")
-'{"error_nr":502,"error_txt":"HTTP-Bad Gateway","response_txt":0}
+'{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 502
+Test.IsEqual JsonResult("error_nr"), 404
 
 'Error, wrong parameter
 TestResult = PublicBitfinex2("ticker/bogus_here", "GET")
