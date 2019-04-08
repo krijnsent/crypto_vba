@@ -4,7 +4,10 @@ Attribute VB_Name = "ModSrcCryptocompare"
 'ToDo: include caching - https://fastexcel.wordpress.com/2012/12/05/writing-efficient-udfs-part-12-getting-used-range-fast-using-application-events-and-a-cache/
 'And https://www.experts-exchange.com/articles/1135/Use-Excel's-hidden-data-store-to-share-data-across-VBA-projects.html
 'And https://github.com/jbaurle/PMStockQuote/blob/master/PMStockQuote/UserDefinedFunctions.cs
-Public Const CacheTime = 1000
+Public Const CacheSeconds = 60
+Public CCDict As New Scripting.Dictionary
+'Dictionary:
+'Key: price?fsym=BTC&tsyms=USD,EUR&e=Coinbase  -> Value: time
 
 'Functions to use in a sheet
 'Source: https://github.com/krijnsent/crypto_vba
@@ -161,14 +164,37 @@ Function PublicCryptoCompareData(Method As String, Optional MethodOptions As Str
 
 'https://www.cryptocompare.com/api/ or https://min-api.cryptocompare.com/
 Dim Url As String
+Dim TempData As String
+Dim Sec As Double
 
 PublicApiSite = "https://min-api.cryptocompare.com/data"
-urlPath = "/" & Method & MethodOptions
-Url = PublicApiSite & urlPath
+urlPath = Method & MethodOptions
+Url = PublicApiSite & "/" & urlPath
 
-PublicCryptoCompareData = WebRequestURL(Url, "GET")
+GetNewData = False
+IsInDict = CCDict.Exists(urlPath)
+If IsInDict = True Then
+    'In dictionary, check time
+    If CCDict(urlPath) + TimeSerial(0, 0, CacheSeconds) < Now() Then
+        'Has not been updated recently, update now
+        CCDict.Remove urlPath
+        CCDict.Add urlPath, Now()
+        If CCDict.Exists("DATA-" & urlPath) Then CCDict.Remove "DATA-" & urlPath
+        GetNewData = True
+    End If
+Else
+    CCDict.Add urlPath, Now()
+    GetNewData = True
+End If
 
-Set objHTTP = Nothing
+If GetNewData = True Then
+    TempData = WebRequestURL(Url, "GET")
+    CCDict.Add "DATA-" & urlPath, TempData
+Else
+    TempData = CCDict("DATA-" & urlPath)
+End If
+
+PublicCryptoCompareData = TempData
 
 End Function
 Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String)
@@ -380,4 +406,5 @@ End If
 Set json = Nothing
 
 End Function
+
 

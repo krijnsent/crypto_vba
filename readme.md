@@ -19,26 +19,24 @@ Get information from/send information to:
 - [Cryptopia](https://www.cryptopia.co.nz/) - WARNING: exchange suspended following a hack
 - [GDAX] -> see CoinbasePro
 - [Liqui] -> exchange closed
-- [WEXnz](https://wex.nz/) - exchange closed, removed
+- [WEXnz] -> exchange closed, removed
 
 The API response is pure JSON, for which I included https://github.com/VBA-tools/VBA-JSON to process and a function to build on that.
-As this is my first Git experiment and Excel/VBA and git don't work that well together, my pushes/forks/updates might be clunky...
+As excel/VBA development is not very compatible with GIT, my pushes/forks/updates might be clunky.
+Please consider the code I provide as simple building blocks: if you want to build a project based on this code, you will have to know (some) VBA. There are plenty of courses available online, two simple ones I send starters to are: https://www.excel-pratique.com/en/ and https://homeandlearn.org/.
 
 # How to use?
 Import the .bas files you need or simply take the sample Excel file. In the modules you'll find some examples how to use the code. Feel free to create an issue if things don't work for you. The project uses quite some Dictionaries in VBA, check out e.g. https://excelmacromastery.com/vba-dictionary/ if you want to know a bit more about them.
 
 # ToDo
-- Improve all code for better testing, todo: HitBTC, Kucoin, Coinone
-- Better testing, automated testing of all exchanges with the test suite
-- Expand the XLSM file with working examples
-- Later: place/cancel orders
+- Excel formulas need better caching to prevent a stalling/crashing Excel
 - Better error handling
 
 # Done
 - For historical prices, included https://www.cryptocompare.com/api/ (now https://min-api.cryptocompare.com/ )
-- Build excel functions to get the information directly to a sheet - TEST PHASE
+- Build excel functions to get the information directly to a sheet, has some caching, but - TEST PHASE
 - Working examples of several exchanges in the example file
-- Created a basic XLSM sample file
+- Created a basic XLSM sample file for all provided exchanges
 - ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
 - Post-process the Array to a more usable format (flat table)
 - Process the response to something you can use in Excel: an array/Range etc.
@@ -49,10 +47,11 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the Bitfinex API connector
 - Build the Bitstamp API connector
 - Build the Bittrex API connector
-- Build the Coinbase/GDAX/CoinbasePro API connector
+- Build the Coinbase API connector
+- Build the GDAX/CoinbasePro API connector
 - Build the Coinone API connector
 - Build the Coinspot API connector
-- Build the Cryptopia API connector
+- Build the Cryptopia API connector -> not updated yet after the hack of Jan 2019
 - Build the HitBTC API connector
 - Build the Kraken API connector
 - Build the Kucoin API connector
