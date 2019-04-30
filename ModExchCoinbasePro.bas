@@ -9,22 +9,22 @@ Sub TestCoinbasePro()
 
 Dim apiKey As String
 Dim secretKey As String
-Dim Passphrase As String
+Dim passphrase As String
 
 apiKey = "your api key here"
 secretKey = "your secret key here"
-Passphrase = "your passphrase here"
+passphrase = "your passphrase here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
 apiKey = apikey_coinbase_pro
 secretKey = secretkey_coinbase_pro
-Passphrase = passphrase_coinbase_pro
+passphrase = passphrase_coinbase_pro
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
 Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
-Cred.Add "Passphrase", Passphrase
+Cred.Add "Passphrase", passphrase
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -78,8 +78,29 @@ Test.IsOk InStr(TestResult, "profile_id") > 0
 Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult.Count > 1
-Test.IsEqual JsonResult(1)("currency"), "BTC"
+Test.IsEqual JsonResult(1)("currency"), "ZRX"
 Test.IsOk JsonResult(1)("balance") >= 0
+
+Dim Params8 As New Dictionary
+Params8.Add "size", 0.01
+Params8.Add "price", 100.1
+Params8.Add "side", "buy"
+Params8.Add "product_id", "BTC-EUR"
+TestResult = PrivateCoinbasePro("orders", "POST", Cred, Params8)
+If InStr(TestResult, "error_txt") > 0 Then
+    'Error result, assume insufficient funds, but could also be Product not found
+    '{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"message":"Insufficient funds"}}
+    Test.IsOk InStr(TestResult, "response_txt") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsEqual JsonResult("response_txt")("message"), "Insufficient funds"
+Else
+    'Normal result
+    '{"id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2","price": "100.10000000","size": "0.01000000","product_id": "BTC-EUR","side": "buy","stp": "dc","type": "limit","time_in_force": "GTC","post_only": false,"created_at": "2016-12-08T20:02:28.53864Z","fill_fees": "0.0000000000000000","filled_size": "0.00000000","executed_value": "0.0000000000000000","status": "pending","settled": false}
+    Test.IsOk InStr(TestResult, "created_at") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsOk Len(JsonResult("id")) > 10
+    Test.IsEqual JsonResult("product_id"), "BTC-EUR"
+End If
 
 
 'Delete all BTC-EUR orders
@@ -96,7 +117,7 @@ Params4.Add "amount", 1
 Params4.Add "currency", "BAT"
 Params4.Add "crypto_address", "0x0"
 TestResult = PrivateCoinbasePro("withdrawals/crypto", "POST", Cred, Params4)
-'E.g. {"message":"Forbidden"}
+'E.g. {"error_nr":403,"error_txt":"HTTP-Forbidden","response_txt":{"message":"Forbidden"}}
 Test.IsOk InStr(TestResult, "Forbidden") > 0
 
 
@@ -119,24 +140,29 @@ Function PrivateCoinbasePro(Method As String, ReqType As String, Credentials As 
 
 Dim NonceUnique As String
 Dim Url As String
+Dim MethodParams As String
 
 'Get a 10-digit Nonce
 NonceUnique = GetCoinbaseProTime
 TradeApiSite = "https://api.pro.coinbase.com"
 
-SignMsg = NonceUnique & UCase(ReqType) & "/" & Method & ""
+'Change the parameters to JSON
+MethodParams = DictToString(ParamDict, "JSON")
+If MethodParams = "{}" Then MethodParams = ""
+    
+SignMsg = NonceUnique & UCase(ReqType) & "/" & Method & "" & MethodParams
 APIsign = Base64Encode(ComputeHash_C("SHA256", SignMsg, Base64Decode(Credentials("secretKey")), "RAW"))
 
 Dim headerDict As New Dictionary
 headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
+headerDict.Add "Content-Type", "application/json"
 headerDict.Add "CB-ACCESS-KEY", Credentials("apiKey")
 headerDict.Add "CB-ACCESS-SIGN", APIsign
 headerDict.Add "CB-ACCESS-TIMESTAMP", NonceUnique
 headerDict.Add "CB-ACCESS-PASSPHRASE", Credentials("Passphrase")
 
 Url = TradeApiSite & "/" & Method
-PrivateCoinbasePro = WebRequestURL(Url, ReqType, headerDict)
+PrivateCoinbasePro = WebRequestURL(Url, ReqType, headerDict, MethodParams)
 
 End Function
 
@@ -152,7 +178,7 @@ GetCoinbaseProTime = Int(json("epoch"))
 If GetCoinbaseProTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseProTime = CreateNonce(10)
-    GetCoinbaseProTime = Trim(Str((Val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetCoinbaseProTime = Trim(Str((val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

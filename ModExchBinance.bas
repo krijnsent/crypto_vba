@@ -90,7 +90,6 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult("takerCommission") > 0
 Test.IsOk JsonResult("balances").Count > 10
 
-
 Set Test = Suite.Test("TestBinancePrivate POST/DELETE")
 'Test a test order
 Dim Params3 As New Dictionary
@@ -115,6 +114,8 @@ Test.IsOk InStr(TestResult, "code") > 0
 Test.IsOk InStr(TestResult, "Unknown order") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("response_txt")("code"), -2011
+
+
 
 
 End Sub

@@ -59,7 +59,7 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult("data").Count >= 20
 Test.IsEqual JsonResult("data")(1)("id"), "AED"
 Test.IsEqual JsonResult("data")(1)("name"), "United Arab Emirates Dirham"
-Test.IsEqual Val(JsonResult("data")(1)("min_size")), 0.01
+Test.IsEqual val(JsonResult("data")(1)("min_size")), 0.01
 
 'Request with parameter
 Dim Params2 As New Dictionary
@@ -69,8 +69,8 @@ TestResult = PublicCoinbase("exchange-rates", "GET", Params2)
 Test.IsOk InStr(TestResult, "EUR") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("data")("currency"), "ETH"
-Test.IsEqual Val(JsonResult("data")("rates")("ETH")), 1
-Test.IsOk Val(JsonResult("data")("rates")("USD")) > 0
+Test.IsEqual val(JsonResult("data")("rates")("ETH")), 1
+Test.IsOk val(JsonResult("data")("rates")("USD")) > 0
 
 'Coinbase time
 TestResult = GetCoinbaseTime
@@ -194,7 +194,7 @@ GetCoinbaseTime = Int(json("data")("epoch"))
 If GetCoinbaseTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseTime = CreateNonce(10)
-    GetCoinbaseTime = Trim(Str((Val(GetCoinbaseTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetCoinbaseTime = Trim(Str((val(GetCoinbaseTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

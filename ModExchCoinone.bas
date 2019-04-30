@@ -44,9 +44,9 @@ TestResult = PublicCoinone("ticker", "GET")
 'e.g. {"currency":"btc","volume":"633.1048","last":"4684000.0","yesterday_last":"4636000.0","timestamp":"1554107620","yesterday_low":"4592000.0","errorCode":"0","yesterday_volume":"395.8966","high":"4720000.0","result":"success","yesterday_first":"4615000.0","first":"4636000.0","yesterday_high":"4651000.0","low":"4630000.0"}
 Test.IsOk InStr(TestResult, "yesterday_last") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk Val(JsonResult("last")) > 0
+Test.IsOk val(JsonResult("last")) > 0
 Test.IsEqual JsonResult("currency"), "btc"
-Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
+Test.IsOk val(JsonResult("timestamp")) > 1500000000#
 
 'Put parameters/options in a dictionary
 'If no parameters are provided, the defaults are used
@@ -59,11 +59,11 @@ TestResult = PublicCoinone("trades", "GET", Params)
 Test.IsOk InStr(TestResult, "completeOrders") > 0
 Test.IsOk InStr(TestResult, "timestamp") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
+Test.IsOk val(JsonResult("timestamp")) > 1500000000#
 Test.IsEqual JsonResult("errorCode"), "0"
 Test.IsEqual JsonResult("completeOrders").Count, 200
-Test.IsOk Val(JsonResult("completeOrders")(1)("id")) > 0
-Test.IsOk Val(JsonResult("completeOrders")(1)("qty")) > 0
+Test.IsOk val(JsonResult("completeOrders")(1)("id")) > 0
+Test.IsOk val(JsonResult("completeOrders")(1)("qty")) > 0
 
 
 Set Test = Suite.Test("TestBittrexPrivate")
@@ -88,7 +88,7 @@ TestResult = PrivateCoinone2("order/limit_buy", "POST", Cred, Params2)
 Test.IsOk InStr(TestResult, "errorCode") > 0
 Test.IsOk InStr(TestResult, "result") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-If Val(JsonResult("errorCode")) = 0 Then
+If val(JsonResult("errorCode")) = 0 Then
     'No error
     Test.IsEqual JsonResult("result"), "success"
     Test.IsEqual JsonResult("errorCode"), "0"

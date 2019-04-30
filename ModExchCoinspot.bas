@@ -99,7 +99,7 @@ NonceUnique = CreateNonce()
 TradeApiSite = "https://www.coinspot.com.au"
 
 Set PayloadDict = New Dictionary
-PayloadDict("nonce") = Val(NonceUnique)
+PayloadDict("nonce") = val(NonceUnique)
 If Not ParamDict Is Nothing Then
     For Each Key In ParamDict.Keys
         PayloadDict(Key) = ParamDict(Key)

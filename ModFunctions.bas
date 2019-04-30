@@ -150,7 +150,6 @@ Function CreateNonce(Optional NonceLength As Integer = 12) As String
 
 End Function
 
-
 Function TransposeArr(ArrIn As Variant)
 
     'Custom transpose function, worksheetfunction.transpose won't handle long strings
@@ -210,27 +209,27 @@ End If
 
 If OutputType = "JSON" Then
     OutputTxt = "{"
-    For Each Opt In DictIn.Keys()
+    For Each opt In DictIn.Keys()
         If OutputTxt <> "{" Then OutputTxt = OutputTxt & ","
         'If a string came in, put double quotes around it
-        ValD = DictIn(Opt)
+        ValD = DictIn(opt)
         Separ = ""
         If VarType(ValD) = vbString Then Separ = """"
         
         'Value: correct for comma decimal system if a value was supplied
         ValStr = ValD
         If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
-        OutputTxt = OutputTxt & """" & Opt & """" & ":" & Separ & ValStr & Separ
+        OutputTxt = OutputTxt & """" & opt & """" & ":" & Separ & ValStr & Separ
     Next
     OutputTxt = OutputTxt & "}"
 ElseIf OutputType = "URLENC" Then
     OutputTxt = ""
-    For Each Opt In DictIn.Keys()
+    For Each opt In DictIn.Keys()
         If OutputTxt <> "" Then OutputTxt = OutputTxt & "&"
-        ValD = DictIn(Opt)
+        ValD = DictIn(opt)
         ValStr = ValD
         If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
-        OutputTxt = OutputTxt & Opt & "=" & ValStr
+        OutputTxt = OutputTxt & opt & "=" & ValStr
     Next
 Else
     OutputTxt = "UNKNOWN_TYPE"

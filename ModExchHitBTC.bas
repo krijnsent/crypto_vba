@@ -88,7 +88,7 @@ TestResult = PublicHitBTCv2("trades", "GET", Params3)
 Test.IsOk InStr(TestResult, "timestamp") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult(1)("id") > 0
-Test.IsOk Val(JsonResult(1)("quantity")) > 0
+Test.IsOk val(JsonResult(1)("quantity")) > 0
 Test.IsEqual JsonResult(1)("side"), "buy"
 
 Set Test = Suite.Test("TestHitBTCPrivate v2")
@@ -106,7 +106,7 @@ For Each Coin In JsonResult
     End If
 Next Coin
 Test.IsOk Len(JsonResult(1)("currency")) > 0
-Test.IsOk Val(JsonResult(2)("available")) >= 0
+Test.IsOk val(JsonResult(2)("available")) >= 0
 
 Dim Params4 As New Dictionary
 Params4.Add "symbol", "DOGEETH"

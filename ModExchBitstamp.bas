@@ -128,7 +128,7 @@ End Function
 Function PrivateBitstamp(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-Dim Message As String
+Dim message As String
 Dim PostMsg As String
 Dim Url As String
 Dim PayloadDict As Dictionary
@@ -137,8 +137,8 @@ Dim PayloadDict As Dictionary
 NonceUnique = CreateNonce()
 TradeApiSite = "https://www.bitstamp.net/api/"
 
-Message = NonceUnique & Credentials("customerID") & Credentials("apiKey")
-APIsign = UCase(ComputeHash_C("SHA256", Message, Credentials("secretKey"), "STRHEX"))
+message = NonceUnique & Credentials("customerID") & Credentials("apiKey")
+APIsign = UCase(ComputeHash_C("SHA256", message, Credentials("secretKey"), "STRHEX"))
 
 Set PayloadDict = New Dictionary
 PayloadDict("key") = Credentials("apiKey")

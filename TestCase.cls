@@ -51,7 +51,7 @@ Public Property Get Failures() As Collection
     total = Me.Successes + pFailures.Count
     
     If Me.Planned > 0 And Me.Planned <> total Then
-        Dim Message As String
+        Dim message As String
         Dim Failure As Variant
         
         Set Failures = New Collection
@@ -59,8 +59,8 @@ Public Property Get Failures() As Collection
             Failures.Add Failure
         Next Failure
         
-        Message = "Total assertions, ${1}, does not equal planned, ${2}"
-        Failures.Add FormatMessage(Message, total, Me.Planned)
+        message = "Total assertions, ${1}, does not equal planned, ${2}"
+        Failures.Add FormatMessage(message, total, Me.Planned)
     Else
         Set Failures = pFailures
     End If
@@ -81,10 +81,10 @@ End Property
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub IsEqual(A As Variant, B As Variant, Optional Message As String = _
+Public Sub IsEqual(A As Variant, B As Variant, Optional message As String = _
     "Expected ${1} to equal ${2}")
 
-    Check IsDeepEqual(A, B), Message, A, B
+    Check IsDeepEqual(A, B), message, A, B
 End Sub
 
 ''
@@ -94,10 +94,10 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub NotEqual(A As Variant, B As Variant, Optional Message As String = _
+Public Sub NotEqual(A As Variant, B As Variant, Optional message As String = _
     "Expected ${1} to not equal ${2}")
 
-    Check Not IsDeepEqual(A, B), Message, A, B
+    Check Not IsDeepEqual(A, B), message, A, B
 End Sub
 
 ''
@@ -111,10 +111,10 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub IsOk(Value As Variant, Optional Message As String = _
+Public Sub IsOk(Value As Variant, Optional message As String = _
     "Expected ${1} to be ok")
 
-    Check Value, Message, Value
+    Check Value, message, Value
 End Sub
 
 ''
@@ -123,10 +123,10 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub NotOk(Value As Variant, Optional Message As String = _
+Public Sub NotOk(Value As Variant, Optional message As String = _
     "Expected ${1} to not be ok")
 
-    Check Not CBool(Value), Message, Value
+    Check Not CBool(Value), message, Value
 End Sub
 
 ''
@@ -135,10 +135,10 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub IsUndefined(Optional Value As Variant, Optional Message As String = _
+Public Sub IsUndefined(Optional Value As Variant, Optional message As String = _
     "Expected ${1} to be undefined")
 
-    Check IsNothing(Value) Or VBA.IsEmpty(Value) Or VBA.IsNull(Value) Or VBA.IsMissing(Value), Message, Value
+    Check IsNothing(Value) Or VBA.IsEmpty(Value) Or VBA.IsNull(Value) Or VBA.IsMissing(Value), message, Value
 End Sub
 
 ''
@@ -147,10 +147,10 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub NotUndefined(Value As Variant, Optional Message As String = _
+Public Sub NotUndefined(Value As Variant, Optional message As String = _
     "Expected ${1} to not be undefined")
 
-    Check Not IsNothing(Value) And Not VBA.IsEmpty(Value) And Not VBA.IsNull(Value) And Not VBA.IsMissing(Value), Message, Value
+    Check Not IsNothing(Value) And Not VBA.IsEmpty(Value) And Not VBA.IsNull(Value) And Not VBA.IsMissing(Value), message, Value
 End Sub
 
 ''
@@ -161,24 +161,24 @@ End Sub
 ' @param {String} [Description]
 ' @param {String} [Message}
 ''
-Public Sub IsError(Optional Number As Long, Optional Source As String, Optional Description As String, Optional Message As String = _
+Public Sub IsError(Optional Number As Long, Optional Source As String, Optional Description As String, Optional message As String = _
     "Expected ${1} to be an error (with Number = ${2}, Source = ${3}, Description = ${4}")
     
     If Err.Number = 0 Then
-        pFailures.Add FormatMessage(Message, "[Error Number=0]", Number, Source, Description)
+        pFailures.Add FormatMessage(message, "[Error Number=0]", Number, Source, Description)
         Exit Sub
     End If
     
     Check (Number = 0 Or Err.Number = Number) _
         And (Source = "" Or Err.Source = Source) _
-        And (Description = "" Or Err.Description = Description), Message, FormattedErr, Number, Source, Description
+        And (Description = "" Or Err.Description = Description), message, FormattedErr, Number, Source, Description
 End Sub
 
 ''
 ' Check if the current Err value does not contain an error
 ''
-Public Sub NotError(Optional Message As String = "Expected ${1} to not be an error")
-    Check Err.Number = 0, Message, FormattedErr
+Public Sub NotError(Optional message As String = "Expected ${1} to not be an error")
+    Check Err.Number = 0, message, FormattedErr
 End Sub
 
 ''
@@ -188,15 +188,15 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub Includes(Values As Variant, Value As Variant, Optional Message As String = _
+Public Sub Includes(Values As Variant, Value As Variant, Optional message As String = _
     "Expected ${2} to be included in ${1}")
 
     If IsCollection(Values) Then
-        Check CollectionIncludes(Values, Value), Message, Values, Value
+        Check CollectionIncludes(Values, Value), message, Values, Value
     ElseIf IsArray(Values) Then
-        Check ArrayIncludes(Values, Value), Message, Values, Value
+        Check ArrayIncludes(Values, Value), message, Values, Value
     Else
-        pFailures.Add FormatMessage(Message, Values, Value) & " (Incompatible type for Values)"
+        pFailures.Add FormatMessage(message, Values, Value) & " (Incompatible type for Values)"
     End If
 End Sub
 
@@ -207,15 +207,15 @@ End Sub
 ' @param {Variant} Value
 ' @param {String} [Message]
 ''
-Public Sub NotIncludes(Values As Variant, Value As Variant, Optional Message As String = _
+Public Sub NotIncludes(Values As Variant, Value As Variant, Optional message As String = _
     "Expected ${2} not to be included in ${1}")
     
     If IsCollection(Values) Then
-        Check Not CollectionIncludes(Values, Value), Message, Values, Value
+        Check Not CollectionIncludes(Values, Value), message, Values, Value
     ElseIf IsArray(Values) Then
-        Check Not ArrayIncludes(Values, Value), Message, Values, Value
+        Check Not ArrayIncludes(Values, Value), message, Values, Value
     Else
-        pFailures.Add FormatMessage(Message, Values, Value) & " (Incompatible type for Values)"
+        pFailures.Add FormatMessage(message, Values, Value) & " (Incompatible type for Values)"
     End If
 End Sub
 
@@ -232,13 +232,13 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub IsApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional Message As String = _
+Public Sub IsApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
     "Expected ${1} to be approximately equal to ${2} (with ${3} significant figures of precision)")
 
     If SignificantFigures < 1 Or SignificantFigures > 15 Then
         pFailures.Add "IsApproximate can only compare from 1 to 15 significant figures"
     Else
-        Check IsApproximatelyEqual(A, B, SignificantFigures), Message, A, B, SignificantFigures
+        Check IsApproximatelyEqual(A, B, SignificantFigures), message, A, B, SignificantFigures
     End If
 End Sub
 
@@ -255,13 +255,13 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub NotApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional Message As String = _
+Public Sub NotApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
     "Expected ${1} to not be approximately equal to ${2} (with ${3} significant figures of precision)")
 
     If SignificantFigures < 1 Or SignificantFigures > 15 Then
         pFailures.Add "NotApproximate can only compare from 1 to 15 significant figures"
     Else
-        Check Not IsApproximatelyEqual(A, B, SignificantFigures), Message, A, B, SignificantFigures
+        Check Not IsApproximatelyEqual(A, B, SignificantFigures), message, A, B, SignificantFigures
     End If
 End Sub
 
@@ -278,10 +278,10 @@ End Sub
 '
 ' @param {String} {Message]
 ''
-Public Sub Fail(Optional Message As String = _
+Public Sub Fail(Optional message As String = _
     "Test failed unexpectedly")
     
-    pFailures.Add Message
+    pFailures.Add message
 End Sub
 
 ''
@@ -304,11 +304,11 @@ End Sub
 ' Private Functions
 ' ============================================= '
 
-Private Sub Check(Assertion As Variant, Message As String, ParamArray Values() As Variant)
+Private Sub Check(Assertion As Variant, message As String, ParamArray Values() As Variant)
     If Assertion Then
         Me.Successes = Me.Successes + 1
     Else
-        pFailures.Add FormatMessage(Message, Values)
+        pFailures.Add FormatMessage(message, Values)
     End If
 End Sub
 
@@ -476,11 +476,11 @@ Private Function IsApproximatelyEqual(A As Variant, B As Variant, SignificantFig
     IsApproximatelyEqual = AValue = BValue
 End Function
 
-Private Function FormatMessage(Message As String, ParamArray Values() As Variant) As String
+Private Function FormatMessage(message As String, ParamArray Values() As Variant) As String
     Dim Value As Variant
     Dim Index As Long
     
-    FormatMessage = Message
+    FormatMessage = message
     For Each Value In IIf(VBA.IsArray(Values(0)), Values(0), Values)
         Index = Index + 1
         FormatMessage = VBA.Replace(FormatMessage, "${" & Index & "}", PrettyPrint(Value))

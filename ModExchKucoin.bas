@@ -15,13 +15,13 @@ secretKey = "your secret key here"
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
 apiKey = apikey_kucoin
 secretKey = secretkey_kucoin
-Passphrase = passphrase_kucoin
+passphrase = passphrase_kucoin
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
 Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
-Cred.Add "Passphrase", Passphrase
+Cred.Add "Passphrase", passphrase
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -281,7 +281,7 @@ GetKucoinTime = json("data")
 If GetKucoinTime = 0 Then
     TimeCorrection = -3600
     GetKucoinTime = DateDiff("s", "1/1/1970", Now)
-    GetKucoinTime = Trim(Str((Val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetKucoinTime = Trim(Str((val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

@@ -115,7 +115,7 @@ TestResult = PrivatePoloniex("buy", "POST", Cred, Params3)
 If InStr(TestResult, "error") > 0 Then
     Test.IsOk InStr(TestResult, "permission") > 0
     Set JsonResult = JsonConverter.ParseJson(TestResult)
-    Test.IsEqual JsonResult("error"), "This API key does not have permission to trade."
+    Test.IsEqual JsonResult("response_txt")("error"), "This API key does not have permission to trade."
 Else
     Test.IsOk InStr(TestResult, "resultingTrades") > 0
     Set JsonResult = JsonConverter.ParseJson(TestResult)
@@ -143,6 +143,7 @@ Function PrivatePoloniex(Method As String, ReqType As String, Credentials As Dic
 Dim NonceUnique As String
 Dim postdata As String
 Dim PayloadDict As Dictionary
+Dim Url As String
 
 'Poloniex nonce
 NonceUnique = CreateNonce(16)
@@ -161,20 +162,12 @@ PayloadDict("&nonce") = NonceUnique
 postdata = DictToString(PayloadDict, "URLENC")
 APIsign = ComputeHash_C("SHA512", postdata, Credentials("secretKey"), "STRHEX")
 
-' Instantiate a WinHttpRequest object and open it
-Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-'If you get VBA: An error occurred in the secure channel support
-'Check out: https://github.com/krijnsent/crypto_vba/issues/25 -> try the extra option below
-'objHTTP.Option(4) = 13056
-objHTTP.Open ReqType, Url, False
-objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-objHTTP.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-objHTTP.setRequestHeader "Key", Credentials("apiKey")
-objHTTP.setRequestHeader "Sign", APIsign
-objHTTP.Send (postdata)
+Dim headerDict As New Dictionary
+headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
+headerDict.Add "Key", Credentials("apiKey")
+headerDict.Add "Sign", APIsign
 
-objHTTP.WaitForResponse
-PrivatePoloniex = objHTTP.responseText
-Set objHTTP = Nothing
+PrivatePoloniex = WebRequestURL(Url, ReqType, headerDict, postdata)
 
 End Function

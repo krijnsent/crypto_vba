@@ -316,8 +316,8 @@ End If
 AggrTxt = ""
 If Len(DayHourMin) > 1 Then
     AggrVal = Left(DayHourMin, Len(DayHourMin) - 1)
-    If Val(AggrVal) >= 1 And Val(AggrVal) <= 60 Then
-        AggrTxt = "&aggregate=" & Val(AggrVal)
+    If val(AggrVal) >= 1 And val(AggrVal) <= 60 Then
+        AggrTxt = "&aggregate=" & val(AggrVal)
     Else
         'Error
         ReDim TempArr(1 To 1, 1 To 1)

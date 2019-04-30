@@ -341,7 +341,7 @@ Dim TblHeaders As New Scripting.Dictionary
 MaxD = 0
 'Find maximum depth
 For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    If Val(ArrIn(1, Rw)) > MaxD Then
+    If val(ArrIn(1, Rw)) > MaxD Then
         MaxD = ArrIn(1, Rw)
     End If
 Next
@@ -349,12 +349,12 @@ Next
 'Get unique headers
 On Error Resume Next
 For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    Lvl = Val(ArrIn(1, Rw))
+    Lvl = val(ArrIn(1, Rw))
     If Lvl < MaxD And Lvl > 0 Then
         TblHeaders.Add "GROUP_" & Lvl, "GROUP_" & Lvl
     'ElseIf Lvl = MaxD And ArrIn(5, rw) = "VAL" Then
     ElseIf Lvl = MaxD Then
-        If Val(ArrIn(3, Rw)) > 0 Then
+        If val(ArrIn(3, Rw)) > 0 Then
             TblHeaders.Add "VAL_" & ArrIn(3, Rw), "VAL_" & ArrIn(3, Rw)
         Else
             TblHeaders.Add ArrIn(3, Rw), ArrIn(3, Rw)
@@ -374,16 +374,16 @@ TempRw = 0
 ResRw = 1 + HeadRw
 
 For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    Lvl = Val(ArrIn(1, Rw))
+    Lvl = val(ArrIn(1, Rw))
     If Rw < UBound(ArrIn, 2) Then
-        NextLvl = Val(ArrIn(1, Rw + 1))
+        NextLvl = val(ArrIn(1, Rw + 1))
     Else
         NextLvl = 0
     End If
     If Lvl = MaxD Then
         'Get result column
         Idx = 0
-        If Val(ArrIn(3, Rw)) > 0 Then
+        If val(ArrIn(3, Rw)) > 0 Then
             Idx = Application.Match("VAL_" & ArrIn(3, Rw), TblHeaders.Keys, 0)
             If ReturnHeader = True Then
                 ResArr(Idx, 1) = "VAL_" & ArrIn(3, Rw)
