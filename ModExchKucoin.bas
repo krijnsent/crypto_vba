@@ -6,20 +6,20 @@ Sub TestKucoin()
 'Remember to create a new API key for excel/VBA
 'Kucoin will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
-apiKey = apikey_kucoin
+Apikey = apikey_kucoin
 secretKey = secretkey_kucoin
 passphrase = passphrase_kucoin
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -188,6 +188,7 @@ Test.IsOk JsonResult("code") * 1 <= 200004
 Dim Params6 As New Dictionary
 Params6.Add "OrderId", JsonResult("data")("orderId")
 TestResult = PrivateKucoin("orders", "DELETE", Cred, Params6)
+'Debug.Print TestResult
 '{"code":"200000","data":{"cancelledOrderIds":["5ca27982054b467eb0d0c8dc"]}}
 Test.IsOk InStr(TestResult, "code") > 0
 Test.IsOk InStr(TestResult, "cancelledOrderIds") > 0
@@ -235,7 +236,7 @@ If ReqType = "GET" Or ReqType = "DELETE" Then
     If Not ParamDict Is Nothing Then
         'OrderId -> add to URL
         For Each Key In ParamDict.Keys
-            If LCase(Key) = "OrderId" Then
+            If LCase(Key) = "orderid" Then
                 ApiEndPoint = ApiEndPoint & "/" & ParamDict(Key)
                 ParamDict.Remove Key
                 Exit For
@@ -281,7 +282,7 @@ GetKucoinTime = json("data")
 If GetKucoinTime = 0 Then
     TimeCorrection = -3600
     GetKucoinTime = DateDiff("s", "1/1/1970", Now)
-    GetKucoinTime = Trim(Str((val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetKucoinTime = Trim(Str((Val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

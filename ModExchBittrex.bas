@@ -5,19 +5,19 @@ Sub TestBittrex()
 'Documentation: https://bittrex.com/home/api
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_bittrex
+Apikey = apikey_bittrex
 secretKey = secretkey_bittrex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -88,6 +88,15 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("success"), True
 Test.IsOk JsonResult("result").Count >= 0
 
+
+Dim Params3 As New Dictionary
+Params3.Add "uuid", "123456789"
+TestResult = PrivateBittrex("market/cancel", "GET", Cred, Params3)
+'{"success":false,"message":"INVALID_ORDER","result":null}
+Test.IsOk InStr(TestResult, "result") > 0
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsEqual JsonResult("success"), False
+Test.IsOk JsonResult("message") = "INVALID_ORDER"
 
 End Sub
 

@@ -5,19 +5,19 @@ Sub TestCoinone()
 'https://doc.coinone.co.kr/#section/V2-version
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_coinone
+Apikey = apikey_coinone
 secretKey = secretkey_coinone
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -37,16 +37,17 @@ TestResult = PublicCoinone("AnUnknownCommand", "GET")
 '{"error_nr":200,"error_txt":"NO JSON BUT HTML RETURNED","response_txt":0}
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_txt"), "NO JSON BUT HTML RETURNED"
+Test.IsEqual JsonResult("error_txt"), "HTTP-Not Found"
+Test.IsEqual JsonResult("error_nr"), 404
 
 'OK request
 TestResult = PublicCoinone("ticker", "GET")
 'e.g. {"currency":"btc","volume":"633.1048","last":"4684000.0","yesterday_last":"4636000.0","timestamp":"1554107620","yesterday_low":"4592000.0","errorCode":"0","yesterday_volume":"395.8966","high":"4720000.0","result":"success","yesterday_first":"4615000.0","first":"4636000.0","yesterday_high":"4651000.0","low":"4630000.0"}
 Test.IsOk InStr(TestResult, "yesterday_last") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk val(JsonResult("last")) > 0
+Test.IsOk Val(JsonResult("last")) > 0
 Test.IsEqual JsonResult("currency"), "btc"
-Test.IsOk val(JsonResult("timestamp")) > 1500000000#
+Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
 
 'Put parameters/options in a dictionary
 'If no parameters are provided, the defaults are used
@@ -59,14 +60,14 @@ TestResult = PublicCoinone("trades", "GET", Params)
 Test.IsOk InStr(TestResult, "completeOrders") > 0
 Test.IsOk InStr(TestResult, "timestamp") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk val(JsonResult("timestamp")) > 1500000000#
+Test.IsOk Val(JsonResult("timestamp")) > 1500000000#
 Test.IsEqual JsonResult("errorCode"), "0"
 Test.IsEqual JsonResult("completeOrders").Count, 200
-Test.IsOk val(JsonResult("completeOrders")(1)("id")) > 0
-Test.IsOk val(JsonResult("completeOrders")(1)("qty")) > 0
+Test.IsOk Val(JsonResult("completeOrders")(1)("id")) > 0
+Test.IsOk Val(JsonResult("completeOrders")(1)("qty")) > 0
 
 
-Set Test = Suite.Test("TestBittrexPrivate")
+Set Test = Suite.Test("TestCoinonePrivate")
 
 TestResult = PrivateCoinone2("account/balance", "POST", Cred)
 '{"btt": {"avail": "0.0", "balance": "0.0"}, "edna": {"avail": "0.0", "balance": "0.0"},  etc.
@@ -88,7 +89,7 @@ TestResult = PrivateCoinone2("order/limit_buy", "POST", Cred, Params2)
 Test.IsOk InStr(TestResult, "errorCode") > 0
 Test.IsOk InStr(TestResult, "result") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-If val(JsonResult("errorCode")) = 0 Then
+If Val(JsonResult("errorCode")) = 0 Then
     'No error
     Test.IsEqual JsonResult("result"), "success"
     Test.IsEqual JsonResult("errorCode"), "0"

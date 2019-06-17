@@ -6,19 +6,19 @@ Sub TestCoinbase()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-apiKey = apikey_coinbase
+Apikey = apikey_coinbase
 secretKey = secretkey_coinbase
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -59,7 +59,7 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult("data").Count >= 20
 Test.IsEqual JsonResult("data")(1)("id"), "AED"
 Test.IsEqual JsonResult("data")(1)("name"), "United Arab Emirates Dirham"
-Test.IsEqual val(JsonResult("data")(1)("min_size")), 0.01
+Test.IsEqual Val(JsonResult("data")(1)("min_size")), 0.01
 
 'Request with parameter
 Dim Params2 As New Dictionary
@@ -69,8 +69,8 @@ TestResult = PublicCoinbase("exchange-rates", "GET", Params2)
 Test.IsOk InStr(TestResult, "EUR") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("data")("currency"), "ETH"
-Test.IsEqual val(JsonResult("data")("rates")("ETH")), 1
-Test.IsOk val(JsonResult("data")("rates")("USD")) > 0
+Test.IsEqual Val(JsonResult("data")("rates")("ETH")), 1
+Test.IsOk Val(JsonResult("data")("rates")("USD")) > 0
 
 'Coinbase time
 TestResult = GetCoinbaseTime
@@ -194,7 +194,7 @@ GetCoinbaseTime = Int(json("data")("epoch"))
 If GetCoinbaseTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseTime = CreateNonce(10)
-    GetCoinbaseTime = Trim(Str((val(GetCoinbaseTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetCoinbaseTime = Trim(Str((Val(GetCoinbaseTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

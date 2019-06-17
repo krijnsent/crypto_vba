@@ -7,22 +7,22 @@ Sub TestCoinbasePro()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 Dim passphrase As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 passphrase = "your passphrase here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-apiKey = apikey_coinbase_pro
+Apikey = apikey_coinbase_pro
 secretKey = secretkey_coinbase_pro
 passphrase = passphrase_coinbase_pro
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -178,7 +178,7 @@ GetCoinbaseProTime = Int(json("epoch"))
 If GetCoinbaseProTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseProTime = CreateNonce(10)
-    GetCoinbaseProTime = Trim(Str((val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    GetCoinbaseProTime = Trim(Str((Val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
 Set json = Nothing

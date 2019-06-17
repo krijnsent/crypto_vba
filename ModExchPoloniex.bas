@@ -6,19 +6,19 @@ Sub TestPoloniex()
 'https://docs.poloniex.com/#http-api
 'Poloniex will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_poloniex = "the key to use everywhere" etc )
-apiKey = apikey_poloniex
+Apikey = apikey_poloniex
 secretKey = secretkey_poloniex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
