@@ -340,24 +340,24 @@ Dim TblHeaders As New Scripting.Dictionary
 'Get max depth and max items at that level
 MaxD = 0
 'Find maximum depth
-For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    If Val(ArrIn(1, Rw)) > MaxD Then
-        MaxD = ArrIn(1, Rw)
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    If Val(ArrIn(1, rw)) > MaxD Then
+        MaxD = ArrIn(1, rw)
     End If
 Next
 
 'Get unique headers
 On Error Resume Next
-For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    Lvl = Val(ArrIn(1, Rw))
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    Lvl = Val(ArrIn(1, rw))
     If Lvl < MaxD And Lvl > 0 Then
         TblHeaders.Add "GROUP_" & Lvl, "GROUP_" & Lvl
     'ElseIf Lvl = MaxD And ArrIn(5, rw) = "VAL" Then
     ElseIf Lvl = MaxD Then
-        If Val(ArrIn(3, Rw)) > 0 Then
-            TblHeaders.Add "VAL_" & ArrIn(3, Rw), "VAL_" & ArrIn(3, Rw)
+        If Val(ArrIn(3, rw)) > 0 Then
+            TblHeaders.Add "VAL_" & ArrIn(3, rw), "VAL_" & ArrIn(3, rw)
         Else
-            TblHeaders.Add ArrIn(3, Rw), ArrIn(3, Rw)
+            TblHeaders.Add ArrIn(3, rw), ArrIn(3, rw)
         End If
     End If
 Next
@@ -373,34 +373,34 @@ ReDim ResArr(1 To TblHeaders.Count, 1 To 1 + HeadRw)
 TempRw = 0
 ResRw = 1 + HeadRw
 
-For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
-    Lvl = Val(ArrIn(1, Rw))
-    If Rw < UBound(ArrIn, 2) Then
-        NextLvl = Val(ArrIn(1, Rw + 1))
+For rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
+    Lvl = Val(ArrIn(1, rw))
+    If rw < UBound(ArrIn, 2) Then
+        NextLvl = Val(ArrIn(1, rw + 1))
     Else
         NextLvl = 0
     End If
     If Lvl = MaxD Then
         'Get result column
         Idx = 0
-        If Val(ArrIn(3, Rw)) > 0 Then
-            Idx = Application.Match("VAL_" & ArrIn(3, Rw), TblHeaders.Keys, 0)
+        If Val(ArrIn(3, rw)) > 0 Then
+            Idx = Application.Match("VAL_" & ArrIn(3, rw), TblHeaders.Keys, 0)
             If ReturnHeader = True Then
-                ResArr(Idx, 1) = "VAL_" & ArrIn(3, Rw)
+                ResArr(Idx, 1) = "VAL_" & ArrIn(3, rw)
             End If
         Else
-            Idx = Application.Match(ArrIn(3, Rw), TblHeaders.Keys, 0)
+            Idx = Application.Match(ArrIn(3, rw), TblHeaders.Keys, 0)
             If ReturnHeader = True Then
-                ResArr(Idx, 1) = ArrIn(3, Rw)
+                ResArr(Idx, 1) = ArrIn(3, rw)
             End If
         End If
         
-        ResArr(Idx, ResRw) = ArrIn(4, Rw)
+        ResArr(Idx, ResRw) = ArrIn(4, rw)
         For k = 1 To Lvl
             If IsEmpty(ResArr(k, ResRw)) Then ResArr(k, ResRw) = ResArr(k, ResRw - 1)
         Next k
         TempRw = TempRw + 1
-        If Rw < UBound(ArrIn, 2) And NextLvl < Lvl Then
+        If rw < UBound(ArrIn, 2) And NextLvl < Lvl Then
             TempRw = 0
             ResRw = ResRw + 1
             ReDim Preserve ResArr(1 To TblHeaders.Count, 1 To ResRw)
@@ -409,7 +409,7 @@ For Rw = LBound(ArrIn, 2) To UBound(ArrIn, 2)
         If ReturnHeader = True Then
             ResArr(Lvl, 1) = "GROUP_" & Lvl
         End If
-        ResArr(Lvl, ResRw) = ArrIn(3, Rw)
+        ResArr(Lvl, ResRw) = ArrIn(3, rw)
     End If
 Next
 

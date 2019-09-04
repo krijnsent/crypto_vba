@@ -172,7 +172,7 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
   Dim StringLen As Long: StringLen = Len(StringVal)
 
   If StringLen > 0 Then
-    ReDim Result(StringLen) As String
+    ReDim result(StringLen) As String
     Dim i As Long, CharCode As Integer
     Dim Char As String, Space As String
 
@@ -183,16 +183,16 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
       CharCode = Asc(Char)
       Select Case CharCode
         Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
-          Result(i) = Char
+          result(i) = Char
         Case 32
-          Result(i) = Space
+          result(i) = Space
         Case 0 To 15
-          Result(i) = "%0" & Hex(CharCode)
+          result(i) = "%0" & Hex(CharCode)
         Case Else
-          Result(i) = "%" & Hex(CharCode)
+          result(i) = "%" & Hex(CharCode)
       End Select
     Next i
-    URLEncode = Join(Result, "")
+    URLEncode = Join(result, "")
   End If
 End Function
 

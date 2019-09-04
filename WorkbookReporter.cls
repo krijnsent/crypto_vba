@@ -91,7 +91,7 @@ Public Sub Done()
     Dim Failed As Boolean
     Dim Suite As TestSuite
     For Each Suite In pSuites
-        If Suite.Result = TestResultType.Fail Then
+        If Suite.result = TestResultType.Fail Then
             Failed = True
             Exit For
         End If
@@ -170,12 +170,12 @@ Private Sub DisplayResults()
 
         If Suite.Description <> "" Then
             Headings.Add Rows.Count
-            Rows.Add Array(Suite.Description, ResultTypeToString(Suite.Result))
+            Rows.Add Array(Suite.Description, ResultTypeToString(Suite.result))
         End If
 
         For Each Test In Suite.Tests
-            If Test.Result <> TestResultType.Skipped Then
-                Rows.Add Array(Test.Name, ResultTypeToString(Test.Result))
+            If Test.result <> TestResultType.Skipped Then
+                Rows.Add Array(Test.Name, ResultTypeToString(Test.result))
     
                 For Each Failure In Test.Failures
                     Rows.Add Array("  " & Failure, "")

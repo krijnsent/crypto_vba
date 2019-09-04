@@ -31,7 +31,7 @@ Public Enum TestResultType
 End Enum
 
 Public Event BeforeEach(Test As TestCase)
-Public Event Result(Test As TestCase)
+Public Event result(Test As TestCase)
 Public Event AfterEach(Test As TestCase)
 
 ''
@@ -54,15 +54,15 @@ Public Tests As VBA.Collection
 ' @property Result
 ' @type SpecResultType
 ''
-Public Property Get Result() As TestResultType
-    Result = TestResultType.Pending
+Public Property Get result() As TestResultType
+    result = TestResultType.Pending
     
     Dim Test As TestCase
     For Each Test In Me.Tests
-        If Test.Result = TestResultType.Pass Then
-            Result = TestResultType.Pass
-        ElseIf Test.Result = TestResultType.Fail Then
-            Result = TestResultType.Fail
+        If Test.result = TestResultType.Pass Then
+            result = TestResultType.Pass
+        ElseIf Test.result = TestResultType.Fail Then
+            result = TestResultType.Fail
             Exit For
         End If
     Next Test
@@ -125,7 +125,7 @@ End Function
 Public Sub TestComplete(Test As TestCase)
     Tests.Add Test
 
-    RaiseEvent Result(Test)
+    RaiseEvent result(Test)
     RaiseEvent AfterEach(Test)
 End Sub
 
@@ -137,7 +137,7 @@ Private Function GetTestsByType(ResultType As TestResultType) As Collection
     Dim Test As TestCase
     Dim Filtered As New VBA.Collection
     For Each Test In Me.Tests
-        If Test.Result = ResultType Then
+        If Test.result = ResultType Then
             Filtered.Add Test
         End If
     Next Test

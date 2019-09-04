@@ -104,13 +104,13 @@ If JsonResult("Type") = 100 Then
     Test.IsEqual JsonResult("Data")("General")("Name"), "BTC"
 End If
 
-'Rate limit WITHOUT an API key: 1000/minute
+'Rate limit WITHOUT an API key: 600/minute
 TestResult = PublicCryptoCompareData("stats/rate/limit")
 '{"Response":"Success","Message":"","HasWarning":false,"Type":100,"RateLimit":{},"Data":{"calls_made":{"second":1,"minute":10,"hour":138,"day":475,"month":4113},"calls_left":{"second":49,"minute":990,"hour":19862,"day":199525,"month":1995887}}}
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("Response"), "Success"
 If JsonResult("Response") = "Success" Then
-    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 1000
+    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 600
 End If
 
 'Rate limit WITH an API key: 2500/minute
@@ -269,7 +269,7 @@ IsInDict = CCDict.Exists(urlPath)
 GetNewData = False
 If IsInDict = True Then
     'In dictionary, check time
-    If CCDict(urlPath) + TimeSerial(0, 0, CCCacheSeconds) < Now() Then
+    If CCDict(urlPath) + TimeSerial(0, 0, CCCacheSeconds) < Now() Or InStr((CCDict("DATA-" & urlPath)), "Error") > 0 Then
         'Has not been updated recently and/or forced no caching, update now
         CCDict.Remove urlPath
         CCDict.Add urlPath, Now()
