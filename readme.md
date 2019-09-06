@@ -14,6 +14,7 @@ Get information from/send information to:
 - [HitBTC](https://hitbtc.com/)
 - [Kraken](https://www.kraken.com/)
 - [Kucoin](https://www.kucoin.com/)
+- [OKEx](https://www.okex.com/)
 - [Poloniex](https://www.poloniex.com/) 
 - [Coinigy](https://www.coinigy.com/) - not an exchange, but a service where you can access multiple exchanges for a fee - not actively maintained
 - [Cryptopia](https://www.cryptopia.co.nz/) - WARNING: exchange suspended following a hack
@@ -55,6 +56,7 @@ Import the .bas files you need or simply take the sample Excel file. In the modu
 - Build the HitBTC API connector
 - Build the Kraken API connector
 - Build the Kucoin API connector
+- Build the OKEx API connector
 - Build the Poloniex API connector
 - Build a working and tested VBA hash function
 - Build a function to transform Dictionaries into JSON and URLencode

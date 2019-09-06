@@ -155,6 +155,8 @@ If strMethod = "GET" Then
             WebRequestURL = objHTTP.responseText
             If Left(WebRequestURL, 1) = "<" Then
                 WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "NO JSON BUT HTML RETURNED"), "RESP_TXT", 0)
+            ElseIf Left(WebRequestURL, 1) <> "{" And Left(WebRequestURL, 1) <> "[" Then
+                WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "NO VALID JSON RETURNED"), "RESP_TXT", 0)
             End If
         Else
             If Left(objHTTP.responseText, 1) = "{" Or Left(objHTTP.responseText, 1) = "[" Then
