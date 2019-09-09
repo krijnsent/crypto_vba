@@ -105,7 +105,6 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("response_txt")("code"), 30031
 Test.IsEqual JsonResult("response_txt")("message"), "BLA is an invalid token"
 
-
 Set Test = Suite.Test("TestOKExPrivate Orders")
 'Create order
 'BUY 100 BTC for a price of 1 USDT per BTC
@@ -123,7 +122,6 @@ Test.IsOk InStr(TestResult, "code") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult("error_code") * 1 = 33017
 Test.IsOk JsonResult("error_message") = "Greater than the maximum available balance"
-
 
 Dim Params3 As New Dictionary
 Params3.Add "instrument_id", "XMR-BTC"
@@ -145,8 +143,21 @@ If TestResult = "[]" Then
 Else
     Test.IsOk InStr(TestResult, "created_at") > 0
     Set JsonResult = JsonConverter.ParseJson(TestResult)
-    Test.IsOk JsonResult(1)(1)("instrument_id") = "XMR-BTC"
-    Test.IsOk Len(JsonResult(1)(1)("order_id")) > 0
+    Test.IsOk JsonResult(1)("instrument_id") = "XMR-BTC"
+    Test.IsOk Len(JsonResult(1)("order_id")) > 0
+End If
+
+Dim Params5 As New Dictionary
+instrument_id = "XAS-BTC"
+Params5.Add "instrument_id", instrument_id
+JsonResponse = PrivateOKEx("spot/v3/fills", "GET", Cred, Params5)
+'e.g. []
+If TestResult = "[]" Then
+    'No orders
+Else
+    Test.IsOk InStr(TestResult, "created_at") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsOk JsonResult(1)("instrument_id") = "XAS-BTC"
 End If
 
 
@@ -183,6 +194,7 @@ If UCase(ReqType) = "POST" Then
 ElseIf UCase(ReqType) = "GET" Then
     MethodParams = DictToString(ParamDict, "URLENC")
     If MethodParams <> "" Then MethodParams = "?" & MethodParams
+    ApiEndPoint = ApiEndPoint & MethodParams
 End If
 
 ApiForSign = NonceUnique & UCase(ReqType) & ApiEndPoint & postdata
