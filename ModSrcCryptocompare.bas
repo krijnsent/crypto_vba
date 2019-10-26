@@ -110,7 +110,7 @@ TestResult = PublicCryptoCompareData("stats/rate/limit")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("Response"), "Success"
 If JsonResult("Response") = "Success" Then
-    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 600
+    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 500
 End If
 
 'Rate limit WITH an API key: 2500/minute

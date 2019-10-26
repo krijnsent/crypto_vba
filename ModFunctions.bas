@@ -113,6 +113,32 @@ UrlTxt = "value1=9&value_2=0.154&value_as_string=1.87&commaval_as_str=2,16"
 Test.IsEqual TestResult, UrlTxt
 
 
+'TestSortDict
+Set Test = Suite.Test("TestSortDict")
+
+'Function: Sort dictionaries
+Dim testDict3 As New Dictionary
+'Fill dictionary
+testDict3.Add "d", 9
+testDict3.Add "e", 0.154
+testDict3.Add "c", "1.87"
+testDict3.Add "b", "2,16"
+
+'Sort normally
+Call SortDictByKey(testDict3)
+Test.IsEqual testDict3.Count, 4
+Test.IsEqual testDict3.Keys(0), "b"
+Test.IsEqual testDict3.Keys(3), "e"
+Test.IsEqual testDict3.Items(3), 0.154
+
+'Sort desc
+Call SortDictByKey(testDict3, False)
+Test.IsEqual testDict3.Count, 4
+Test.IsEqual testDict3.Keys(0), "e"
+Test.IsEqual testDict3.Keys(3), "b"
+Test.IsEqual testDict3.Items(3), "2,16"
+
+
 End Sub
 
 Function DateToUnixTime(dt) As Long
@@ -239,4 +265,38 @@ DictToString = OutputTxt
 
 End Function
 
+
+Sub SortDictByKey(DictIn As Dictionary, Optional SortAsc As Boolean = True)
+    'Default: sort dictionary Ascending by Key
+    'Inspired by https://excelmacromastery.com/vba-dictionary/#Sorting_the_Dictionary
+    
+    Dim ResDict As New Dictionary
+    Set arrayList = CreateObject("System.Collections.ArrayList")
+    
+    'Exit if DictIn is empty or only has max 1 item
+    If DictIn Is Nothing Then
+        Exit Sub
+    Else
+        If DictIn.Count <= 1 Then
+            Exit Sub
+        End If
+    End If
+    
+    ' Put keys in array and sort (asc/desc)
+    For Each Key In DictIn.Keys
+        arrayList.Add Key
+    Next Key
+    arrayList.Sort
+    If SortAsc = False Then
+        arrayList.Reverse
+    End If
+    
+    'Loop through array
+    For Each va In arrayList
+        ResDict.Add va, DictIn(va)
+    Next va
+    
+    Set DictIn = ResDict
+
+End Sub
 

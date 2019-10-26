@@ -196,7 +196,11 @@ ElseIf strMethod = "POST" Or strMethod = "PUT" Or strMethod = "DELETE" Then
     If Err.Number = 0 Then
         If objHTTP.Status = "200" Then
             objHTTP.WaitForResponse
-            WebRequestURL = objHTTP.responseText
+            If Left(objHTTP.responseText, 1) = "{" Or Left(objHTTP.responseText, 1) = "[" Then
+                WebRequestURL = objHTTP.responseText
+            Else
+                WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "NO VALID JSON RETURNED"), "RESP_TXT", objHTTP.responseText)
+            End If
         Else
             If Left(objHTTP.responseText, 1) = "{" Or Left(objHTTP.responseText, 1) = "[" Then
                 WebRequestURL = Replace(Replace(Replace(ErrResp, "ERR_NR", objHTTP.Status), "ERR_TXT", "HTTP-" & objHTTP.StatusText), "RESP_TXT", objHTTP.responseText)

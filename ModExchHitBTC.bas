@@ -37,46 +37,46 @@ Set Test = Suite.Test("TestHitBTCPublic v2")
 'Error, unknown command
 TestResult = PublicHitBTCv2("AnUnknownCommand", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "unknowncommand 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_nr"), 404, "unknowncommand 2 failed, result: ${1}"
 
 'Error, parameter missing
 TestResult = PublicHitBTCv2("trades", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "trades 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_nr"), 404, "trades 2 failed, result: ${1}"
 
 'Error, wrong parameter
 Dim Params As New Dictionary
 Params.Add "symbol", "BLABLA"
 TestResult = PublicHitBTCv2("trades", "GET", Params)
 '{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"error":{"code":2001,"message":"Symbol not found","description":"Try get /api/2/public/symbol, to get list of all available symbols."}}}
-Test.IsOk InStr(TestResult, "error") > 0
-Test.IsOk InStr(TestResult, "Symbol not found") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "trades params 1 failed, result: ${1}"
+Test.IsOk InStr(TestResult, "Symbol not found") > 0, "trades params 2 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 400
-Test.IsEqual JsonResult("response_txt")("error")("code"), 2001
+Test.IsEqual JsonResult("error_nr"), 400, "trades params 3 failed, result: ${1}"
+Test.IsEqual JsonResult("response_txt")("error")("code"), 2001, "trades params 4 failed, result: ${1}"
 
 'Simple request without parameters
 TestResult = PublicHitBTCv2("currency", "GET")
 'Example: [{"id":"DDF","fullName":"DDF","crypto":true,"payinEnabled":false,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"646"},{"id":"ZRX","fullName":"0x Protocol","crypto":true,"payinEnabled":true,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"26.45"},{"id":"ACO","fullName":"A!Coin","crypto":true etc...
-Test.IsOk InStr(TestResult, "payoutFee") > 0
+Test.IsOk InStr(TestResult, "payoutFee") > 0, "currency 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk JsonResult.Count >= 100
-Test.IsOk Len(JsonResult(1)("id")) >= 3
+Test.IsOk JsonResult.Count >= 100, "currency 2 failed, result: ${1}"
+Test.IsOk Len(JsonResult(1)("id")) >= 3, "currency 3 failed, result: ${1}"
 
 'Request with parameter
 Dim Params2 As New Dictionary
 Params2.Add "currency", "ETH"
 TestResult = PublicHitBTCv2("currency", "GET", Params2)
 '{"id":"ETH","fullName":"Ethereum","crypto":true,"payinEnabled":true,"payinPaymentId":false,"payinConfirmations":2,"payoutEnabled":true,"payoutIsPaymentId":false,"transferEnabled":true,"delisted":false,"payoutFee":"0.0428"}
-Test.IsOk InStr(TestResult, "Ethereum") > 0
+Test.IsOk InStr(TestResult, "Ethereum") > 0, "currency params 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("id"), "ETH"
-Test.IsEqual JsonResult("crypto"), True
-Test.IsEqual JsonResult("delisted"), False
+Test.IsEqual JsonResult("id"), "ETH", "currency params 2 failed, result: ${1}"
+Test.IsEqual JsonResult("crypto"), True, "currency params 3 failed, result: ${1}"
+Test.IsEqual JsonResult("delisted"), False, "currency params 4 failed, result: ${1}"
 
 'Request with parameters
 Dim Params3 As New Dictionary
@@ -85,11 +85,11 @@ Params3.Add "sort", "ASC"
 Params3.Add "limit", 10
 TestResult = PublicHitBTCv2("trades", "GET", Params3)
 '[{"id":3462311,"price":"0.006000","quantity":"0.001","side":"buy","timestamp":"2015-08-20T19:01:23.764Z"},{"id":3462314,"price":"0.006000","quantity":"0.001","side":"buy","timestamp":"2018-07-10T16:11:35.511Z"},etc...
-Test.IsOk InStr(TestResult, "timestamp") > 0
+Test.IsOk InStr(TestResult, "timestamp") > 0, "trades2 params 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk JsonResult(1)("id") > 0
-Test.IsOk Val(JsonResult(1)("quantity")) > 0
-Test.IsEqual JsonResult(1)("side"), "buy"
+Test.IsOk JsonResult(1)("id") > 0, "trades2 params 2 failed, result: ${1}"
+Test.IsOk Val(JsonResult(1)("quantity")) > 0, "trades2 params 3 failed, result: ${1}"
+Test.IsEqual JsonResult(1)("side"), "buy", "trades2 params 4 failed, result: ${1}"
 
 Set Test = Suite.Test("TestHitBTCPrivate v2")
 
@@ -127,8 +127,8 @@ Dim Params5 As New Dictionary
 Params5.Add "symbol", "DOGEETH"
 TestResult = PrivateHitBTCv2("order", "DELETE", Cred, Params5)
 'e.g. [{"id": 0,"clientOrderId": "d8574207d9e3b16a4a5511753eeef175","symbol": "DOGEETH","side": "sell","status": "canceled","type": "limit", etc...
-If TestResult = "[]" Then
-    Test.IsEqual TestResult, "[]"
+If InStr(TestResult, "NO VALID JSON RETURNED") > 0 Then
+    Test.IsOk InStr(TestResult, ":200") > 0
 Else
     Test.IsOk InStr(TestResult, "clientOrderId") > 0
     Test.IsOk InStr(TestResult, "symbol") > 0
