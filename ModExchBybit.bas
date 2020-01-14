@@ -68,6 +68,27 @@ Test.IsOk JsonResult("result").Count > 0, "tickers 2 failed, result: ${1}"
 Test.IsOk Val(JsonResult("result")(1)("bid_price")) > 0, "tickers 3 failed, result: ${1}"
 Test.IsOk Val(JsonResult("result")(1)("prev_price_24h")) > 0, "tickers 4 failed, result: ${1}"
 
+Dim Params1a As New Dictionary
+Dim LimitTime As Double
+Dim ResTime As Long
+Params1a.Add "symbol", "BTCUSD"
+Params1a.Add "interval", 60 'TimeFrame in minutes
+Params1a.Add "limit", 2
+LimitTime = Round(GetBybitTime() / 1000, 0) - 60 * 60 * 2
+'GetByBitTime returns time in ms (microseconds, 13 digits), and this function takes seconds (10 digits)
+'In order to get the past 2 hours, deduct that time in seconds: interval*limit*60
+Params1a.Add "from", LimitTime
+TestResult = PublicBybit("kline/list", "GET", Params1a)
+Test.IsEqual JsonResult("ret_msg"), "OK", "kline 1 failed, result: ${1}"
+Set JsonResult = JsonConverter.ParseJson(TestResult)
+Test.IsOk JsonResult("result").Count > 0, "kline 2 failed, result: ${1}"
+Test.IsEqual JsonResult("result")(1)("symbol"), "BTCUSD", "kline 3 failed, result: ${1}"
+Test.IsOk Val(JsonResult("result")(1)("high")) > 0, "kline 4 failed, result: ${1}"
+'ResTime = JsonResult("result")(1)("open_time")
+'Debug.Print ResTime, UnixTimeToDate(ResTime)
+'ResTime = JsonResult("result")(2)("open_time")
+'Debug.Print ResTime, UnixTimeToDate(ResTime)
+
 ' Create a new test
 Set Test = Suite.Test("TestBybitTime")
 TestResult = GetBybitTime()
@@ -81,16 +102,24 @@ Set Test = Suite.Test("TestBybitPrivate")
 TestResult = PrivateBybit("open-api/api-key", "GET", Cred)
 'e.g. {"ret_code":0,"ret_msg":"ok","ext_code":"","result":[{"api_key":"Tc5aI32WaSqSD","user_id":619,"ips":["192.168.1.1"],"note":"ExcelBybit","permissions":["Order","Position"],"created_at":"2019-10-26T10:16:38.000Z","read_only":false}],"ext_info":null,"time_now":"1572103275.354790","rate_limit_status":99,"rate_limit_reset":1572103275}
 Test.IsOk InStr(TestResult, "ret_msg") > 0
+'Debug.Print TestResult
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("ret_msg"), "ok"
-Test.IsOk Len(JsonResult("result")(1)("api_key")) >= 10
-Test.IsOk JsonResult("result")(1)("user_id") > 0
 
-'More tests & examples to follow
+If JsonResult("ret_msg") = "ok" Then
+    Test.IsOk Len(JsonResult("result")(1)("api_key")) >= 10
+    Test.IsOk JsonResult("result")(1)("user_id") > 0
+Else
+    'E.g. IP-address block
+    Test.IsEqual Left(JsonResult("ret_msg"), 12), "unmatched IP"
+    Test.IsUndefined JsonResult("result")
+End If
+
+'Example set leverage
 Dim Params2 As New Dictionary
 Params2.Add "symbol", "ETHUSD"
 Params2.Add "leverage", 1
 TestResult = PrivateBybit("user/leverage/save", "POST", Cred, Params2)
+'Debug.Print TestResult
 'e.g. {"ret_code":0,"ret_msg":"ok","ext_code":"","result":2,"ext_info":null,"time_now":"1572104006.055933","rate_limit_status":74,"rate_limit_reset":1572104006}
 'or {"ret_code":34015,"ret_msg":"cannot set leverage which is same to the old leverage","ext_code":"","result":null,"ext_info":null,"time_now":"1572103987.614015","rate_limit_status":72,"rate_limit_reset":1572103987}
 Test.IsOk InStr(TestResult, "ret_msg") > 0
@@ -103,7 +132,6 @@ Else
     Test.IsEqual JsonResult("ret_msg"), "cannot set leverage which is same to the old leverage"
     Test.IsUndefined JsonResult("result")
 End If
-
 
 
 End Sub
@@ -173,25 +201,31 @@ headerDict.Add "Content-Type", contentFormat
 Url = TradeApiSite & Method & MethodParams
 
 PrivateBybit = WebRequestURL(Url, ReqType, headerDict, postdataJSON)
-A = 1
 
 End Function
 
 
 Function GetBybitTime() As Double
 
+Dim BybitTime As String
+Dim ValBybitTime As Double
 Dim JsonResponse As String
 Dim json As Object
 
-'PublicBybit time, 10 digit
+'PublicBybit time, 13 digit (ms)
 JsonResponse = PublicBybit("time", "GET")
 Set json = JsonConverter.ParseJson(JsonResponse)
-GetBybitTime = Left(json("time_now"), InStr(json("time_now"), ".")) & "000"
-If GetBybitTime = 0 Then
+BybitTime = Left(json("time_now"), InStr(json("time_now"), ".") - 1) & "000"
+
+If Len(BybitTime) = 0 Then
     TimeCorrection = -3600
-    GetBybitTime = DateDiff("s", "1/1/1970", Now)
-    GetBybitTime = Trim(Str((Val(GetBybitTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
+    ValBybitTime = DateDiff("s", "1/1/1970", Now) + TimeCorrection
+    BybitTime = Trim(Str(ValBybitTime) & Right(Int(Timer * 100), 2) & "0")
 End If
+
+'Debug.Print BybitTime
+
+GetBybitTime = Val(BybitTime)
 
 Set json = Nothing
 

@@ -5,7 +5,7 @@ Attribute VB_Name = "ModJSON"
 'ArrayTable - transforms JsonToArray (internal tree) into a flat table for output
 'Source: https://github.com/krijnsent/crypto_vba
 
-Sub TestJSON()
+Sub TestJson()
 
 Dim JsonResponse As String
 Dim json As Object 'Can be dictionary - json starting {} or collection - json starting []
@@ -185,6 +185,17 @@ Test.IsEqual UBound(TestResult, 2), 5
 Test.IsEqual TestResult(2, 3), 41
 Test.IsEqual TestResult(4, 4), "BTC"
 
+'NEW TEST, UNFINISHED
+PrTxt = "{""ret_msg"": ""ok"",""ext_code"": """",""result"": {""BTCUSD"": {""leverage"": 1},""EOSUSD"": {""leverage"": 1}},""time_now"": ""1567608910.732004""}"
+Set json = JsonConverter.ParseJson(PrTxt)
+Set Res1 = json("result")
+'Res2 = json("result") '-> error, doesn't work...
+For Each elm In json("result")
+    'Debug.Print elm
+    'Debug.Print json("result")(elm)
+    Set Res3 = json("result")(elm)
+    'Debug.Print json("result")(elm)("leverage")
+Next elm
 
 End Sub
 
@@ -216,10 +227,10 @@ Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional Node
         Set DictIn = ObjIn
         For Each k In DictIn.Keys
             'item could be value, object or array, determine:
-            iV = ""
+            IV = ""
             Set iO = Nothing
             On Error Resume Next
-            iV = DictIn(k)
+            IV = DictIn(k)
             Set iO = DictIn(k)
             On Error GoTo 0
             
@@ -260,10 +271,10 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
         Set CollIn = ObjIn
         For i = 1 To CollIn.Count
             'item could be value, object or array, determine:
-            iV = ""
+            IV = ""
             Set iO = Nothing
             On Error Resume Next
-            iV = CollIn(i)
+            IV = CollIn(i)
             Set iO = CollIn(i)
             On Error GoTo 0
 
@@ -286,7 +297,7 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
                 ResArr(1, UBound(ResArr, 2)) = NodeLvl
                 ResArr(2, UBound(ResArr, 2)) = ParentKey
                 ResArr(3, UBound(ResArr, 2)) = i
-                ResArr(4, UBound(ResArr, 2)) = iV
+                ResArr(4, UBound(ResArr, 2)) = IV
                 ResArr(5, UBound(ResArr, 2)) = "VAL"
             End If
         Next i
@@ -295,10 +306,10 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
         Set DictIn = ObjIn
         For Each k In DictIn.Keys
             'item could be value, object or array, determine:
-            iV = ""
+            IV = ""
             Set iO = Nothing
             On Error Resume Next
-            iV = DictIn(k)
+            IV = DictIn(k)
             Set iO = DictIn(k)
             On Error GoTo 0
             
@@ -321,7 +332,7 @@ Function JsonToArray(ObjIn As Object, Optional ParentKey As String = "MAIN", Opt
                 ResArr(1, UBound(ResArr, 2)) = NodeLvl
                 ResArr(2, UBound(ResArr, 2)) = ParentKey
                 ResArr(3, UBound(ResArr, 2)) = k
-                ResArr(4, UBound(ResArr, 2)) = iV
+                ResArr(4, UBound(ResArr, 2)) = IV
                 ResArr(5, UBound(ResArr, 2)) = "VAL"
             End If
         Next k

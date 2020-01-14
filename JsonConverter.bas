@@ -176,7 +176,7 @@ Public Function ParseJson(ByVal JsonString As String) As Object
 
     ' Remove vbCr, vbLf, and vbTab from json_String
     JsonString = VBA.Replace(VBA.Replace(VBA.Replace(JsonString, VBA.vbCr, ""), VBA.vbLf, ""), VBA.vbTab, "")
-
+    
     json_SkipSpaces JsonString, json_Index
     Select Case VBA.Mid$(JsonString, json_Index, 1)
     Case "{"

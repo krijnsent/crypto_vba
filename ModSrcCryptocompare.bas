@@ -110,7 +110,7 @@ TestResult = PublicCryptoCompareData("stats/rate/limit")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("Response"), "Success"
 If JsonResult("Response") = "Success" Then
-    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 500
+    Test.IsEqual JsonResult("Data")("calls_made")("minute") + JsonResult("Data")("calls_left")("minute"), 300
 End If
 
 'Rate limit WITH an API key: 2500/minute
@@ -215,7 +215,7 @@ Test.IsEqual TestArr(1, 1), "time"
 Test.IsEqual TestArr(1, 8), "volumeto"
 Test.IsEqual TestArr(2, 2), #12/30/2017#
 Test.IsEqual TestArr(50, 2), #1/1/2018#
-Test.IsEqual TestArr(50, 3), 0.01447
+Test.IsEqual TestArr(50, 3), 0.0145
 
 TestArr = C_ARR_OHLCV("4H", "XMR", "BTC", "EC", 48)
 Test.IsEqual UBound(TestArr, 1), 50
@@ -263,6 +263,7 @@ End If
 
 urlPath = Method & MethodParams
 Url = PublicApiSite & urlPath
+'Debug.Print Url
 
 'For caching, check if data already exists
 IsInDict = CCDict.Exists(urlPath)
@@ -387,7 +388,7 @@ End Function
 
 Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String, Optional ReverseData As Boolean, Optional Apikey As String) As Variant()
 
-'ReturnColumns: variable "TEOHLCFV" -> select columns you want back in the order you want them back, no spaces
+'ReturnColumns: variable "TEOHLC    " -> select columns you want back in the order you want them back, no spaces
 'T = timestamp (unixtime)
 'E = normal excel date/time
 'O = open price

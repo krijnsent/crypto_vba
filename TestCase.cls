@@ -81,10 +81,10 @@ End Property
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub IsEqual(A As Variant, B As Variant, Optional message As String = _
+Public Sub IsEqual(a As Variant, B As Variant, Optional message As String = _
     "Expected ${1} to equal ${2}")
 
-    Check IsDeepEqual(A, B), message, A, B
+    Check IsDeepEqual(a, B), message, a, B
 End Sub
 
 ''
@@ -94,10 +94,10 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub NotEqual(A As Variant, B As Variant, Optional message As String = _
+Public Sub NotEqual(a As Variant, B As Variant, Optional message As String = _
     "Expected ${1} to not equal ${2}")
 
-    Check Not IsDeepEqual(A, B), message, A, B
+    Check Not IsDeepEqual(a, B), message, a, B
 End Sub
 
 ''
@@ -232,13 +232,13 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub IsApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
+Public Sub IsApproximate(a As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
     "Expected ${1} to be approximately equal to ${2} (with ${3} significant figures of precision)")
 
     If SignificantFigures < 1 Or SignificantFigures > 15 Then
         pFailures.Add "IsApproximate can only compare from 1 to 15 significant figures"
     Else
-        Check IsApproximatelyEqual(A, B, SignificantFigures), message, A, B, SignificantFigures
+        Check IsApproximatelyEqual(a, B, SignificantFigures), message, a, B, SignificantFigures
     End If
 End Sub
 
@@ -255,13 +255,13 @@ End Sub
 ' @param {Variant} B
 ' @param {String} [Message]
 ''
-Public Sub NotApproximate(A As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
+Public Sub NotApproximate(a As Variant, B As Variant, SignificantFigures As Integer, Optional message As String = _
     "Expected ${1} to not be approximately equal to ${2} (with ${3} significant figures of precision)")
 
     If SignificantFigures < 1 Or SignificantFigures > 15 Then
         pFailures.Add "NotApproximate can only compare from 1 to 15 significant figures"
     Else
-        Check Not IsApproximatelyEqual(A, B, SignificantFigures), message, A, B, SignificantFigures
+        Check Not IsApproximatelyEqual(a, B, SignificantFigures), message, a, B, SignificantFigures
     End If
 End Sub
 
@@ -312,51 +312,51 @@ Private Sub Check(Assertion As Variant, message As String, ParamArray Values() A
     End If
 End Sub
 
-Private Function IsDeepEqual(A As Variant, B As Variant) As Boolean
+Private Function IsDeepEqual(a As Variant, B As Variant) As Boolean
     Dim AType As VbVarType
     Dim BType As VbVarType
     
-    AType = VBA.VarType(A)
+    AType = VBA.VarType(a)
     BType = VBA.VarType(B)
 
-    If VBA.IsError(A) Or VBA.IsError(B) Then
+    If VBA.IsError(a) Or VBA.IsError(B) Then
         IsDeepEqual = False
         
-    ElseIf VBA.IsArray(A) And VBA.IsArray(B) Then
-        IsDeepEqual = IsArrayEqual(A, B)
+    ElseIf VBA.IsArray(a) And VBA.IsArray(B) Then
+        IsDeepEqual = IsArrayEqual(a, B)
     
     ElseIf AType = VBA.vbObject Or BType = VBA.vbObject Then
-        If AType <> BType Or VBA.TypeName(A) <> VBA.TypeName(B) Then
+        If AType <> BType Or VBA.TypeName(a) <> VBA.TypeName(B) Then
             IsDeepEqual = False
-        ElseIf VBA.TypeName(A) = "Collection" Then
-            IsDeepEqual = IsCollectionEqual(A, B)
-        ElseIf VBA.TypeName(A) = "Dictionary" Then
-            IsDeepEqual = IsDictionaryEqual(A, B)
+        ElseIf VBA.TypeName(a) = "Collection" Then
+            IsDeepEqual = IsCollectionEqual(a, B)
+        ElseIf VBA.TypeName(a) = "Dictionary" Then
+            IsDeepEqual = IsDictionaryEqual(a, B)
         Else
-            IsDeepEqual = A Is B
+            IsDeepEqual = a Is B
         End If
     
-    ElseIf VBA.VarType(A) = VBA.vbDouble Or VBA.VarType(B) = VBA.vbDouble Then
+    ElseIf VBA.VarType(a) = VBA.vbDouble Or VBA.VarType(B) = VBA.vbDouble Then
         ' It is inherently difficult/almost impossible to check equality of Double
         ' http://support.microsoft.com/kb/78113
         '
         ' -> Compare up to 15 significant figures
-        IsDeepEqual = IsApproximatelyEqual(A, B, 15)
+        IsDeepEqual = IsApproximatelyEqual(a, B, 15)
     
     Else
-        IsDeepEqual = A = B
+        IsDeepEqual = a = B
     End If
 End Function
 
-Private Function IsArrayEqual(A As Variant, B As Variant) As Boolean
-    If UBound(A) <> UBound(B) Then
+Private Function IsArrayEqual(a As Variant, B As Variant) As Boolean
+    If UBound(a) <> UBound(B) Then
         IsArrayEqual = False
         Exit Function
     End If
     
     Dim i As Long
-    For i = LBound(A) To UBound(A)
-        If Not IsDeepEqual(A(i), B(i)) Then
+    For i = LBound(a) To UBound(a)
+        If Not IsDeepEqual(a(i), B(i)) Then
             IsArrayEqual = False
             Exit Function
         End If
@@ -365,15 +365,15 @@ Private Function IsArrayEqual(A As Variant, B As Variant) As Boolean
     IsArrayEqual = True
 End Function
 
-Private Function IsCollectionEqual(A As Variant, B As Variant) As Boolean
-    If A.Count <> B.Count Then
+Private Function IsCollectionEqual(a As Variant, B As Variant) As Boolean
+    If a.Count <> B.Count Then
         IsCollectionEqual = False
         Exit Function
     End If
     
     Dim i As Long
-    For i = 1 To A.Count
-        If Not IsDeepEqual(A(i), B(i)) Then
+    For i = 1 To a.Count
+        If Not IsDeepEqual(a(i), B(i)) Then
             IsCollectionEqual = False
             Exit Function
         End If
@@ -382,8 +382,8 @@ Private Function IsCollectionEqual(A As Variant, B As Variant) As Boolean
     IsCollectionEqual = True
 End Function
 
-Private Function IsDictionaryEqual(A As Variant, B As Variant) As Boolean
-    If UBound(A.Keys) <> UBound(B.Keys) Then
+Private Function IsDictionaryEqual(a As Variant, B As Variant) As Boolean
+    If UBound(a.Keys) <> UBound(B.Keys) Then
         IsDictionaryEqual = False
         Exit Function
     End If
@@ -392,11 +392,11 @@ Private Function IsDictionaryEqual(A As Variant, B As Variant) As Boolean
     Dim BKeys As Variant
     Dim i As Long
     
-    AKeys = A.Keys
+    AKeys = a.Keys
     BKeys = B.Keys
     
     For i = LBound(AKeys) To UBound(AKeys)
-        If AKeys(i) <> BKeys(i) Or A.Item(AKeys(i)) <> B.Item(BKeys(i)) Then
+        If AKeys(i) <> BKeys(i) Or a.Item(AKeys(i)) <> B.Item(BKeys(i)) Then
             IsDictionaryEqual = False
             Exit Function
         End If
@@ -461,8 +461,8 @@ Private Function CollectionIncludes(Values As Variant, Value As Variant) As Bool
     CollectionIncludes = False
 End Function
 
-Private Function IsApproximatelyEqual(A As Variant, B As Variant, SignificantFigures As Integer) As Boolean
-    If SignificantFigures < 1 Or SignificantFigures > 15 Or VBA.IsError(A) Or VBA.IsError(B) Then
+Private Function IsApproximatelyEqual(a As Variant, B As Variant, SignificantFigures As Integer) As Boolean
+    If SignificantFigures < 1 Or SignificantFigures > 15 Or VBA.IsError(a) Or VBA.IsError(B) Then
         IsApproximatelyEqual = False
         Exit Function
     End If
@@ -470,7 +470,7 @@ Private Function IsApproximatelyEqual(A As Variant, B As Variant, SignificantFig
     Dim AValue As String
     Dim BValue As String
     
-    AValue = VBA.Format$(A, VBA.Left$("0.00000000000000", SignificantFigures + 1) & IIf(A > 1, "e+0", "e-0"))
+    AValue = VBA.Format$(a, VBA.Left$("0.00000000000000", SignificantFigures + 1) & IIf(a > 1, "e+0", "e-0"))
     BValue = VBA.Format$(B, VBA.Left$("0.00000000000000", SignificantFigures + 1) & IIf(B > 1, "e+0", "e-0"))
     
     IsApproximatelyEqual = AValue = BValue

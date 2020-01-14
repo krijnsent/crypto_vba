@@ -50,11 +50,11 @@ Test.IsEqual JsonResult("response_txt")("message"), "CB-ACCESS-KEY header is req
 Dim Params As New Dictionary
 Params.Add "level", 5
 TestResult = PublicCoinbasePro("products/BTC-USD/book", "GET", Params)
-'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"message":"unexpected level: 5"}}
+'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"message":"Bad Request"}}
 Test.IsOk InStr(TestResult, "message") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 400
-Test.IsEqual JsonResult("response_txt")("message"), "unexpected level: 5"
+Test.IsEqual JsonResult("response_txt")("message"), "Bad Request"
 
 'Request with parameter
 Dim Params2 As New Dictionary
