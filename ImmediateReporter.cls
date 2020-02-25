@@ -105,13 +105,13 @@ Private Function Summary() As String
 End Function
 
 Private Sub pSuite_Result(Test As TestCase)
-    If Test.result = TestResultType.Skipped Then
+    If Test.Result = TestResultType.Skipped Then
         Exit Sub
     End If
 
-    Debug.Print ResultTypeToString(Test.result) & " " & Test.Name
+    Debug.Print ResultTypeToString(Test.Result) & " " & Test.Name
     
-    If Test.result = TestResultType.Fail Then
+    If Test.Result = TestResultType.Fail Then
         Dim Failure As Variant
         For Each Failure In Test.Failures
             Debug.Print "  " & Failure

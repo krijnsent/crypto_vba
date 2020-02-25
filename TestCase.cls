@@ -34,15 +34,15 @@ Public Skipped As Boolean
 
 Public Suite As TestSuite
 
-Public Property Get result() As TestResultType
+Public Property Get Result() As TestResultType
     If Me.Skipped Then
-        result = TestResultType.Skipped
+        Result = TestResultType.Skipped
     ElseIf Me.Successes = 0 And Me.Failures.Count = 0 Then
-        result = TestResultType.Pending
+        Result = TestResultType.Pending
     ElseIf Me.Failures.Count > 0 Then
-        result = TestResultType.Fail
+        Result = TestResultType.Fail
     Else
-        result = TestResultType.Pass
+        Result = TestResultType.Pass
     End If
 End Property
 

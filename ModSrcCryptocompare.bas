@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModSrcCryptocompare"
 'Two variables for caching, so the formulas don't update every recalculation
-Public Const CCCacheSeconds = 60   'Nr of seconds cache, default >= 60
+Public Const CCCacheSeconds = 300   'Nr of seconds cache, default >= 60
 Public CCDict As New Scripting.Dictionary
 
 Sub TestSrcCryptocompare()
@@ -178,7 +178,7 @@ TestArr = C_ARR_OHLCV("90M", "2FA", "EUR", "ECV")
 Test.IsEqual TestArr(1, 1), "ERROR, DayHourMin aggregation has to be from 1 to 60. Valid values are e.g. 7D, 2H or 30M"
 
 TestArr = C_ARR_OHLCV("H", "ETH", "EUR", "")
-Test.IsEqual TestArr(1, 1), "ERROR ReturnColumns, use the letters ETCHLOFV"
+Test.IsEqual TestArr(1, 1), "ERROR ReturnColumns, use the letters ETHLCOFV"
 
 TestArr = C_ARR_OHLCV("H", "BTC", "EUR", "ABD")
 Test.IsEqual TestArr(1, 1), "unknown ReturnColumn"
@@ -205,7 +205,7 @@ Test.IsEqual UBound(TestArr, 1), 26
 Test.IsEqual UBound(TestArr, 2), 2
 Test.IsEqual TestArr(1, 1), "time"
 Test.IsEqual TestArr(1, 2), "close"
-Test.IsOk TestArr(2, 1) > #12/30/2017#
+Test.IsOk TestArr(2, 1) > #12/30/2019#
 Test.IsOk TestArr(2, 2) > 1
 
 TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 48, DateSerial(2018, 1, 1), "Kraken")
@@ -222,7 +222,7 @@ Test.IsEqual UBound(TestArr, 1), 50
 Test.IsEqual UBound(TestArr, 2), 2
 Test.IsEqual TestArr(1, 1), "time"
 Test.IsEqual TestArr(1, 2), "close"
-Test.IsOk TestArr(50, 1) > #1/1/2018#
+Test.IsOk TestArr(50, 1) > #1/1/2020#
 Test.IsOk TestArr(50, 2) > 0
 
 'Flip the result (newest row on top)
@@ -406,7 +406,16 @@ Dim utime As Long
 Dim json As Object
 Dim TempArr As Variant
 Dim ParamDict As New Dictionary
-ColumnOptions = "ETCHLOFV"
+Dim HeadDict As New Dictionary
+ColumnOptions = "ETHLCOFV"
+HeadDict("E") = "time"
+HeadDict("T") = "time"
+HeadDict("H") = "high"
+HeadDict("L") = "low"
+HeadDict("O") = "open"
+HeadDict("C") = "close"
+HeadDict("F") = "volumefrom"
+HeadDict("V") = "volumeto"
 Application.Volatile
 
 If UCase(Right(DayHourMin, 1)) = "D" Then
@@ -478,20 +487,27 @@ Else
         ReDim TempArr(1 To UBound(ResTbl, 2), 1 To Len(ReturnColumns))
         For i = 1 To Len(ReturnColumns)
             Itm = Mid(ReturnColumns, i, 1)
-            itmnr = InStr(ColumnOptions, Itm) + 1
+            itmnr = 0
+            For c = 1 To UBound(ResTbl, 1)
+                If ResTbl(c, 1) = HeadDict(Itm) Then
+                    itmnr = c
+                    Exit For
+                End If
+            Next c
+            
             'Checked for valid column types, move the data to the TempArr
             If itmnr > 1 Then
                 For j = 1 To UBound(ResTbl, 2)
                     j2 = j
                     If ReverseData = True And j > 1 Then j2 = UBound(ResTbl, 2) - j + 2
                     TempArr(j2, i) = ResTbl(itmnr, j)
-                    If itmnr = 2 Then
+                    If Itm = "E" Then
                         'Time from Unixtime to normal date/time
                         If j > 1 Then
-                            utime = ResTbl(itmnr + 1, j)
+                            utime = ResTbl(itmnr, j)
                             TempArr(j2, i) = UnixTimeToDate(utime)
                         Else
-                            TempArr(j2, i) = ResTbl(itmnr + 1, j)
+                            TempArr(j2, i) = ResTbl(itmnr, j)
                         End If
                     End If
                 Next j

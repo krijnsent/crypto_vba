@@ -23,8 +23,8 @@ TestResult = PublicCoinGeckoData("unknown_command")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":{"error":"Incorrect path. Please check https://www.coingecko.com/api/"}}
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
-Test.IsEqual JsonResult("response_txt")("error"), "Incorrect path. Please check https://www.coingecko.com/api/"
+Test.IsEqual JsonResult("error_nr"), 502
+'Test.IsEqual JsonResult("response_txt")("error"), "Incorrect path. Please check https://www.coingecko.com/api/"
 
 'Simple ping
 TestResult = PublicCoinGeckoData("ping")

@@ -1,4 +1,17 @@
 Attribute VB_Name = "ModFunctions"
+Declare PtrSafe Sub GetSystemTime Lib "kernel32" (ByRef lpSystemTime As SYSTEMTIME)
+
+Type SYSTEMTIME
+  wYear As Integer
+  wMonth As Integer
+  wDayOfWeek As Integer
+  wDay As Integer
+  wHour As Integer
+  wMinute As Integer
+  wSecond As Integer
+  wMilliseconds As Integer
+End Type
+
 'Functions in module:
 'DateToUnixTime - retuns the UnixTime of a date/time
 'UnixTimeToDate - returns the date/time of a UnixTime
@@ -159,7 +172,6 @@ Function UnixTimeToDate(ts As Long) As Date
     
     UnixTimeToDate = DateSerial(1970, 1, intDays + 1) + TimeSerial(intHours, intMins, intSecs)
 End Function
-
 Function CreateNonce(Optional NonceLength As Integer = 12) As String
     
     Dim ScsLng As Long
@@ -173,6 +185,16 @@ Function CreateNonce(Optional NonceLength As Integer = 12) As String
     Else
         CreateNonce = 0
     End If
+
+End Function
+
+Function GetUTCTime() As Date
+
+Dim t As SYSTEMTIME
+Dim currentime As String
+GetSystemTime t
+currentTime = t.wYear & "/" & t.wMonth & "/" & t.wDay & " " & t.wHour & ":" & t.wMinute & ":" & t.wSecond
+GetUTCTime = currentTime
 
 End Function
 
@@ -198,7 +220,7 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
   Dim StringLen As Long: StringLen = Len(StringVal)
 
   If StringLen > 0 Then
-    ReDim result(StringLen) As String
+    ReDim Result(StringLen) As String
     Dim i As Long, CharCode As Integer
     Dim Char As String, Space As String
 
@@ -209,16 +231,16 @@ Public Function URLEncode(StringVal As String, Optional SpaceAsPlus As Boolean =
       CharCode = Asc(Char)
       Select Case CharCode
         Case 97 To 122, 65 To 90, 48 To 57, 45, 46, 95, 126
-          result(i) = Char
+          Result(i) = Char
         Case 32
-          result(i) = Space
+          Result(i) = Space
         Case 0 To 15
-          result(i) = "%0" & Hex(CharCode)
+          Result(i) = "%0" & Hex(CharCode)
         Case Else
-          result(i) = "%" & Hex(CharCode)
+          Result(i) = "%" & Hex(CharCode)
       End Select
     Next i
-    URLEncode = Join(result, "")
+    URLEncode = Join(Result, "")
   End If
 End Function
 

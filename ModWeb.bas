@@ -46,7 +46,7 @@ headerDict.Add "Customheader", "MyCustomHeader"
 TestResult = WebRequestURL("https://httpbin.org/get", "GET", headerDict)
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/get"
-Test.IsEqual JsonResult("headers").Count, 5
+Test.IsEqual JsonResult("headers").Count, 6
 Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
@@ -55,7 +55,7 @@ Set Test = Suite.Test("TestWebRequestURL POST")
 TestResult = WebRequestURL("https://httpbin.org/post", "POST")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
-Test.IsEqual JsonResult("headers").Count, 4
+Test.IsEqual JsonResult("headers").Count, 5
 
 Set headerDict = Nothing
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
@@ -63,7 +63,7 @@ headerDict.Add "Customheader", "MyCustomHeader"
 TestResult = WebRequestURL("https://httpbin.org/post", "POST", headerDict)
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers").Count, 7
 Test.IsEqual JsonResult("headers")("Content-Type"), "application/x-www-form-urlencoded"
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
@@ -71,13 +71,13 @@ TestResult = WebRequestURL("https://httpbin.org/post", "POST", , "my_post_messag
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
 Test.IsEqual JsonResult("data"), "my_post_message"
-Test.IsEqual JsonResult("headers").Count, 5
+Test.IsEqual JsonResult("headers").Count, 6
 
 TestResult = WebRequestURL("https://httpbin.org/post", "POST", headerDict, "my_post_message_2=msg")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/post"
 Test.IsEqual JsonResult("form")("my_post_message_2"), "msg"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers").Count, 7
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 'DELETE -> delete action
@@ -85,7 +85,7 @@ Set Test = Suite.Test("TestWebRequestURL DELETE")
 TestResult = WebRequestURL("https://httpbin.org/delete", "DELETE")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/delete"
-Test.IsEqual JsonResult("headers").Count, 3
+Test.IsEqual JsonResult("headers").Count, 5
 
 Set headerDict = Nothing
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
@@ -94,7 +94,7 @@ TestResult = WebRequestURL("https://httpbin.org/delete", "DELETE", headerDict, "
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/delete"
 Test.IsEqual JsonResult("form")("my_delete_order_nr"), "243"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers").Count, 7
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 
@@ -103,7 +103,7 @@ Set Test = Suite.Test("TestWebRequestURL PUT")
 TestResult = WebRequestURL("https://httpbin.org/put", "PUT")
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/put"
-Test.IsEqual JsonResult("headers").Count, 4
+Test.IsEqual JsonResult("headers").Count, 5
 
 Set headerDict = Nothing
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
@@ -112,7 +112,7 @@ TestResult = WebRequestURL("https://httpbin.org/put", "PUT", headerDict, "my_upd
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("url"), "https://httpbin.org/put"
 Test.IsEqual JsonResult("form")("my_update_nr"), "729"
-Test.IsEqual JsonResult("headers").Count, 6
+Test.IsEqual JsonResult("headers").Count, 7
 Test.IsEqual JsonResult("headers")("Customheader"), "MyCustomHeader"
 
 
@@ -148,7 +148,7 @@ If strMethod = "GET" Then
         'No headers
     End If
     
-    objHTTP.Send
+    objHTTP.send
     If Err.Number = 0 Then
         If objHTTP.Status = "200" Then
             objHTTP.WaitForResponse
@@ -188,9 +188,9 @@ ElseIf strMethod = "POST" Or strMethod = "PUT" Or strMethod = "DELETE" Then
     End If
     
     If strPostMsg = "" Then
-        objHTTP.Send
+        objHTTP.send
     Else
-        objHTTP.Send (strPostMsg)
+        objHTTP.send (strPostMsg)
     End If
 
     If Err.Number = 0 Then
