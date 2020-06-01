@@ -7,16 +7,16 @@ Sub TestIDEX()
 'Documentation: https://docs.idex.market/
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 
 'Remove this lines, unless you define a constant somewhere ( Public Const apikey_idex = "the key to use everywhere" etc )
-Apikey = apikey_idex
+apiKey = apikey_idex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -72,7 +72,7 @@ End Sub
 
 Function PublicIDEX(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 Dim postdata As String
 PublicApiSite = "https://api.idex.market"
 
@@ -87,12 +87,12 @@ ElseIf UCase(ReqType) = "GET" Then
 End If
 
 urlPath = "/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
 Dim headerDict As New Dictionary
 headerDict.Add "Content-Type", "application/json"
 
-PublicIDEX = WebRequestURL(Url, ReqType, headerDict, postdata)
+PublicIDEX = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function
 Function PrivateIDEX(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String

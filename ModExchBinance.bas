@@ -5,19 +5,19 @@ Sub TestBinance()
 'Documentation: https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_binance
+apiKey = apikey_binance
 secretKey = secretkey_binance
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -122,22 +122,22 @@ End Sub
 
 Function PublicBinance(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.binance.com"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/api/v1/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicBinance = WebRequestURL(Url, ReqType)
+PublicBinance = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateBinance(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
 Dim TimeCorrection As Long
-Dim Url As String
+Dim url As String
 
 TradeApiSite = "https://api.binance.com/api/v3/"
 
@@ -145,27 +145,27 @@ MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "&" & MethodParams
 
 APIsign = ComputeHash_C("SHA256", MethodParams, Credentials("secretKey"), "STRHEX")
-Url = TradeApiSite & Method & "?" & MethodParams & "&signature=" & APIsign
+url = TradeApiSite & Method & "?" & MethodParams & "&signature=" & APIsign
 
 Dim UrlHeaders As New Dictionary
 UrlHeaders.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 UrlHeaders.Add "Content-Type", "application/x-www-form-urlencoded"
 UrlHeaders.Add "X-MBX-APIKEY", Credentials("apiKey")
-PrivateBinance = WebRequestURL(Url, ReqType, UrlHeaders)
+PrivateBinance = WebRequestURL(url, ReqType, UrlHeaders)
 
 End Function
 
 Function GetBinanceTime() As Double
 
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 'PublicBinance time
 JsonResponse = PublicBinance("time", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-GetBinanceTime = json("serverTime")
+Set Json = JsonConverter.ParseJson(JsonResponse)
+GetBinanceTime = Json("serverTime")
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 

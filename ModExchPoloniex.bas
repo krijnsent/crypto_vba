@@ -6,19 +6,19 @@ Sub TestPoloniex()
 'https://docs.poloniex.com/#http-api
 'Poloniex will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_poloniex = "the key to use everywhere" etc )
-Apikey = apikey_poloniex
+apiKey = apikey_poloniex
 secretKey = secretkey_poloniex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -127,15 +127,15 @@ End Sub
 
 Function PublicPoloniex(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://poloniex.com"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "&" & MethodParams
 urlPath = "/public?command=" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicPoloniex = WebRequestURL(Url, ReqType)
+PublicPoloniex = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivatePoloniex(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -143,19 +143,19 @@ Function PrivatePoloniex(Method As String, ReqType As String, Credentials As Dic
 Dim NonceUnique As String
 Dim postdata As String
 Dim PayloadDict As Dictionary
-Dim Url As String
+Dim url As String
 
 'Poloniex nonce
 NonceUnique = CreateNonce(16)
 
-Url = "https://poloniex.com/tradingApi"
+url = "https://poloniex.com/tradingApi"
 
 Set PayloadDict = New Dictionary
 PayloadDict("command") = Method
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PayloadDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PayloadDict(key) = ParamDict(key)
+    Next key
 End If
 PayloadDict("&nonce") = NonceUnique
 
@@ -168,6 +168,6 @@ headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "Key", Credentials("apiKey")
 headerDict.Add "Sign", APIsign
 
-PrivatePoloniex = WebRequestURL(Url, ReqType, headerDict, postdata)
+PrivatePoloniex = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function

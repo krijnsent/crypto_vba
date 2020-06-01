@@ -5,19 +5,19 @@ Sub TestCoinspot()
 'Documentation: https://www.coinspot.com.au/api
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_coinspot
+apiKey = apikey_coinspot
 secretKey = secretkey_coinspot
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -75,22 +75,22 @@ End Sub
 
 Function PublicCoinspot(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://www.coinspot.com.au"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "&" & MethodParams
 urlPath = "/pubapi/" & Method & MethodOptions
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicCoinspot = WebRequestURL(Url, ReqType)
+PublicCoinspot = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateCoinspot(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
 Dim postdata As String
-Dim Url As String
+Dim url As String
 Dim PayloadDict As Dictionary
 Dim MethodParams As String
 
@@ -101,9 +101,9 @@ TradeApiSite = "https://www.coinspot.com.au"
 Set PayloadDict = New Dictionary
 PayloadDict("nonce") = Val(NonceUnique)
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PayloadDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PayloadDict(key) = ParamDict(key)
+    Next key
 End If
 MethodParams = DictToString(PayloadDict, "JSON")
 
@@ -116,8 +116,8 @@ headerDict.Add "Content-Type", "application/json"
 headerDict.Add "sign", APIsign
 headerDict.Add "key", Credentials("apiKey")
 
-Url = TradeApiSite & PostPath
-PrivateCoinspot = WebRequestURL(Url, "POST", headerDict, MethodParams)
+url = TradeApiSite & PostPath
+PrivateCoinspot = WebRequestURL(url, "POST", headerDict, MethodParams)
 
 End Function
 

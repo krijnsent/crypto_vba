@@ -7,22 +7,22 @@ Sub TestCoinbasePro()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 Dim passphrase As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 passphrase = "your passphrase here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-Apikey = apikey_coinbase_pro
+apiKey = apikey_coinbase_pro
 secretKey = secretkey_coinbase_pro
 passphrase = passphrase_coinbase_pro
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -78,7 +78,7 @@ Test.IsOk InStr(TestResult, "profile_id") > 0
 Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk JsonResult.Count > 1
-Test.IsEqual JsonResult(1)("currency"), "ZRX"
+Test.IsEqual JsonResult(1)("currency"), "BAT"
 Test.IsOk JsonResult(1)("balance") >= 0
 
 Dim Params8 As New Dictionary
@@ -125,21 +125,21 @@ End Sub
 
 Function PublicCoinbasePro(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.pro.coinbase.com"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicCoinbasePro = WebRequestURL(Url, ReqType)
+PublicCoinbasePro = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateCoinbasePro(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-Dim Url As String
+Dim url As String
 Dim MethodParams As String
 
 'Get a 10-digit Nonce
@@ -161,27 +161,27 @@ headerDict.Add "CB-ACCESS-SIGN", APIsign
 headerDict.Add "CB-ACCESS-TIMESTAMP", NonceUnique
 headerDict.Add "CB-ACCESS-PASSPHRASE", Credentials("Passphrase")
 
-Url = TradeApiSite & "/" & Method
-PrivateCoinbasePro = WebRequestURL(Url, ReqType, headerDict, MethodParams)
+url = TradeApiSite & "/" & Method
+PrivateCoinbasePro = WebRequestURL(url, ReqType, headerDict, MethodParams)
 
 End Function
 
 Function GetCoinbaseProTime() As Double
 
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 'PublicCoinbasePro time
 JsonResponse = PublicCoinbasePro("time", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-GetCoinbaseProTime = Int(json("epoch"))
+Set Json = JsonConverter.ParseJson(JsonResponse)
+GetCoinbaseProTime = Int(Json("epoch"))
 If GetCoinbaseProTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseProTime = CreateNonce(10)
     GetCoinbaseProTime = Trim(Str((Val(GetGDAXTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 

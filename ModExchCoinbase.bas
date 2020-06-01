@@ -6,19 +6,19 @@ Sub TestCoinbase()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-Apikey = apikey_coinbase
+apiKey = apikey_coinbase
 secretKey = secretkey_coinbase
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -129,21 +129,21 @@ End Sub
 
 Function PublicCoinbase(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.coinbase.com"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/v2/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicCoinbase = WebRequestURL(Url, ReqType)
+PublicCoinbase = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateCoinbase(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-Dim Url As String
+Dim url As String
 Dim CBVersion As String
 Dim MethodParams As String
 
@@ -177,8 +177,8 @@ If CBVersion <> "" Then
     headerDict.Add "CB-VERSION", CBVersion
 End If
 
-Url = TradeApiSite & Method
-PrivateCoinbase = WebRequestURL(Url, ReqType, headerDict, MethodParams)
+url = TradeApiSite & Method
+PrivateCoinbase = WebRequestURL(url, ReqType, headerDict, MethodParams)
 
 
 End Function
@@ -186,18 +186,18 @@ End Function
 Function GetCoinbaseTime() As Double
 
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 JsonResponse = PublicCoinbase("time", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-GetCoinbaseTime = Int(json("data")("epoch"))
+Set Json = JsonConverter.ParseJson(JsonResponse)
+GetCoinbaseTime = Int(Json("data")("epoch"))
 If GetCoinbaseTime = 0 Then
     TimeCorrection = -3600
     GetCoinbaseTime = CreateNonce(10)
     GetCoinbaseTime = Trim(Str((Val(GetCoinbaseTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 

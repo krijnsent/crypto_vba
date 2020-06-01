@@ -17,11 +17,11 @@ Sub TestSrcCryptocompare()
 'C_DAY_AVG_PRICE - dayAvg?fsym=BTC&tsym=USD&toTs=1487116800&e=Bitfinex
 'C_ARR_OHLCV - histoday?fsym=GBP&tsym=USD&limit=30&aggregate=1&e=CCCAGG
 
-Dim Apikey As String
-Apikey = "your_api_key_here" 'empty if you don't use an API key
+Dim apiKey As String
+apiKey = "your_api_key_here" 'empty if you don't use an API key
 
 'Remove this line, unless you define a constant somewhere ( Public Const apikey_cryptocompare = "the key to use everywhere" etc )
-Apikey = apikey_cryptocompare
+apiKey = apikey_cryptocompare
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -92,7 +92,7 @@ Test.IsEqual JsonResult("Type"), 1
 
 'Add an API key and force caching off
 Dim Params3 As New Dictionary
-Params3.Add "apikey", Apikey
+Params3.Add "apikey", apiKey
 TestResult = PublicCryptoCompareData("data/social/coin/latest", Params3)
 '{"Response":"Success","Message":"","HasWarning":false,"Type":100,"RateLimit":{},"Data":{"General":{"Points":8212774,"Name":"BTC","CoinName":"Bitcoin","Type":"Webpagecoinp"},"CryptoCompare":{"Points":6898505, etc...
 Test.IsOk InStr(TestResult, "Success") > 0
@@ -140,7 +140,7 @@ JsonResult = C_LAST_PRICE("BTC", "EUR", "Kraken")
 Test.IsOk JsonResult > 0
 
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_LAST_PRICE("BTC", "USD", "Bittrex", Apikey)
+JsonResult = C_LAST_PRICE("BTC", "USD", "Bittrex", apiKey)
 Test.IsOk JsonResult > 0
 
 
@@ -150,7 +150,7 @@ Test.IsOk JsonResult > 0
 JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2018#, "Bittrex")
 Test.IsOk JsonResult > 0
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2019#, , Apikey)
+JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2019#, , apiKey)
 Test.IsOk JsonResult > 0
 
 
@@ -160,7 +160,7 @@ Test.IsOk JsonResult > 0
 JsonResult = C_DAY_AVG_PRICE("ETH", "BTC", #1/1/2017#, "Poloniex")
 Test.IsOk JsonResult > 0
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_DAY_AVG_PRICE("XMR", "BTC", #10/1/2018#, , Apikey)
+JsonResult = C_DAY_AVG_PRICE("XMR", "BTC", #10/1/2018#, , apiKey)
 Test.IsOk JsonResult > 0
 
 
@@ -226,7 +226,7 @@ Test.IsOk TestArr(50, 1) > #1/1/2020#
 Test.IsOk TestArr(50, 2) > 0
 
 'Flip the result (newest row on top)
-TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 24, DateSerial(2019, 1, 1), "Kraken", True, Apikey)
+TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 24, DateSerial(2019, 1, 1), "Kraken", True, apiKey)
 Test.IsEqual UBound(TestArr, 1), 26
 Test.IsEqual UBound(TestArr, 2), 8
 Test.IsEqual TestArr(1, 1), "time"
@@ -240,8 +240,8 @@ End Sub
 Function PublicCryptoCompareData(Method As String, Optional ParamDict As Dictionary) As String
 
 'For documentation, see: https://min-api.cryptocompare.com/
-Dim Url As String
-Dim Apikey As String
+Dim url As String
+Dim apiKey As String
 Dim TempData As String
 Dim Sec As Double
 Dim objHeaders As New Dictionary
@@ -262,7 +262,7 @@ If Not ParamDict Is Nothing Then
 End If
 
 urlPath = Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 'Debug.Print Url
 
 'For caching, check if data already exists
@@ -283,7 +283,7 @@ Else
 End If
 
 If GetNewData = True Then
-    TempData = WebRequestURL(Url, "GET", objHeaders)
+    TempData = WebRequestURL(url, "GET", objHeaders)
     CCDict.Add "DATA-" & urlPath, TempData
 Else
     TempData = CCDict("DATA-" & urlPath)
@@ -292,10 +292,10 @@ End If
 PublicCryptoCompareData = TempData
 
 End Function
-Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String, Optional Apikey As String)
+Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String, Optional apiKey As String)
 
 Dim PrTxt As String
-Dim json As Object
+Dim Json As Object
 Dim ParamDict As New Dictionary
 Application.Volatile
 
@@ -304,28 +304,28 @@ ParamDict.Add ("tsyms"), CurrSell
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(Apikey) > 0 Then
-    ParamDict.Add ("apikey"), Apikey
+If Len(apiKey) > 0 Then
+    ParamDict.Add ("apikey"), apiKey
 End If
 
 PrTxt = PublicCryptoCompareData("data/price", ParamDict)
-Set json = JsonConverter.ParseJson(PrTxt)
+Set Json = JsonConverter.ParseJson(PrTxt)
 
-If json("Response") = "Error" Then
+If Json("Response") = "Error" Then
     'Error
-    C_LAST_PRICE = "ERROR " & json("Message")
+    C_LAST_PRICE = "ERROR " & Json("Message")
 Else
-    C_LAST_PRICE = json(CurrSell)
+    C_LAST_PRICE = Json(CurrSell)
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 
-Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional Apikey As String)
+Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional apiKey As String)
 
 Dim PrTxt As String
-Dim json As Object
+Dim Json As Object
 Dim ParamDict As New Dictionary
 Application.Volatile
 
@@ -336,28 +336,28 @@ ParamDict.Add ("ts"), dt
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(Apikey) > 0 Then
-    ParamDict.Add ("apikey"), Apikey
+If Len(apiKey) > 0 Then
+    ParamDict.Add ("apikey"), apiKey
 End If
 
 PrTxt = PublicCryptoCompareData("data/price", ParamDict)
-Set json = JsonConverter.ParseJson(PrTxt)
+Set Json = JsonConverter.ParseJson(PrTxt)
 
-If json("Response") = "Error" Then
+If Json("Response") = "Error" Then
     'Error
-    C_HIST_PRICE = "ERROR " & json("Message")
+    C_HIST_PRICE = "ERROR " & Json("Message")
 Else
-    C_HIST_PRICE = json(CurrSell)
+    C_HIST_PRICE = Json(CurrSell)
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 
-Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional Apikey As String)
+Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional apiKey As String)
 
 Dim PrTxt As String
-Dim json As Object
+Dim Json As Object
 Dim ParamDict As New Dictionary
 Application.Volatile
 
@@ -368,25 +368,25 @@ ParamDict.Add ("toTs"), dt
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(Apikey) > 0 Then
-    ParamDict.Add ("apikey"), Apikey
+If Len(apiKey) > 0 Then
+    ParamDict.Add ("apikey"), apiKey
 End If
 
 PrTxt = PublicCryptoCompareData("data/dayAvg", ParamDict)
-Set json = JsonConverter.ParseJson(PrTxt)
+Set Json = JsonConverter.ParseJson(PrTxt)
 
-If json("Response") = "Error" Then
+If Json("Response") = "Error" Then
     'Error
-    C_DAY_AVG_PRICE = "ERROR " & json("Message")
+    C_DAY_AVG_PRICE = "ERROR " & Json("Message")
 Else
-    C_DAY_AVG_PRICE = json(CurrSell)
+    C_DAY_AVG_PRICE = Json(CurrSell)
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 
-Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String, Optional ReverseData As Boolean, Optional Apikey As String) As Variant()
+Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String, Optional ReverseData As Boolean, Optional apiKey As String) As Variant()
 
 'ReturnColumns: variable "TEOHLC    " -> select columns you want back in the order you want them back, no spaces
 'T = timestamp (unixtime)
@@ -403,7 +403,7 @@ Dim PrTxt As String
 Dim AggrVal As String
 Dim cmd As String
 Dim utime As Long
-Dim json As Object
+Dim Json As Object
 Dim TempArr As Variant
 Dim ParamDict As New Dictionary
 Dim HeadDict As New Dictionary
@@ -458,17 +458,17 @@ End If
 If NrLines > 0 Then
     ParamDict.Add ("limit"), NrLines
 End If
-If Len(Apikey) > 0 Then
-    ParamDict.Add ("apikey"), Apikey
+If Len(apiKey) > 0 Then
+    ParamDict.Add ("apikey"), apiKey
 End If
 
 PrTxt = PublicCryptoCompareData(cmd, ParamDict)
-Set json = JsonConverter.ParseJson(PrTxt)
+Set Json = JsonConverter.ParseJson(PrTxt)
 
-If json("Response") = "Error" Then
+If Json("Response") = "Error" Then
     'Error
     ReDim TempArr(1 To 1, 1 To 1)
-    TempArr(1, 1) = "ERROR " & json("Message")
+    TempArr(1, 1) = "ERROR " & Json("Message")
     C_ARR_OHLCV = TempArr
 Else
     If InStr(PrTxt, """Data"":[]") > 0 Then
@@ -478,7 +478,7 @@ Else
         C_ARR_OHLCV = TempArr
         Exit Function
     End If
-    ResArr = JsonToArray(json)
+    ResArr = JsonToArray(Json)
     ResTbl = ArrayTable(ResArr, True)
     
     ReturnColumns = UCase(Trim(ReturnColumns))
@@ -527,7 +527,7 @@ Else
     End If
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function
 

@@ -5,19 +5,19 @@ Sub TestCoinone()
 'https://doc.coinone.co.kr/#section/V2-version
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_coinone
+apiKey = apikey_coinone
 secretKey = secretkey_coinone
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -115,15 +115,15 @@ End Sub
 
 Function PublicCoinone(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.coinone.co.kr/"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicCoinone = WebRequestURL(Url, ReqType)
+PublicCoinone = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateCoinone2(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -132,21 +132,21 @@ Dim NonceUnique As String
 Dim postdata As String
 Dim postdataUrl As String
 Dim postdataJSON As String
-Dim Url As String
+Dim url As String
 
 'Get a 14-digit Nonce
 NonceUnique = CreateNonce(14)
 TradeApiSite = "https://api.coinone.co.kr/v2/"
 
-Url = TradeApiSite & Method
+url = TradeApiSite & Method
 
 Dim PostDict As New Dictionary
 PostDict.Add "access_token", Credentials("apiKey")
 PostDict.Add "nonce", NonceUnique
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PostDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PostDict(key) = ParamDict(key)
+    Next key
 End If
 
 postdataUrl = DictToString(PostDict, "URLENC")
@@ -161,7 +161,7 @@ headerDict.Add "Content-Type", "application/json"
 headerDict.Add "X-COINONE-PAYLOAD", postdata64
 headerDict.Add "X-COINONE-SIGNATURE", APIsign
 
-Url = TradeApiSite & Method
-PrivateCoinone2 = WebRequestURL(Url, ReqType, headerDict, postdataUrl)
+url = TradeApiSite & Method
+PrivateCoinone2 = WebRequestURL(url, ReqType, headerDict, postdataUrl)
 
 End Function

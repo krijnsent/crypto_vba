@@ -5,20 +5,20 @@ Sub TestOKEx()
 'https://www.okex.com/docs/en/
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_okex = "the key to use everywhere" etc )
-Apikey = apikey_okex
+apiKey = apikey_okex
 secretKey = secretkey_okex
 passphrase = passphrase_okex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -38,7 +38,7 @@ Set Test = Suite.Test("TestOKExPublic")
 TestResult = PublicOKEx("AnUnknownCommand", "GET")
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 200
+Test.IsEqual JsonResult("error_nr"), 403
 
 'Error, missing parameter
 TestResult = PublicOKEx("spot/v3/instruments/EOS-BTC/", "GET")
@@ -128,11 +128,11 @@ Dim Params3 As New Dictionary
 Params3.Add "instrument_id", "XMR-BTC"
 ClientIdOrderId = "12345"
 TestResult = PrivateOKEx("spot/v3/cancel_orders/" & ClientIdOrderId, "POST", Cred, Params3)
-'{"error_nr":400,"error_txt":"HTTP-","response_txt":{"code":33014,"message":"Order does not exist"}}
+'{"client_oid":"","code":"33014","error_code":"33014","error_message":"Order does not exist","message":"Order does not exist","order_id":"12345","result":false}
 Test.IsOk InStr(TestResult, "code") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk JsonResult("response_txt")("code") * 1 = 33014
-Test.IsOk JsonResult("response_txt")("message") = "Order does not exist"
+Test.IsOk JsonResult("code") * 1 = 33014
+Test.IsOk JsonResult("message") = "Order does not exist"
 
 Dim Params4 As New Dictionary
 Params4.Add "instrument_id", "XMR-BTC"
@@ -166,21 +166,21 @@ End Sub
 
 Function PublicOKEx(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://www.okex.com/api"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicOKEx = WebRequestURL(Url, ReqType)
+PublicOKEx = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateOKEx(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-Dim Url As String
+Dim url As String
 Dim postdata As String
 
 TradeApiSite = "https://www.okex.com"
@@ -201,7 +201,7 @@ End If
 ApiForSign = NonceUnique & UCase(ReqType) & ApiEndPoint & postdata
 APIsign = ComputeHash_C("SHA256", ApiForSign, Credentials("secretKey"), "STR64")
 
-Url = TradeApiSite & ApiEndPoint
+url = TradeApiSite & ApiEndPoint
 
 Dim headerDict As New Dictionary
 headerDict.Add "OK-ACCESS-KEY", Credentials("apiKey")
@@ -210,22 +210,22 @@ headerDict.Add "OK-ACCESS-TIMESTAMP", NonceUnique
 headerDict.Add "OK-ACCESS-PASSPHRASE", Credentials("Passphrase")
 headerDict.Add "Content-Type", "application/json"
 
-PrivateOKEx = WebRequestURL(Url, ReqType, headerDict, postdata)
+PrivateOKEx = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function
 
 Function GetOKExTime() As Double
 
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 'PublicOKEx time
 JsonResponse = PublicOKEx("general/v3/time", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-If InStr(json("epoch"), ".") Then
-    GetOKExTime = Left(json("epoch"), InStr(json("epoch"), "."))
+Set Json = JsonConverter.ParseJson(JsonResponse)
+If InStr(Json("epoch"), ".") Then
+    GetOKExTime = Left(Json("epoch"), InStr(Json("epoch"), "."))
 Else
-    GetOKExTime = json("epoch")
+    GetOKExTime = Json("epoch")
 End If
 If GetOKExTime = 0 Then
     TimeCorrection = -3600
@@ -233,6 +233,6 @@ If GetOKExTime = 0 Then
     GetOKExTime = Trim(Str((Val(GetOKExTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function

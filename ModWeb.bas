@@ -140,10 +140,10 @@ If strMethod = "GET" Then
     objHTTP.Open "GET", strURL, False
    
     If Not objHeaders Is Nothing Then
-        For Each Key In objHeaders.Keys()
+        For Each key In objHeaders.Keys()
             'e.g. objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-            objHTTP.setRequestHeader Key, objHeaders(Key)
-        Next Key
+            objHTTP.setRequestHeader key, objHeaders(key)
+        Next key
     Else
         'No headers
     End If
@@ -179,10 +179,10 @@ ElseIf strMethod = "POST" Or strMethod = "PUT" Or strMethod = "DELETE" Then
     objHTTP.Open strMethod, strURL, False
     
     If Not objHeaders Is Nothing Then
-        For Each Key In objHeaders.Keys()
+        For Each key In objHeaders.Keys()
             'e.g. objHTTP.setRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-            objHTTP.setRequestHeader Key, objHeaders(Key)
-        Next Key
+            objHTTP.setRequestHeader key, objHeaders(key)
+        Next key
     Else
         'No headers
     End If

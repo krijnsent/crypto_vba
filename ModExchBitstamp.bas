@@ -5,21 +5,21 @@ Sub TestBitstamp()
 'Documentation: https://Bitstamp.com/home/api
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 customerID = "your customer id here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_bitstamp
+apiKey = apikey_bitstamp
 secretKey = secretkey_bitstamp
 customerID = customer_id_bitstamp
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 Cred.Add "customerID", customerID
 
@@ -114,15 +114,15 @@ End Sub
 
 Function PublicBitstamp(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://www.bitstamp.net"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/api/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicBitstamp = WebRequestURL(Url, ReqType)
+PublicBitstamp = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateBitstamp(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -130,7 +130,7 @@ Function PrivateBitstamp(Method As String, ReqType As String, Credentials As Dic
 Dim NonceUnique As String
 Dim message As String
 Dim PostMsg As String
-Dim Url As String
+Dim url As String
 Dim PayloadDict As Dictionary
 
 'Get a Nonce
@@ -145,9 +145,9 @@ PayloadDict("key") = Credentials("apiKey")
 PayloadDict("signature") = APIsign
 PayloadDict("nonce") = NonceUnique
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PayloadDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PayloadDict(key) = ParamDict(key)
+    Next key
 End If
 PostMsg = DictToString(PayloadDict, "URLENC")
 
@@ -155,8 +155,8 @@ Dim headerDict As New Dictionary
 headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 
-Url = TradeApiSite & Method
-PrivateBitstamp = WebRequestURL(Url, ReqType, headerDict, PostMsg)
+url = TradeApiSite & Method
+PrivateBitstamp = WebRequestURL(url, ReqType, headerDict, PostMsg)
 
 End Function
 

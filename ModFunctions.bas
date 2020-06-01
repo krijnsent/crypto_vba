@@ -305,9 +305,9 @@ Sub SortDictByKey(DictIn As Dictionary, Optional SortAsc As Boolean = True)
     End If
     
     ' Put keys in array and sort (asc/desc)
-    For Each Key In DictIn.Keys
-        arrayList.Add Key
-    Next Key
+    For Each key In DictIn.Keys
+        arrayList.Add key
+    Next key
     arrayList.Sort
     If SortAsc = False Then
         arrayList.Reverse

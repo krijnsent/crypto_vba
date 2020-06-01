@@ -7,19 +7,19 @@ Sub TestHitBTC()
 'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 'HitBTC will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_HitBTC = "the key to use everywhere" etc )
-Apikey = apikey_hitbtc
+apiKey = apikey_hitbtc
 secretKey = secretkey_hitbtc
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -41,12 +41,6 @@ Test.IsOk InStr(TestResult, "error") > 0, "unknowncommand 1 failed, result: ${1}
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 404, "unknowncommand 2 failed, result: ${1}"
 
-'Error, parameter missing
-TestResult = PublicHitBTCv2("trades", "GET")
-'{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
-Test.IsOk InStr(TestResult, "error") > 0, "trades 1 failed, result: ${1}"
-Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404, "trades 2 failed, result: ${1}"
 
 'Error, wrong parameter
 Dim Params As New Dictionary
@@ -130,11 +124,13 @@ TestResult = PrivateHitBTCv2("order", "DELETE", Cred, Params5)
 If InStr(TestResult, "NO VALID JSON RETURNED") > 0 Then
     Test.IsOk InStr(TestResult, ":200") > 0
 Else
-    Test.IsOk InStr(TestResult, "clientOrderId") > 0
-    Test.IsOk InStr(TestResult, "symbol") > 0
-    Set JsonResult = JsonConverter.ParseJson(TestResult)
-    Test.IsEqual JsonResult(1)("symbol"), "DOGEETH"
-    Test.IsOk Len(JsonResult(1)("side")) >= 3
+    If TestResult <> "[]" Then
+        Test.IsOk InStr(TestResult, "clientOrderId") > 0
+        Test.IsOk InStr(TestResult, "symbol") > 0
+        Set JsonResult = JsonConverter.ParseJson(TestResult)
+        Test.IsEqual JsonResult(1)("symbol"), "DOGEETH"
+        Test.IsOk Len(JsonResult(1)("side")) >= 3
+    End If
 End If
 
 'Create an order, but trigger an error
@@ -164,36 +160,36 @@ End Sub
 
 Function PublicHitBTCv2(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 Dim PayloadDict As New Dictionary
 
 PublicApiSite = "https://api.hitbtc.com"
 
 'Get special parameters currency and symbol and add them to the URL
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        If LCase(Key) = "currency" Or LCase(Key) = "symbol" Then
-            Method = Method & "/" & ParamDict(Key)
+    For Each key In ParamDict.Keys
+        If LCase(key) = "currency" Or LCase(key) = "symbol" Then
+            Method = Method & "/" & ParamDict(key)
         Else
-            PayloadDict(Key) = ParamDict(Key)
+            PayloadDict(key) = ParamDict(key)
         End If
-    Next Key
+    Next key
 End If
 
 
 MethodParams = DictToString(PayloadDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/api/2/public/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicHitBTCv2 = WebRequestURL(Url, ReqType)
+PublicHitBTCv2 = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateHitBTCv2(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
 Dim postdata As String
-Dim Url As String
+Dim url As String
 Dim MethodParams As String
 
 NonceUnique = CreateNonce(10)
@@ -203,14 +199,14 @@ MethodParams = DictToString(ParamDict, "URLENC")
 postdata = DictToString(ParamDict, "JSON")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 
-Url = TradeApiSite & urlPath
+url = TradeApiSite & urlPath
 
 Dim headerDict As New Dictionary
 headerDict.Add "Content-Type", "application/json"
 'Credentials in a special format
 headerDict.Add "Authorization", "Basic " & Base64Encode(Credentials("apiKey") & ":" & Credentials("secretKey"))
 
-Url = TradeApiSite & urlPath & MethodParams
-PrivateHitBTCv2 = WebRequestURL(Url, ReqType, headerDict, postdata)
+url = TradeApiSite & urlPath & MethodParams
+PrivateHitBTCv2 = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function

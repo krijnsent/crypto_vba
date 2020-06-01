@@ -7,19 +7,19 @@ Sub TestKraken()
 'https://www.kraken.com/en-us/help/api#public-market-data
 'https://www.kraken.com/help/api#private-user-data
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_kraken = "the key to use everywhere" etc )
-Apikey = apikey_kraken
+apiKey = apikey_kraken
 secretKey = secretkey_kraken
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -88,15 +88,15 @@ End Sub
 
 Function PublicKraken(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.kraken.com"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/0/public/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicKraken = WebRequestURL(Url, ReqType)
+PublicKraken = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateKraken(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -104,7 +104,7 @@ Function PrivateKraken(Method As String, ReqType As String, Credentials As Dicti
 Dim NonceUnique As String
 Dim postdata As String
 Dim PayloadDict As Dictionary
-Dim Url As String
+Dim url As String
 
 'Kraken nonce: 16 characters
 NonceUnique = CreateNonce(16)
@@ -114,14 +114,14 @@ urlPath = "/0/private/" & Method
 
 Set PayloadDict = New Dictionary
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PayloadDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PayloadDict(key) = ParamDict(key)
+    Next key
 End If
 PayloadDict("nonce") = NonceUnique
 postdata = DictToString(PayloadDict, "URLENC")
 
-Url = TradeApiSite & urlPath
+url = TradeApiSite & urlPath
 APIsign = ComputeHash_C("SHA512", urlPath & ComputeHash_C("SHA256", NonceUnique & postdata, "", "RAW"), Base64Decode(Credentials("secretKey")), "STR64")
 
 Dim headerDict As New Dictionary
@@ -130,6 +130,6 @@ headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
 headerDict.Add "API-Key", Credentials("apiKey")
 headerDict.Add "API-Sign", APIsign
 
-PrivateKraken = WebRequestURL(Url, ReqType, headerDict, postdata)
+PrivateKraken = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function

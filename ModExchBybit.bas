@@ -5,19 +5,19 @@ Sub TestBybit()
 'https://doc.Bybit.co.kr/#section/V2-version
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_bybit
+apiKey = apikey_bybit
 secretKey = secretkey_bybit
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -133,12 +133,27 @@ Else
     Test.IsUndefined JsonResult("result")
 End If
 
+'Example set leverage
+Tm = GetBybitTime()
+'e.g. 1583401823000 -> milliseconds
+Hrs = 24
+Dim Params3 As New Dictionary
+Params3.Add "symbol", "ETHUSD"
+Params3.Add "limit", 1
+Params3.Add "start_time", Tm - 3600000 * Hrs
+TestResult = PrivateBybit("v2/private/execution/list", "GET", Cred, Params3)
+'Debug.Print Tm
+'Debug.Print TestResult
+'{"ret_code":0,"ret_msg":"OK","ext_code":"","ext_info":"","result":{"order_id":"","trade_list":null},"time_now":"1583400361.063716","rate_limit_status":119,"rate_limit_reset_ms":1583400361061,"rate_limit":120}
+
+
+'/v2/private/execution/list
 
 End Sub
 
 Function PublicBybit(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.bybit.com/v2/public/"
  
 'symbols, orderBook/L2  +symbol , time, tickers (+symbol)
@@ -146,9 +161,9 @@ PublicApiSite = "https://api.bybit.com/v2/public/"
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicBybit = WebRequestURL(Url, ReqType)
+PublicBybit = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateBybit(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -157,21 +172,21 @@ Dim NonceUnique As String
 Dim postdata As String
 Dim postdataUrl As String
 Dim postdataJSON As String
-Dim Url As String
+Dim url As String
 
 'Get a 10-digit Nonce
 NonceUnique = GetBybitTime()
 TradeApiSite = "https://api.bybit.com/"
 
-Url = TradeApiSite & Method
+url = TradeApiSite & Method
 
 Dim PostDict As New Dictionary
 PostDict.Add "api_key", Credentials("apiKey")
 PostDict.Add "timestamp", NonceUnique
 If Not ParamDict Is Nothing Then
-    For Each Key In ParamDict.Keys
-        PostDict(Key) = ParamDict(Key)
-    Next Key
+    For Each key In ParamDict.Keys
+        PostDict(key) = ParamDict(key)
+    Next key
 End If
 'Sort alphabetically
 Call SortDictByKey(PostDict)
@@ -198,9 +213,9 @@ Dim headerDict As New Dictionary
 headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 headerDict.Add "Content-Type", contentFormat
 
-Url = TradeApiSite & Method & MethodParams
+url = TradeApiSite & Method & MethodParams
 
-PrivateBybit = WebRequestURL(Url, ReqType, headerDict, postdataJSON)
+PrivateBybit = WebRequestURL(url, ReqType, headerDict, postdataJSON)
 
 End Function
 
@@ -210,12 +225,12 @@ Function GetBybitTime() As Double
 Dim BybitTime As String
 Dim ValBybitTime As Double
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 'PublicBybit time, 13 digit (ms)
 JsonResponse = PublicBybit("time", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-BybitTime = Left(json("time_now"), InStr(json("time_now"), ".") - 1) & "000"
+Set Json = JsonConverter.ParseJson(JsonResponse)
+BybitTime = Left(Json("time_now"), InStr(Json("time_now"), ".") - 1) & "000"
 
 If Len(BybitTime) = 0 Then
     TimeCorrection = -3600
@@ -227,6 +242,6 @@ End If
 
 GetBybitTime = Val(BybitTime)
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function

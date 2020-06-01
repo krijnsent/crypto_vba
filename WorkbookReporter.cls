@@ -141,13 +141,13 @@ Private Sub ClearResults()
     StartRow = pSheet.Range("Output").Row
     StartColumn = pSheet.Range("Output").Column
     
-    Dim LastRow As Long
-    LastRow = StartRow
-    Do While pSheet.Cells(LastRow + 1, StartColumn).Value <> ""
-        LastRow = LastRow + 1
+    Dim lastrow As Long
+    lastrow = StartRow
+    Do While pSheet.Cells(lastrow + 1, StartColumn).Value <> ""
+        lastrow = lastrow + 1
     Loop
     
-    With pSheet.Range(pSheet.Cells(StartRow, StartColumn), pSheet.Cells(LastRow, StartColumn + 1))
+    With pSheet.Range(pSheet.Cells(StartRow, StartColumn), pSheet.Cells(lastrow, StartColumn + 1))
         .Value = ""
         .Font.Bold = False
         .Borders(xlInsideHorizontal).LineStyle = xlNone

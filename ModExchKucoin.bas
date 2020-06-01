@@ -6,20 +6,20 @@ Sub TestKucoin()
 'Remember to create a new API key for excel/VBA
 'Kucoin will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
-Apikey = apikey_kucoin
+apiKey = apikey_kucoin
 secretKey = secretkey_kucoin
 passphrase = passphrase_kucoin
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -208,21 +208,21 @@ End Sub
 
 Function PublicKucoin(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api.kucoin.com/api/v1"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = "/" & Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
-PublicKucoin = WebRequestURL(Url, ReqType)
+PublicKucoin = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateKucoin(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
 
 Dim NonceUnique As String
-Dim Url As String
+Dim url As String
 Dim postdata As String
 
 'Kucoin wants a 13-digit Nonce, use time correction if needed
@@ -235,13 +235,13 @@ If ReqType = "GET" Or ReqType = "DELETE" Then
     'For GET, DELETE request, all query parameters need to be included in the request url. (e.g. /api/v1/accounts?currency=BTC)
     If Not ParamDict Is Nothing Then
         'OrderId -> add to URL
-        For Each Key In ParamDict.Keys
-            If LCase(Key) = "orderid" Then
-                ApiEndPoint = ApiEndPoint & "/" & ParamDict(Key)
-                ParamDict.Remove Key
+        For Each key In ParamDict.Keys
+            If LCase(key) = "orderid" Then
+                ApiEndPoint = ApiEndPoint & "/" & ParamDict(key)
+                ParamDict.Remove key
                 Exit For
             End If
-        Next Key
+        Next key
     End If
     
     MethodTxt = DictToString(ParamDict, "URLENC")
@@ -257,7 +257,7 @@ End If
 ApiForSign = NonceUnique & ReqType & ApiEndPoint & ReqBody
 APIsign = ComputeHash_C("SHA256", ApiForSign, Credentials("secretKey"), "STR64")
 
-Url = TradeApiSite & ApiEndPoint
+url = TradeApiSite & ApiEndPoint
 
 Dim headerDict As New Dictionary
 headerDict.Add "KC-API-KEY", Credentials("apiKey")
@@ -266,25 +266,25 @@ headerDict.Add "KC-API-TIMESTAMP", NonceUnique
 headerDict.Add "KC-API-PASSPHRASE", Credentials("Passphrase")
 headerDict.Add "Content-Type", "application/json"
 
-PrivateKucoin = WebRequestURL(Url, ReqType, headerDict, postdata)
+PrivateKucoin = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function
 
 Function GetKucoinTime() As Double
 
 Dim JsonResponse As String
-Dim json As Object
+Dim Json As Object
 
 'PublicKucoin time
 JsonResponse = PublicKucoin("timestamp", "GET")
-Set json = JsonConverter.ParseJson(JsonResponse)
-GetKucoinTime = json("data")
+Set Json = JsonConverter.ParseJson(JsonResponse)
+GetKucoinTime = Json("data")
 If GetKucoinTime = 0 Then
     TimeCorrection = -3600
     GetKucoinTime = DateDiff("s", "1/1/1970", Now)
     GetKucoinTime = Trim(Str((Val(GetKucoinTime) + TimeCorrection)) & Right(Int(Timer * 100), 2) & "0")
 End If
 
-Set json = Nothing
+Set Json = Nothing
 
 End Function

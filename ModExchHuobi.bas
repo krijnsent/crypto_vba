@@ -5,19 +5,19 @@ Sub TestHuobi()
 'https://alphaex-api.github.io/openapi/spot/v1/en/#introduction
 'Remember to create a new API key for excel/VBA
 
-Dim Apikey As String
+Dim apiKey As String
 Dim secretKey As String
 
-Apikey = "your api key here"
+apiKey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-Apikey = apikey_huobi
+apiKey = apikey_huobi
 secretKey = secretkey_huobi
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", Apikey
+Cred.Add "apiKey", apiKey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -109,7 +109,7 @@ Set Test = Suite.Test("TestHuobiPrivate POST")
 'Get account-id:
 TestResult = PrivateHuobi("v1/account/accounts", "GET", Cred)
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-AccId = JsonResult("data")(1)("id")
+    AccId = JsonResult("data")(1)("id")
 'Place order
 Dim Params4 As New Dictionary
 Params4.Add "account-id", AccId
@@ -130,17 +130,17 @@ End Sub
 
 Function PublicHuobi(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
 
-Dim Url As String
+Dim url As String
 PublicApiSite = "https://api-cloud.huobi.co.kr/"
 
 MethodParams = DictToString(ParamDict, "URLENC")
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 urlPath = Method & MethodParams
-Url = PublicApiSite & urlPath
+url = PublicApiSite & urlPath
 
 'Debug.Print Url
 
-PublicHuobi = WebRequestURL(Url, ReqType)
+PublicHuobi = WebRequestURL(url, ReqType)
 
 End Function
 Function PrivateHuobi(Method As String, ReqType As String, Credentials As Dictionary, Optional ParamDict As Dictionary) As String
@@ -148,7 +148,7 @@ Function PrivateHuobi(Method As String, ReqType As String, Credentials As Dictio
 Dim APIsign As String
 Dim ApiEndPoint As String
 Dim postdata As String
-Dim Url As String
+Dim url As String
 
 'Get a Timestamp
 Stamp = GetUTCTime()
@@ -158,7 +158,7 @@ HostTxt = "api-cloud.huobi.co.kr"
 HostTxt = "api.huobi.pro"
 TradeApiSite = "https://" & HostTxt & "/"
 
-Url = TradeApiSite & Method
+url = TradeApiSite & Method
 StrHash = ""
 postdata = ""
 
@@ -176,9 +176,9 @@ If UCase(ReqType) = "POST" Then
     'ApiEndPoint = Url
 ElseIf UCase(ReqType) = "GET" Then
     If Not ParamDict Is Nothing Then
-        For Each Key In ParamDict.Keys
-            TotDict(Key) = ParamDict(Key)
-        Next Key
+        For Each key In ParamDict.Keys
+            TotDict(key) = ParamDict(key)
+        Next key
     End If
     MethodParams = DictToString(TotDict, "URLENC")
     postdata = ""
@@ -187,7 +187,7 @@ End If
 StrHash = UCase(ReqType) & Chr(10) & HostTxt & Chr(10) & "/" & Method & Chr(10) & MethodParams
 
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
-ApiEndPoint = Url & MethodParams
+ApiEndPoint = url & MethodParams
 
 
 'Dim PostDict As New Dictionary

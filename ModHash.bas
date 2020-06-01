@@ -43,7 +43,7 @@ Test.IsEqual Left(TestResult, 4), "2¥9u"
 
 End Sub
 
-Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As String, Optional OutType As String) As Variant
+Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal key As String, Optional OutType As String) As Variant
 
     'Created by Koen Rijnsent, www.castoro.nl
     'Function to return a hash
@@ -59,9 +59,9 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
     Dim bytes() As Byte
     
     BTxt = StrConv(clearText, vbFromUnicode)
-    BKey = StrConv(Key, vbFromUnicode)
+    BKey = StrConv(key, vbFromUnicode)
     
-    If Key <> "" Then
+    If key <> "" Then
         'MD5 does not work with a key, no error catching yet
         If Meth = "SHA512" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA512")
@@ -72,8 +72,8 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
         Else
             Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA1")
         End If
-        SHAhasher.Key = BKey
-        bytes = SHAhasher.ComputeHash_2(BTxt)
+        SHAhasher.key = BKey
+        bytes = SHAhasher.computeHash_2(BTxt)
     Else
         If Meth = "SHA512" Then
             Set SHAhasher = CreateObject("System.Security.Cryptography.SHA512Managed")
@@ -88,7 +88,7 @@ Function ComputeHash_C(Meth As String, ByVal clearText As String, ByVal Key As S
         End If
         Set oT = CreateObject("System.Text.UTF8Encoding")
         TextToHash = oT.GetBytes_4(clearText)
-        bytes = SHAhasher.ComputeHash_2((TextToHash))
+        bytes = SHAhasher.computeHash_2((TextToHash))
     End If
     
     If OutType = "STR64" Then
