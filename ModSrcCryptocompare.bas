@@ -486,10 +486,10 @@ Else
     If Len(ReturnColumns) > 0 Then
         ReDim TempArr(1 To UBound(ResTbl, 2), 1 To Len(ReturnColumns))
         For i = 1 To Len(ReturnColumns)
-            Itm = Mid(ReturnColumns, i, 1)
+            itm = Mid(ReturnColumns, i, 1)
             itmnr = 0
             For c = 1 To UBound(ResTbl, 1)
-                If ResTbl(c, 1) = HeadDict(Itm) Then
+                If ResTbl(c, 1) = HeadDict(itm) Then
                     itmnr = c
                     Exit For
                 End If
@@ -501,7 +501,7 @@ Else
                     j2 = j
                     If ReverseData = True And j > 1 Then j2 = UBound(ResTbl, 2) - j + 2
                     TempArr(j2, i) = ResTbl(itmnr, j)
-                    If Itm = "E" Then
+                    If itm = "E" Then
                         'Time from Unixtime to normal date/time
                         If j > 1 Then
                             utime = ResTbl(itmnr, j)
