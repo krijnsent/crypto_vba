@@ -214,8 +214,8 @@ If Not ParamDict Is Nothing Then
 End If
     
 Json = Replace(ConvertToJson(PayloadDict), "/", "\/")
-Payload = Base64Encode(Json)
-APIsign = ComputeHash_C("SHA384", Payload, Credentials("secretKey"), "STRHEX")
+payload = Base64Encode(Json)
+APIsign = ComputeHash_C("SHA384", payload, Credentials("secretKey"), "STRHEX")
 
 url = TradeApiSite & ApiPath
 
@@ -223,7 +223,7 @@ Dim UrlHeaders As New Dictionary
 UrlHeaders.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
 UrlHeaders.Add "Content-Type", "application/x-www-form-urlencoded"
 UrlHeaders.Add "X-BFX-APIKEY", Credentials("apiKey")
-UrlHeaders.Add "X-BFX-PAYLOAD", Payload
+UrlHeaders.Add "X-BFX-PAYLOAD", payload
 UrlHeaders.Add "X-BFX-SIGNATURE", APIsign
 PrivateBitfinex1 = WebRequestURL(url, ReqType, UrlHeaders)
 

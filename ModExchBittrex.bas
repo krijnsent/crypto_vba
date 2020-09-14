@@ -82,10 +82,12 @@ Test.IsOk JsonResult(1)("open") > 0, "test candles 2 failed, result: ${1}"
 Test.IsOk JsonResult(1)("high") > 0, "test candles 3 failed, result: ${1}"
 Test.IsOk JsonResult(1)("low") > 0, "test candles 4 failed, result: ${1}"
 
+
 'Get bittrex time from ping
 Set Test = Suite.Test("TestBittrexTime")
 TestResult = GetBittrexTime()
 Test.IsOk TestResult > 0, "test time 2 failed, result: ${1}"
+
 
 'Test private API
 Set Test = Suite.Test("TestBittrexPrivate")
@@ -96,34 +98,41 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsOk Len(JsonResult(1)("currencySymbol")) >= 3
 Test.IsOk JsonResult(1)("Balance") >= 0
 
-'Test private API
+
 Dim Params4 As New Dictionary
-Params4.Add "marketSymbol", "DOGE-BTC"
-Set Test = Suite.Test("TestBittrexPrivate")
+Params4.Add "marketSymbol", "XRP-BTC"
 TestResult = PrivateBittrex("orders/open", "GET", Cred, Params4)
-Debug.Print TestResult
+'[] (assuming no open orders DOGE-BTC, why would you have any...?
+Test.IsEqual TestResult, "[]"
 
-'[{"currencySymbol":"BCH","total":"0.00001733","available":"0.00001733","updatedAt":"2001-01-01T00:00:00Z"},{"currencySymbol":"BTC","total":"0.01500039","available":"0.01500039","updatedAt":"2001-01-01T00:00:00Z"},{"currencySymbol":"BTXCRD","total":"0.00000000","available":"0.00000000","updatedAt":"2019-10-23T04:16:31.1Z"},{"currencySymbol":"XLM","total":"0","available":"0","updatedAt":"2020-09-13T16:02:42.84307Z"}], etc...
-Test.IsOk InStr(TestResult, "currencySymbol") > 0
-Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk Len(JsonResult(1)("currencySymbol")) >= 3
-Test.IsOk JsonResult(1)("Balance") >= 0
-
-
+'Buy 1 BTC for a crazy low price of 0.1 USD :-)
 Dim Params5 As New Dictionary
-Params5.Add "marketSymbol", "DOGE-BTC"
+Params5.Add "marketSymbol", "BTC-USD"
 Params5.Add "direction", "BUY"
 Params5.Add "type", "LIMIT"
-Params5.Add "quantity", 10
 Params5.Add "timeInForce", "FILL_OR_KILL"
-Params5.Add "quantity", 10
-
+Params5.Add "quantity", 1
+Params5.Add "limit", 0.1
 TestResult = PrivateBittrex("orders", "POST", Cred, Params5)
-'{"success":false,"message":"INVALID_ORDER","result":null}
-Test.IsOk InStr(TestResult, "result") > 0
-Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("success"), False
-Test.IsOk JsonResult("message") = "INVALID_ORDER"
+'Debug.Print TestResult
+If InStr(TestResult, "error_nr") Then
+    'e.g. {"error_nr":409,"error_txt":"HTTP-Conflict","response_txt":{"code":"INSUFFICIENT_FUNDS"}}
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsOk JsonResult("error_nr") > 400
+Else
+    'or OK: {"id": "string (uuid)","marketSymbol": "string","direction": "string","type": "string","quantity": "number (double)","limit": "number (double)","ceiling": "number (double)","timeInForce": "string","clientOrderId": "string (uuid)","fillQuantity": "number (double)","commission": "number (double)","proceeds": "number (double)","status": "string","createdAt": "string (date-time)","updatedAt": "string (date-time)","closedAt": "string (date-time)","orderToCancel": {  "type": "string",  "id": "string (uuid)"}}
+    Test.IsOk InStr(TestResult, "marketSymbol") > 0
+    Set JsonResult = JsonConverter.ParseJson(TestResult)
+    Test.IsEqual JsonResult("direction"), "BUY"
+End If
+
+'Cancel order with id
+Dim Params6 As New Dictionary
+Params6.Add "uuid", "orderid-bla"
+TestResult = PrivateBittrex("orders", "DELETE", Cred, Params6)
+'{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":{"code":"NOT_FOUND"}}
+Test.IsOk InStr(TestResult, "error_nr") > 0
+Test.IsOk InStr(TestResult, "NOT_FOUND") > 0
 
 End Sub
 
@@ -156,28 +165,32 @@ Dim Uri As String
 NonceUnique = GetBittrexTime
 TradeApiSite = "https://api.bittrex.com/v3/"
 
-Uri = TradeApiSite & Method
-PostContent = DictToString(ParamDict, "URLENC")
-'Uri = Uri & "/?" & PostContent
-contentHash = ComputeHash_C("SHA512", PostContent, "", "STRHEX")
-preSign = NonceUnique & Uri & ReqType & contentHash
+url = TradeApiSite & Method
+postdata = ""
+If ReqType = "DELETE" Then
+    For Each itm In ParamDict
+        url = url & "/" & ParamDict(itm)
+    Next itm
+ElseIf ReqType = "GET" And Not ParamDict Is Nothing Then
+    url = url & "?" & DictToString(ParamDict, "URLENC")
+ElseIf ReqType = "POST" Then
+    postdata = DictToString(ParamDict, "JSON")
+End If
 
-'MethodParams = DictToString(ParamDict, "URLENC")
-'If MethodParams <> "" Then MethodParams = "&" & MethodParams
-
-'postdata = Method & "?apikey=" & Credentials("apiKey") & MethodParams & "&nonce=" & NonceUnique
+contentHash = ComputeHash_C("SHA512", postdata, "", "STRHEX")
+preSign = NonceUnique & url & ReqType & contentHash
 APIsign = ComputeHash_C("SHA512", preSign, Credentials("secretKey"), "STRHEX")
 
 Dim headerDict As New Dictionary
 headerDict.Add "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-headerDict.Add "Content-Type", "application/x-www-form-urlencoded"
+headerDict.Add "Content-Type", "application/json"
 headerDict.Add "Api-Key", Credentials("apiKey")
 headerDict.Add "Api-Timestamp", NonceUnique
 headerDict.Add "Api-Content-Hash", contentHash
 headerDict.Add "Api-Signature", APIsign
 
-url = TradeApiSite & postdata
-PrivateBittrex = WebRequestURL(Uri, ReqType, headerDict)
+'Debug.Print url, postdata
+PrivateBittrex = WebRequestURL(url, ReqType, headerDict, postdata)
 
 End Function
 
