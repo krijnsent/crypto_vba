@@ -105,7 +105,7 @@ If Not ParamDict Is Nothing Then
         PayloadDict(key) = ParamDict(key)
     Next key
 End If
-MethodParams = DictToString(PayloadDict, "JSON")
+MethodParams = JsonConverter.ConvertToJson(PayloadDict)
 
 PostPath = "/api/" & Method
 APIsign = ComputeHash_C("SHA512", MethodParams, Credentials("secretKey"), "STRHEX")

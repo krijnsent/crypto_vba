@@ -78,6 +78,7 @@ Set Test = Suite.Test("TestHuobiPrivate GET")
 'Simple test, should return data
 TestResult = PrivateHuobi("v1/account/accounts", "GET", Cred)
 '{"status":"ok","data":[{"id":9999,"type":"spot","subtype":"","state":"working"}]}
+Debug.Print TestResult
 Test.IsOk InStr(TestResult, "status") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("status"), "ok"
@@ -172,7 +173,7 @@ If UCase(ReqType) = "POST" Then
     'For POST request, all query parameters need to be included in the request body with JSON. (e.g. {"currency":"BTC"}).
     MethodParams = DictToString(TotDict, "URLENC")
     
-    postdata = DictToString(ParamDict, "JSON")
+    postdata = JsonConverter.ConvertToJson(ParamDict)
     'ApiEndPoint = Url
 ElseIf UCase(ReqType) = "GET" Then
     If Not ParamDict Is Nothing Then
@@ -199,7 +200,7 @@ ApiEndPoint = url & MethodParams
 '    Next Key
 'End If
 'postdataUrl = DictToString(PostDict, "URLENC")
-'postdataJSON = DictToString(PostDict, "JSON")
+'postdataJSON = JsonConverter.ConvertToJson(ParamDict)
 'postdata64 = Base64Encode(postdataJSON)
 
 APIsign = ComputeHash_C("SHA256", StrHash, Credentials("secretKey"), "STR64")

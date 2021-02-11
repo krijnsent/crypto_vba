@@ -66,24 +66,23 @@ Test.IsOk Len(JsonResult(2)("instrument_id")) > 0
 
 Dim Params As New Dictionary
 Params.Add "granularity", 14400  '14400 seconds = 6 hours
-Params.Add "start", "2019-12-18T08%3A28%3A48.899Z"  'ISO 8601
-Params.Add "end", "2019-12-19T09%3A28%3A48.899Z"
+Params.Add "start", "2020-12-15T08%3A28%3A48.899Z"  'ISO 8601
+Params.Add "end", "2020-12-19T09%3A28%3A48.899Z"
 TestResult = PublicOKEx("spot/v3/instruments/ETH-USDT/candles", "GET", Params)
-
 'Result: TOHLCV
 '[["2019-03-19T08:00:00.000Z","137.74","138.69","137.38","137.79","107365.43315"],["2019-03-19T04:00:00.000Z","137.76","138","136.97","137.73","85020.919026"],["2019-03-19T00:00:00.000Z","137.61","139.41","137.31","137.74","94292.72983"],["2019-03-18T20:00:00.000Z","137.44","138.33","137.42","137.63","63587.691327"],["2019-03-18T16:00:00.000Z","137.59","137.91","137.09","137.42","58001.277483"],["2019-03-18T12:00:00.000Z","137.27","138.03","137","137.6","83512.951662"]]
-Test.IsOk InStr(TestResult, "2019-12-19") > 0
-Test.IsOk InStr(TestResult, "2019-12-18") > 0
+Test.IsOk InStr(TestResult, "2020-12-19") > 0
+Test.IsOk InStr(TestResult, "2020-12-18") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult(1)(1), "2019-12-19T08:00:00.000Z"
-Test.IsEqual JsonResult(1)(2), "127.49"
-Test.IsEqual JsonResult.Count, 6
+Test.IsEqual JsonResult(1)(1), "2020-12-19T08:00:00.000Z"
+Test.IsEqual JsonResult(1)(2), "648.67"
+Test.IsEqual JsonResult.Count, 24
 
 ' Create a new test
 Set Test = Suite.Test("TestOKExTime")
 TestResult = GetOKExTime()
 Test.IsOk TestResult > 1500000000#
-Test.IsOk TestResult < 1600000000#
+Test.IsOk TestResult < 1700000000#
 
 
 Set Test = Suite.Test("TestOKExPrivate")
@@ -191,7 +190,7 @@ NonceUnique = GetOKExTime() & ".00" 'Should be string
 
 If UCase(ReqType) = "POST" Then
     'For POST request, all query parameters need to be included in the request body with JSON. (e.g. {"currency":"BTC"}).
-    postdata = DictToString(ParamDict, "JSON")
+    postdata = JsonConverter.ConvertToJson(ParamDict)
 ElseIf UCase(ReqType) = "GET" Then
     MethodParams = DictToString(ParamDict, "URLENC")
     If MethodParams <> "" Then MethodParams = "?" & MethodParams

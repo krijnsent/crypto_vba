@@ -37,15 +37,15 @@ Set Test = Suite.Test("TestKucoinPublic")
 
 'Error, unknown command
 TestResult = PublicKucoin("AnUnknownCommand", "GET")
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test error 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_nr"), 404, "test error 2 failed, result: ${1}"
 
 'Error, missing parameters
 TestResult = PublicKucoin("market/orderbook/level1", "GET")
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test error 3 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 400
+Test.IsEqual JsonResult("error_nr"), 400, "test error 4 failed, result: ${1}"
 
 TestResult = PublicKucoin("market/allTickers", "GET")
 '{"code":"200000","data":{"ticker":[{"symbol":"LOOM-BTC","high":"0.00001204","vol":"39738.31683935","last":"0.00001187","low":"0.00001151","buy":"0.00001172","sell":"0.00001187","changePrice":"0.00000025","changeRate":"0.0215"},etc...
@@ -74,9 +74,8 @@ Test.IsOk JsonResult("data")("asks")(1)(2) > 0
 ' Create a new test
 Set Test = Suite.Test("TestKucoinTime")
 TestResult = GetKucoinTime()
-Test.IsOk TestResult > 1500000000000#
-Test.IsOk TestResult < 1600000000000#
-
+Test.IsOk TestResult > 1500000000000#, "test time 1 failed, result: ${1}"
+Test.IsOk TestResult < 1700000000000#, "test time 2 failed, result: ${1}"
 
 Set Test = Suite.Test("TestKucoinPrivate")
 
@@ -250,7 +249,7 @@ If ReqType = "GET" Or ReqType = "DELETE" Then
 Else
     'For POST, PUT request, all query parameters need to be included in the request body with JSON. (e.g. {"currency":"BTC"}). Do not include extra spaces in JSON strings.
     MethodTxt = ""
-    ReqBody = DictToString(ParamDict, "JSON")
+    ReqBody = JsonConverter.ConvertToJson(ParamDict)
     postdata = ReqBody
 End If
 

@@ -37,16 +37,16 @@ Set Test = Suite.Test("TestKrakenPublic")
 'Error, unknown command
 TestResult = PublicKraken("AnUnknownCommand", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":{"error":["EGeneral:Unknown method"]}}
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test error 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_nr"), 404, "test error 2 failed, result: ${1}"
 
 'Error, parameter missing
 TestResult = PublicKraken("Ticker", "GET")
 '{"error":["EGeneral:Invalid arguments"]}
-Test.IsOk InStr(TestResult, "Invalid") > 0
+Test.IsOk InStr(TestResult, "Invalid") > 0, "test error 3 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error")(1), "EGeneral:Invalid arguments"
+Test.IsEqual JsonResult("error")(1), "EGeneral:Invalid arguments", "test error 4 failed, result: ${1}"
 
 'Ok request without parameters
 TestResult = PublicKraken("Time", "GET")

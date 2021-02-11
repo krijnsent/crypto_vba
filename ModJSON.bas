@@ -197,6 +197,7 @@ For Each elm In Json("result")
     'Debug.Print json("result")(elm)("leverage")
 Next elm
 
+
 End Sub
 
 Function MaxDepth(ObjIn As Object, Optional MaxLvl As Integer = 1, Optional NodeLvl As Integer = 1) As Integer

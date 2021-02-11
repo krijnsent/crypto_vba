@@ -174,7 +174,7 @@ If ReqType = "DELETE" Then
 ElseIf ReqType = "GET" And Not ParamDict Is Nothing Then
     url = url & "?" & DictToString(ParamDict, "URLENC")
 ElseIf ReqType = "POST" Then
-    postdata = DictToString(ParamDict, "JSON")
+    postdata = JsonConverter.ConvertToJson(ParamDict)
 End If
 
 contentHash = ComputeHash_C("SHA512", postdata, "", "STRHEX")

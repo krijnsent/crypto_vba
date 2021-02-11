@@ -37,8 +37,8 @@ TestResult = PublicCoinone("AnUnknownCommand", "GET")
 '{"error_nr":200,"error_txt":"NO JSON BUT HTML RETURNED","response_txt":0}
 Test.IsOk InStr(TestResult, "error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_txt"), "HTTP-Not Found"
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_txt"), "HTTP-Found"
+Test.IsEqual JsonResult("error_nr"), 302
 
 'OK request
 TestResult = PublicCoinone("ticker", "GET")
@@ -150,7 +150,7 @@ If Not ParamDict Is Nothing Then
 End If
 
 postdataUrl = DictToString(PostDict, "URLENC")
-postdataJSON = DictToString(PostDict, "JSON")
+postdataJSON = JsonConverter.ConvertToJson(PostDict)
 postdata64 = Base64Encode(postdataJSON)
 
 APIsign = ComputeHash_C("SHA512", postdata64, Credentials("secretKey"), "STRHEX")

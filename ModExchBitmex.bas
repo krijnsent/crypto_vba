@@ -166,7 +166,7 @@ NonceUnique = CreateNonce(13)
 
 If UCase(ReqType) = "POST" Then
     'For POST request, all query parameters need to be included in the request body with JSON. (e.g. {"currency":"BTC"}).
-    postdata = DictToString(ParamDict, "JSON")
+    postdata = JsonConverter.ConvertToJson(ParamDict)
 ElseIf UCase(ReqType) = "GET" Then
     MethodParams = DictToString(ParamDict, "URLENC")
     If MethodParams <> "" Then MethodParams = "?" & MethodParams

@@ -83,7 +83,7 @@ Test.IsOk InStr(TestResult, "currency") > 0
 Test.IsOk InStr(TestResult, "warnings") > 0
 Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("pagination")("limit"), 25
+Test.IsEqual JsonResult("pagination")("limit"), 44
 Test.IsOk JsonResult("data").Count >= 1
 Test.IsEqual JsonResult("warnings")(1)("id"), "missing_version"
 
@@ -160,7 +160,7 @@ If Not ParamDict Is Nothing Then
         ParamDict.Remove "CB-VERSION"
     End If
     'Change the rest of the parameters to JSON
-    MethodParams = DictToString(ParamDict, "JSON")
+    MethodParams = JsonConverter.ConvertToJson(ParamDict)
     If MethodParams = "{}" Then MethodParams = ""
 End If
 

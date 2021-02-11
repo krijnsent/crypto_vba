@@ -91,6 +91,7 @@ Test.IsEqual TestResult, "https%3A%2F%2Fgithub.com%2Fsearch%3Fq%3Dcrypto_vba%26t
 
 
 'TestDictToString
+'Only works for 1-level Dicts, for multilevel, use JsonConverter.ConvertToJson(testDict)
 Set Test = Suite.Test("TestDictToString")
 Dim testDict As New Dictionary
 

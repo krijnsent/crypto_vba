@@ -44,7 +44,7 @@ TestResult = PublicCoinbasePro("AnUnknownCommand", "GET")
 Test.IsOk InStr(TestResult, "message") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 401
-Test.IsEqual JsonResult("response_txt")("message"), "CB-ACCESS-KEY header is required"
+Test.IsEqual JsonResult("response_txt")("message"), "Unauthorized."
 
 'Request wrong parameters
 Dim Params As New Dictionary
@@ -54,7 +54,7 @@ TestResult = PublicCoinbasePro("products/BTC-USD/book", "GET", Params)
 Test.IsOk InStr(TestResult, "message") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 400
-Test.IsEqual JsonResult("response_txt")("message"), "Bad Request"
+Test.IsEqual JsonResult("response_txt")("message"), "unexpected level: _"
 
 'Request with parameter
 Dim Params2 As New Dictionary
@@ -121,6 +121,14 @@ TestResult = PrivateCoinbasePro("withdrawals/crypto", "POST", Cred, Params4)
 Test.IsOk InStr(TestResult, "Forbidden") > 0
 
 
+Dim Params5 As New Dictionary
+Params5.Add "product_id", "ETH-USD"
+TestResult = PrivateCoinbasePro("fills", "GET", Cred, Params5)
+Test.IsEqual TestResult, "[]"
+
+
+'{"error_nr":401,"error_txt":"HTTP-Unauthorized","response_txt":{"message":"invalid signature"}}
+
 End Sub
 
 Function PublicCoinbasePro(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String
@@ -146,9 +154,15 @@ Dim MethodParams As String
 NonceUnique = GetCoinbaseProTime
 TradeApiSite = "https://api.pro.coinbase.com"
 
-'Change the parameters to JSON
-MethodParams = DictToString(ParamDict, "JSON")
-If MethodParams = "{}" Then MethodParams = ""
+'Change the parameters to JSON HEREHERE
+If ReqType = "GET" Then
+     MethodParams = DictToString(ParamDict, "URLENC")
+     If MethodParams <> "" Then MethodParams = "?" & MethodParams
+Else
+    'e.g. POST
+    MethodParams = JsonConverter.ConvertToJson(ParamDict)
+    If MethodParams = "{}" Then MethodParams = ""
+End If
     
 SignMsg = NonceUnique & UCase(ReqType) & "/" & Method & "" & MethodParams
 APIsign = Base64Encode(ComputeHash_C("SHA256", SignMsg, Base64Decode(Credentials("secretKey")), "RAW"))
@@ -162,6 +176,7 @@ headerDict.Add "CB-ACCESS-TIMESTAMP", NonceUnique
 headerDict.Add "CB-ACCESS-PASSPHRASE", Credentials("Passphrase")
 
 url = TradeApiSite & "/" & Method
+If ReqType = "GET" Then url = url & MethodParams
 PrivateCoinbasePro = WebRequestURL(url, ReqType, headerDict, MethodParams)
 
 End Function

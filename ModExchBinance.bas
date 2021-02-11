@@ -116,8 +116,6 @@ Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("response_txt")("code"), -2011
 
 
-
-
 End Sub
 
 Function PublicBinance(Method As String, ReqType As String, Optional ParamDict As Dictionary) As String

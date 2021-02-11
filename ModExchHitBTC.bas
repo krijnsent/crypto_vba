@@ -46,9 +46,9 @@ Test.IsEqual JsonResult("error_nr"), 404, "unknowncommand 2 failed, result: ${1}
 Dim Params As New Dictionary
 Params.Add "symbol", "BLABLA"
 TestResult = PublicHitBTCv2("trades", "GET", Params)
-'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"error":{"code":2001,"message":"Symbol not found","description":"Try get /api/2/public/symbol, to get list of all available symbols."}}}
+'{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"timestamp":"2021-02-09T17:30:24.738+00:00","path":"/api/2/public/trades/BLABLA","status":400,"error":{"code":2001,"description":"Try get /public/symbol, to get list of all available symbols.","message":"No such symbol: BLABLA"},"requestId":"eecd7978-102065517"}}
 Test.IsOk InStr(TestResult, "error") > 0, "trades params 1 failed, result: ${1}"
-Test.IsOk InStr(TestResult, "Symbol not found") > 0, "trades params 2 failed, result: ${1}"
+Test.IsOk InStr(TestResult, "No such symbol") > 0, "trades params 2 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("error_nr"), 400, "trades params 3 failed, result: ${1}"
 Test.IsEqual JsonResult("response_txt")("error")("code"), 2001, "trades params 4 failed, result: ${1}"
@@ -196,7 +196,7 @@ NonceUnique = CreateNonce(10)
 TradeApiSite = "https://api.hitbtc.com"
 urlPath = "/api/2/" & Method
 MethodParams = DictToString(ParamDict, "URLENC")
-postdata = DictToString(ParamDict, "JSON")
+postdata = JsonConverter.ConvertToJson(ParamDict)
 If MethodParams <> "" Then MethodParams = "?" & MethodParams
 
 url = TradeApiSite & urlPath

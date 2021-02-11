@@ -36,16 +36,16 @@ Set Test = Suite.Test("TestPoloniexPublic")
 'Error, unknown command
 TestResult = PublicPoloniex("returnUnknownCommand", "GET")
 '{"error":"Invalid command."}
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test error 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error"), "Invalid command."
+Test.IsEqual JsonResult("error"), "Invalid command.", "test error 2 failed, result: ${1}"
 
 'Error, missing parameters
 TestResult = PublicPoloniex("returnOrderBook", "GET")
 '{"error":"Please specify a currency pair."}
-Test.IsOk InStr(TestResult, "error") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test error 3 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error"), "Please specify a currency pair."
+Test.IsEqual JsonResult("error"), "Please specify a currency pair.", "test error 4 failed, result: ${1}"
 
 'Testing error catching and replies
 TestResult = PublicPoloniex("returnTicker", "GET")
@@ -112,10 +112,11 @@ Params3.Add "fillOrKill", 1
 TestResult = PrivatePoloniex("buy", "POST", Cred, Params3)
 '{"error":"This API key does not have permission to trade."}
 '{orderNumber: '514845991795',resultingTrades:[{amount: '3.0',Date: '2018-10-25 23:03:21',rate:'0.0002',total:'0.0006',tradeID:'251834',type:'buy'}]}
+'{"error":"Not enough BTC.","fee":"0.00125000","currencyPair":"BTC_ETH"}
 If InStr(TestResult, "error") > 0 Then
-    Test.IsOk InStr(TestResult, "permission") > 0
+    Test.IsOk InStr(TestResult, "currencyPair") > 0
     Set JsonResult = JsonConverter.ParseJson(TestResult)
-    Test.IsEqual JsonResult("response_txt")("error"), "This API key does not have permission to trade."
+    Test.IsEqual JsonResult("error"), "Not enough BTC."
 Else
     Test.IsOk InStr(TestResult, "resultingTrades") > 0
     Set JsonResult = JsonConverter.ParseJson(TestResult)

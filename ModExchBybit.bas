@@ -201,7 +201,7 @@ If UCase(ReqType) = "GET" Then
     If MethodParams <> "" Then MethodParams = "?" & MethodParams
     contentFormat = "application/x-www-form-urlencoded"
 ElseIf UCase(ReqType) = "POST" Then
-    postdataJSON = DictToString(PostDict, "JSON")
+    postdataJSON = JsonConverter.ConvertToJson(ParamDict)
     contentFormat = "application/json"
     MethodParams = ""
 Else

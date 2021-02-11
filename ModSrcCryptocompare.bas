@@ -46,7 +46,7 @@ TestResult = PublicCryptoCompareData("data/histoday")
 Test.IsOk InStr(TestResult, "Error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("Response"), "Error"
-Test.IsEqual JsonResult("Message"), "fsym param seems to be missing."
+Test.IsEqual JsonResult("Message"), "fsym is a required param."
 Test.IsEqual JsonResult("Path"), ""
 
 'Error, create a dictionary with ONLY the parameter fsym
@@ -56,7 +56,7 @@ TestResult = PublicCryptoCompareData("data/histoday", Params)
 Test.IsOk InStr(TestResult, "Error") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
 Test.IsEqual JsonResult("Response"), "Error"
-Test.IsEqual JsonResult("Message"), "tsym param seems to be missing."
+Test.IsEqual JsonResult("Message"), "tsym is a required param."
 Test.IsEqual JsonResult("Path"), ""
 
 'Error, add to the same dictionary an unknown tsym
@@ -125,10 +125,10 @@ End If
 
 Set Test = Suite.Test("TestC_LAST_PRICE")
 JsonResult = C_LAST_PRICE("MYCOIN1", "BLABLA")
-Test.IsEqual JsonResult, "ERROR There is no data for the symbol MYCOIN1 ."
+Test.IsEqual JsonResult, "ERROR cccagg_or_exchange market does not exist for this coin pair (MYCOIN1-BLABLA)"
 
 JsonResult = C_LAST_PRICE("BTC", "BLABLA")
-Test.IsEqual JsonResult, "ERROR There is no data for any of the toSymbols BLABLA ."
+Test.IsEqual JsonResult, "ERROR cccagg_or_exchange market does not exist for this coin pair (BTC-BLABLA)"
 
 JsonResult = C_LAST_PRICE("BTC", "EUR", "An_Unknown_Exchange")
 Test.IsEqual JsonResult, "ERROR an_unknown_exchange market does not exist for this coin pair (BTC-EUR)"
