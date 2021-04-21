@@ -9,6 +9,7 @@ Get information from/send information to:
 - [Bitmex](https://www.bitmex.com/)
 - [Bitstamp](https://www.bitstamp.net/)
 - [Bittrex](https://www.bittrex.com/) 
+- [BitVavo](https://www.bitvavo.com/) 
 - [Bybit](https://www.bybit.com/) 
 - [Coinbase](https://www.coinbase.com)
 - [CoinbasePro](https://pro.coinbase.com/)
@@ -43,13 +44,13 @@ You do need some references in your VBA editor (already set up in the example fi
 And you do need .NET 3.5 or greater on your system, as it's used by the hashing algorithms (System.Security.Cryptography)
 
 # ToDo
-- Excel formulas need better caching to prevent a stalling/crashing Excel - looking into a RTD option
+- Excel formulas need better caching to prevent a stalling/crashing Excel - an RTD would be a solution, but that's out of scope for me
 - Better error handling
 - Updating/adding exchanges: do create an issue if you want an exchange added/updated, as I'm not checking them.
 
 # Done
 - For historical prices, included https://www.cryptocompare.com/api/ (now https://min-api.cryptocompare.com/ )
-- Build excel functions to get the information directly to a sheet, has some caching, but - TEST PHASE
+- Build excel functions to get the information directly to a sheet, has some caching, but - BETA STAGE - use at own risk
 - Working examples of several exchanges in the example file
 - Created a basic XLSM sample file for all provided exchanges
 - ArrayToTable improvement to handle various data types (e.g. Trade and Margin trade) in one JSON response
@@ -62,11 +63,11 @@ And you do need .NET 3.5 or greater on your system, as it's used by the hashing 
 - Build the Bitfinex API connector
 - Build the Bitstamp API connector
 - Build the Bittrex API connector
+- Build the Bitvavo API connector
 - Build the Coinbase API connector
-- Build the GDAX/CoinbasePro API connector
+- Build the CoinbasePro API connector
 - Build the Coinone API connector
 - Build the Coinspot API connector
-- Build the Cryptopia API connector -> not updated yet after the hack of Jan 2019
 - Build the HitBTC API connector
 - Build the Kraken API connector
 - Build the Kucoin API connector
