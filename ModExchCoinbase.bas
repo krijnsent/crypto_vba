@@ -6,19 +6,19 @@ Sub TestCoinbase()
 'Source: https://github.com/krijnsent/crypto_vba
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_gdax = "the key to use everywhere" etc )
-apiKey = apikey_coinbase
+Apikey = apikey_coinbase
 secretKey = secretkey_coinbase
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -83,7 +83,7 @@ Test.IsOk InStr(TestResult, "currency") > 0
 Test.IsOk InStr(TestResult, "warnings") > 0
 Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("pagination")("limit"), 44
+Test.IsEqual JsonResult("pagination")("limit"), 56
 Test.IsOk JsonResult("data").Count >= 1
 Test.IsEqual JsonResult("warnings")(1)("id"), "missing_version"
 

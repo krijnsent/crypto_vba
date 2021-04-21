@@ -7,19 +7,19 @@ Sub TestBitmex()
 'VBA example: https://github.com/BitMEX/api-connectors/tree/master/official-http/vba
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_bitmex
+Apikey = apikey_bitmex
 secretKey = secretkey_bitmex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -186,148 +186,4 @@ UrlHeaders.Add "api-key", Credentials("apiKey")
 UrlHeaders.Add "api-signature", APIsign
 PrivateBitmex = WebRequestURL(url, ReqType, UrlHeaders, postdata)
 
-End Function
-
-
-
-Sub placeorder()
-Dim Json, httpObject As Object
-Dim nonce As Double
-Dim verb, apiKey, apiSecret, Signature, symbol, price, qty, url, postdata, replytext, nonceStr As String
-Dim jsoncount As Long
-
-' Set monotonically (w time) increasing nonce
-nonce = DateDiff("s", "1/1/1970", Now)
-
-' Set api key and secret
-apiKey = "key"
-apiSecret = "secret"
-
-' Build query
-symbol = "XBT"
-price = 16
-qty = 1
-
-verb = "POST"
-url = "/api/v1/order"
-postdata = "symbol=" & symbol & "&price=" & price & "&quantity=" & qty
-
-' Stringize nonce
-nonceStr = nonce
-
-' Compute signature using hexhash script
-Signature = HexHash(verb + url + nonceStr + postdata, apiSecret, "SHA256")
-
-' Set up HTTP req with headers
-Set httpObject = CreateObject("MSXML2.XMLHTTP")
-httpObject.Open "POST", "https://testnet.bitmex.com" & url, False
-httpObject.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
-httpObject.setRequestHeader "api-nonce", nonceStr
-httpObject.setRequestHeader "api-key", apiKey
-httpObject.setRequestHeader "api-signature", Signature
-httpObject.send (postdata)
-
-' Catch response
-replytext = httpObject.responseText
-
-' Parse JSON response
-Set Json = JsonConverter.ParseJson(replytext)
-
-' This is useful for grabbing dimensions of the response for loops
-' When doing this, get Json parms by doing Json(i)("key") like Json(2)("symbol")
-jsoncount = Json.Count
-
-If Json("ordStatus") = "Rejected" Then
-  MsgBox ("Order rejected")
-Exit Sub
-Else
-'And here just outputting some elements of response
-  Cells(1, "A") = Json("symbol")
-  Cells(1, "B") = Json("timestamp")
-  Cells(1, "C") = Json("price")
-  Cells(1, "D") = Json("orderQty")
-  Cells(1, "E") = Json("orderID")
-  MsgBox ("Order placed.")
-End If
-End Sub
-
-
-Sub BitMexSign()
-
-    Dim nonce As Double
-    Dim verb, url, apiKey, apiSecret, postdata, Signature, nonce2 As String
-    nonce = 1429631577690#
-
-    '
-    ' Reproducing examples from https://www.bitmex.com/app/apiKeys
-    '
-
-    apiKey = "LAqUlngMIQkIUjXMUreyu3qn"
-    apiSecret = "chNOOS4KvNXR_Xq4k4c9qsfoKWvnDecLATCRlcBwyKDYnWgO"
-    verb = "GET"
-    ' Note url-encoding on querystring - this is '/api/v1/instrument?filter={"symbol": "XBTM15"}'
-    url = "/api/v1/instrument?filter=%7B%22symbol%22%3A+%22XBTM15%22%7D"
-    nonce2 = nonce
-    postdata = ""
-    Debug.Print ComputeHash_C("SHA256", verb + url + nonce2 + postdata, apiSecret, "STRHEX")
-
-    ' HEX(HMAC_SHA256(apiSecret, 'GET/api/v1/instrument?filter=%7B%22symbol%22%3A+%22XBTM15%22%7D1429631577690'))
-    ' Result is:
-    ' '9f1753e2db64711e39d111bc2ecace3dc9e7f026e6f65b65c4f53d3d14a60e5f'
-    Signature = HexHash(verb + url + nonce2 + postdata, apiSecret, "SHA256")
-    MsgBox ("Signature from GET req: " & Signature)
-    '9f1753e2db64711e39d111bc2ecace3dc9e7f026e6f65b65c4f53d3d14a60e5f
-    
-    ' POST
-    verb = "POST"
-    url = "/api/v1/order"
-    nonce = 1429631577995#
-    nonce2 = nonce
-    postdata = "{" + Chr(34) & "symbol" & Chr(34) & ":" & Chr(34) & "XBTM15" & Chr(34) & "," & Chr(34) & "price" & Chr(34) & ":219.0," & Chr(34) & "clOrdID" & Chr(34) & ":" & Chr(34) & "mm_bitmex_1a/oemUeQ4CAJZgP3fjHsA" & Chr(34) & "," & Chr(34) & "quantity" & Chr(34) & ":98}"
-    ' "c8f371f0bdae96fd6b4a4d506632b5832982c5143f5c22973bc08d2f56a8beaf"
-    Signature = HexHash(verb + url + nonce2 + postdata, apiSecret, "SHA256")
-    Debug.Print ComputeHash_C("SHA256", verb + url + nonce2 + postdata, apiSecret, "STRHEX")
-    
-    MsgBox ("Signature from POST req: " & Signature)
-
-End Sub
-
-
-
-Function HexHash(ByVal clearText As String, ByVal key As String, Meth As String) As String
-
-    Dim hashedBytes
-    Dim i As Integer
-
-    hashedBytes = computeHash(clearText, key, Meth)
-    HexHash = ""
-
-    For i = 1 To LenB(hashedBytes)
-        ' Incredibly important that the LCase() function calls this way, otherwise code won't always work
-        HexHash = HexHash & LCase(Right("0" & Hex(AscB(MidB(hashedBytes, i, 1))), 2))
-    Next
-
-End Function
-Function computeHash(ByVal clearText As String, ByVal key As String, Meth As String) As Byte()
-
-    Dim BKey() As Byte
-    Dim BTxt() As Byte
-
-    BTxt = StrConv(clearText, vbFromUnicode)
-    BKey = StrConv(key, vbFromUnicode)
-
-    If Meth = "SHA512" Then
-        Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA512")
-    ElseIf Meth = "SHA256" Then
-        Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA256")
-    Else
-        Set SHAhasher = CreateObject("System.Security.Cryptography.HMACSHA1")
-    End If
-
-    If key <> "" Then
-        SHAhasher.key = BKey
-    Else
-    End If
-    computeHash = SHAhasher.computeHash_2(BTxt)
-    Set SHAhaser = Nothing
 End Function
