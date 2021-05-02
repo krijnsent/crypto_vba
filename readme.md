@@ -1,7 +1,6 @@
 # crypto_vba
 An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 365, but should work for Excel 2007+. 
 
-
 # Exchanges:
 Get information from/send information to:
 - [Binance](http://binance.com/)
@@ -42,6 +41,9 @@ You do need some references in your VBA editor (already set up in the example fi
 - Microsoft HTML Object Library --- C:\Windows\SysWOW64\mshtml.tlb
 
 And you do need .NET 3.5 or greater on your system, as it's used by the hashing algorithms (System.Security.Cryptography)
+
+# Virus warnings
+From 2021 several issues have been filed that my example file (the xlsm file) triggers a virus warning, e.g. issue #67 & #73. I have no idea what triggers this (I didn't put any virus in) and have no idea how to solve it, suggestions are very welcome. A solution if you want to use the code is to import the .bas modules & setting up the right references yourself.
 
 # ToDo
 - Excel formulas need better caching to prevent a stalling/crashing Excel - an RTD would be a solution, but that's out of scope for me
