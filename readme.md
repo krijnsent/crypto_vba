@@ -44,6 +44,10 @@ And you do need .NET 3.5 or greater on your system, as it's used by the hashing 
 
 # Virus warnings
 From 2021 several issues have been filed that my example file (the xlsm file) triggers a virus warning, e.g. issue #67 & #73. I have no idea what triggers this (I didn't put any virus in) and have no idea how to solve it, suggestions are very welcome. A solution if you want to use the code is to import the .bas modules & setting up the right references yourself.
+An alternative:
+- download the Github desktop app : https://desktop.github.com/
+- clone the repository "URL": https://github.com/krijnsent/crypto_vba
+- all files are in your local folder and the file should open without warning
 
 # ToDo
 - Excel formulas need better caching to prevent a stalling/crashing Excel - an RTD would be a solution, but that's out of scope for me
