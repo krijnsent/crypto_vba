@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModSrcCoinGecko"
 'Two variables for caching, so the formulas don't update every recalculation
-Public Const CGCacheSeconds = 60   'Nr of seconds cache, default >= 60
+Public Const CGCacheSeconds = 6000   'Nr of seconds cache, default >= 60
 Public CGDict As New Scripting.Dictionary
 
 Sub TestSrcCoinGecko()

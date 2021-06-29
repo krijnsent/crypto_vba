@@ -7,16 +7,16 @@ Sub TestIDEX()
 'Documentation: https://docs.idex.io/
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 
 'Remove this lines, unless you define a constant somewhere ( Public Const apikey_idex = "the key to use everywhere" etc )
-apiKey = apikey_idex
+Apikey = apikey_idex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 
 ' Create a new test suite
 Dim Suite As New TestSuite

@@ -5,19 +5,19 @@ Sub TestCoinone()
 'https://doc.coinone.co.kr/#section/V2-version
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_coinone
+Apikey = apikey_coinone
 secretKey = secretkey_coinone
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite

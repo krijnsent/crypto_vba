@@ -36,54 +36,55 @@ Set Test = Suite.Test("TestCoinbasePublic")
 'Error, unknown command
 TestResult = PublicCoinbase("AnUnknownCommand", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":{"errors":[{"id":"not_found","message":"Not found"}]}}
-Test.IsOk InStr(TestResult, "error") > 0
-Test.IsOk InStr(TestResult, "not_found") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test UnknownCommand 1a failed, result: ${1}"
+Test.IsOk InStr(TestResult, "not_found") > 0, "test UnknownCommand 1b failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404
+Test.IsEqual JsonResult("error_nr"), 404, "test UnknownCommand 1c failed, result: ${1}"
 
 'Request wrong parameter
 Dim Params As New Dictionary
-Params.Add "currency", "X"
+Params.Add "currency", "XY"
 TestResult = PublicCoinbase("exchange-rates", "GET", Params)
 '{"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"errors":[{"id":"invalid_request","message":"Invalid currency (X)"}]}}
-Test.IsOk InStr(TestResult, "error") > 0
-Test.IsOk InStr(TestResult, "invalid_request") > 0
+Test.IsOk InStr(TestResult, "error") > 0, "test Rates 1a failed, result: ${1}"
+Test.IsOk InStr(TestResult, "invalid_request") > 0, "test Rates 1b failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 400
+Test.IsEqual JsonResult("error_nr"), 400, "test Rates 1c failed, result: ${1}"
 
 'Simpel request without parameters
 TestResult = PublicCoinbase("currencies", "GET")
 '{"data":[{"id":"AED","name":"United Arab Emirates Dirham","min_size":"0.01000000"},{"id":"AFN","name":"Afghan Afghani","min_size":"0.01000000"},{"id":"ALL","name":"Albanian Lek","min_size":"0.01000000"},
-Test.IsOk InStr(TestResult, "min_size") > 0
+Test.IsOk InStr(TestResult, "min_size") > 0, "test Currencies 1a failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsOk JsonResult("data").Count >= 20
-Test.IsEqual JsonResult("data")(1)("id"), "AED"
-Test.IsEqual JsonResult("data")(1)("name"), "United Arab Emirates Dirham"
-Test.IsEqual Val(JsonResult("data")(1)("min_size")), 0.01
+Test.IsOk JsonResult("data").Count >= 20, "test Currencies 1b failed, result: ${1}"
+Test.IsEqual JsonResult("data")(1)("id"), "AED", "test Currencies 1c failed, result: ${1}"
+Test.IsEqual JsonResult("data")(1)("name"), "United Arab Emirates Dirham", "test Currencies 1d failed, result: ${1}"
+Test.IsEqual Val(JsonResult("data")(1)("min_size")), 0.01, "test Currencies 1e failed, result: ${1}"
 
 'Request with parameter
 Dim Params2 As New Dictionary
 Params2.Add "currency", "ETH"
 TestResult = PublicCoinbase("exchange-rates", "GET", Params2)
 '{"data":{"currency":"ETH","rates":{"AED":"503.843775","AFN":"10260.72100155","ALL":"15205.84875","AMD":"66996.080561325","ANG":"250.3323036", etc
-Test.IsOk InStr(TestResult, "EUR") > 0
+Test.IsOk InStr(TestResult, "EUR") > 0, "test Rates 2a failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("data")("currency"), "ETH"
-Test.IsEqual Val(JsonResult("data")("rates")("ETH")), 1
-Test.IsOk Val(JsonResult("data")("rates")("USD")) > 0
+Test.IsEqual JsonResult("data")("currency"), "ETH", "test Rates 2b failed, result: ${1}"
+Test.IsEqual Val(JsonResult("data")("rates")("ETH")), 1, "test Rates 2c failed, result: ${1}"
+Test.IsOk Val(JsonResult("data")("rates")("USD")) > 0, "test Rates 2d failed, result: ${1}"
 
 'Coinbase time
 TestResult = GetCoinbaseTime
-Test.IsOk TestResult > 1550000000
+Test.IsOk TestResult > 1550000000, "test Time failed, result: ${1}"
 
 Set Test = Suite.Test("TestCoinbasePrivate")
 TestResult = PrivateCoinbase("accounts", "GET", Cred)
+'Debug.Print TestResult
 '{"pagination":{"ending_before":null,"starting_after":null,"limit":25,"order":"desc","previous_uri":null,"next_uri":null},"data":[{"id":"0cdbaac7-da83-5b85-0fe555be0b48","name":"EUR-wallet","primary":false,"type":"fiat","currency":{"code":"EUR","name":"Euro","color":"#0066cf","sort_index":0,"exponent":2,"type":"fiat"},"balance":{"amount":"0.00","currency":"EUR"},"created_at":"2017-12-27T16:57:41Z","updated_at":"2017-12-27T16:57:41Z","resource":"account","resource_path":"/v2/accounts/0cdbaac7-da83-5b85-b647-0fe402be0b48","allow_deposits":true,"allow_withdrawals":true},{"id":"0a3c2dfc-1c62-190b-abef-fbba3102c89b","name":"LTC-wallet","primary":true,"type":"wallet", etc...
 Test.IsOk InStr(TestResult, "currency") > 0
 Test.IsOk InStr(TestResult, "warnings") > 0
 Test.IsOk InStr(TestResult, "balance") > 0
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("pagination")("limit"), 56
+Test.IsEqual JsonResult("pagination")("limit"), 74
 Test.IsOk JsonResult("data").Count >= 1
 Test.IsEqual JsonResult("warnings")(1)("id"), "missing_version"
 

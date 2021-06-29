@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModSrcCryptocompare"
 'Two variables for caching, so the formulas don't update every recalculation
-Public Const CCCacheSeconds = 300   'Nr of seconds cache, default >= 60
+Public Const CCCacheSeconds = 3000   'Nr of seconds cache, default >= 60
 Public CCDict As New Scripting.Dictionary
 
 Sub TestSrcCryptocompare()
@@ -17,11 +17,11 @@ Sub TestSrcCryptocompare()
 'C_DAY_AVG_PRICE - dayAvg?fsym=BTC&tsym=USD&toTs=1487116800&e=Bitfinex
 'C_ARR_OHLCV - histoday?fsym=GBP&tsym=USD&limit=30&aggregate=1&e=CCCAGG
 
-Dim apiKey As String
-apiKey = "your_api_key_here" 'empty if you don't use an API key
+Dim Apikey As String
+Apikey = "your_api_key_here" 'empty if you don't use an API key
 
 'Remove this line, unless you define a constant somewhere ( Public Const apikey_cryptocompare = "the key to use everywhere" etc )
-apiKey = apikey_cryptocompare
+Apikey = apikey_cryptocompare
 
 ' Create a new test suite
 Dim Suite As New TestSuite
@@ -92,7 +92,7 @@ Test.IsEqual JsonResult("Type"), 1
 
 'Add an API key and force caching off
 Dim Params3 As New Dictionary
-Params3.Add "apikey", apiKey
+Params3.Add "apikey", Apikey
 TestResult = PublicCryptoCompareData("data/social/coin/latest", Params3)
 '{"Response":"Success","Message":"","HasWarning":false,"Type":100,"RateLimit":{},"Data":{"General":{"Points":8212774,"Name":"BTC","CoinName":"Bitcoin","Type":"Webpagecoinp"},"CryptoCompare":{"Points":6898505, etc...
 Test.IsOk InStr(TestResult, "Success") > 0
@@ -140,7 +140,7 @@ JsonResult = C_LAST_PRICE("BTC", "EUR", "Kraken")
 Test.IsOk JsonResult > 0
 
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_LAST_PRICE("BTC", "USD", "Bittrex", apiKey)
+JsonResult = C_LAST_PRICE("BTC", "USD", "Bittrex", Apikey)
 Test.IsOk JsonResult > 0
 
 
@@ -150,7 +150,7 @@ Test.IsOk JsonResult > 0
 JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2018#, "Bittrex")
 Test.IsOk JsonResult > 0
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2019#, , apiKey)
+JsonResult = C_HIST_PRICE("ETH", "USD", #1/1/2019#, , Apikey)
 Test.IsOk JsonResult > 0
 
 
@@ -160,7 +160,7 @@ Test.IsOk JsonResult > 0
 JsonResult = C_DAY_AVG_PRICE("ETH", "BTC", #1/1/2017#, "Poloniex")
 Test.IsOk JsonResult > 0
 'Optional, add an apikey, only affects the rate limit for this function
-JsonResult = C_DAY_AVG_PRICE("XMR", "BTC", #10/1/2018#, , apiKey)
+JsonResult = C_DAY_AVG_PRICE("XMR", "BTC", #10/1/2018#, , Apikey)
 Test.IsOk JsonResult > 0
 
 
@@ -226,7 +226,7 @@ Test.IsOk TestArr(50, 1) > #1/1/2020#
 Test.IsOk TestArr(50, 2) > 0
 
 'Flip the result (newest row on top)
-TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 24, DateSerial(2019, 1, 1), "Kraken", True, apiKey)
+TestArr = C_ARR_OHLCV("H", "XLM", "EUR", "TEOHLCFV", 24, DateSerial(2019, 1, 1), "Kraken", True, Apikey)
 Test.IsEqual UBound(TestArr, 1), 26
 Test.IsEqual UBound(TestArr, 2), 8
 Test.IsEqual TestArr(1, 1), "time"
@@ -241,7 +241,7 @@ Function PublicCryptoCompareData(Method As String, Optional ParamDict As Diction
 
 'For documentation, see: https://min-api.cryptocompare.com/
 Dim url As String
-Dim apiKey As String
+Dim Apikey As String
 Dim TempData As String
 Dim Sec As Double
 Dim objHeaders As New Dictionary
@@ -292,7 +292,7 @@ End If
 PublicCryptoCompareData = TempData
 
 End Function
-Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String, Optional apiKey As String)
+Function C_LAST_PRICE(CurrBuy As String, CurrSell As String, Optional exchange As String, Optional Apikey As String)
 
 Dim PrTxt As String
 Dim Json As Object
@@ -304,8 +304,8 @@ ParamDict.Add ("tsyms"), CurrSell
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(apiKey) > 0 Then
-    ParamDict.Add ("apikey"), apiKey
+If Len(Apikey) > 0 Then
+    ParamDict.Add ("apikey"), Apikey
 End If
 
 PrTxt = PublicCryptoCompareData("data/price", ParamDict)
@@ -322,7 +322,7 @@ Set Json = Nothing
 
 End Function
 
-Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional apiKey As String)
+Function C_HIST_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional Apikey As String)
 
 Dim PrTxt As String
 Dim Json As Object
@@ -336,8 +336,8 @@ ParamDict.Add ("ts"), dt
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(apiKey) > 0 Then
-    ParamDict.Add ("apikey"), apiKey
+If Len(Apikey) > 0 Then
+    ParamDict.Add ("apikey"), Apikey
 End If
 
 PrTxt = PublicCryptoCompareData("data/price", ParamDict)
@@ -354,7 +354,7 @@ Set Json = Nothing
 
 End Function
 
-Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional apiKey As String)
+Function C_DAY_AVG_PRICE(CurrBuy As String, CurrSell As String, DateRates As Date, Optional exchange As String, Optional Apikey As String)
 
 Dim PrTxt As String
 Dim Json As Object
@@ -368,8 +368,8 @@ ParamDict.Add ("toTs"), dt
 If Len(exchange) > 2 Then
     ParamDict.Add ("e"), exchange
 End If
-If Len(apiKey) > 0 Then
-    ParamDict.Add ("apikey"), apiKey
+If Len(Apikey) > 0 Then
+    ParamDict.Add ("apikey"), Apikey
 End If
 
 PrTxt = PublicCryptoCompareData("data/dayAvg", ParamDict)
@@ -386,7 +386,7 @@ Set Json = Nothing
 
 End Function
 
-Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String, Optional ReverseData As Boolean, Optional apiKey As String) As Variant()
+Function C_ARR_OHLCV(DayHourMin As String, CurrBuy As String, CurrSell As String, ReturnColumns As String, Optional NrLines As Long, Optional MaxTimeDate As Date, Optional exchange As String, Optional ReverseData As Boolean, Optional Apikey As String) As Variant()
 
 'ReturnColumns: variable "TEOHLC    " -> select columns you want back in the order you want them back, no spaces
 'T = timestamp (unixtime)
@@ -458,8 +458,8 @@ End If
 If NrLines > 0 Then
     ParamDict.Add ("limit"), NrLines
 End If
-If Len(apiKey) > 0 Then
-    ParamDict.Add ("apikey"), apiKey
+If Len(Apikey) > 0 Then
+    ParamDict.Add ("apikey"), Apikey
 End If
 
 PrTxt = PublicCryptoCompareData(cmd, ParamDict)

@@ -7,19 +7,19 @@ Sub TestHitBTC()
 'https://github.com/hitbtc-com/hitbtc-api#rest-api-reference
 'HitBTC will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_HitBTC = "the key to use everywhere" etc )
-apiKey = apikey_hitbtc
+Apikey = apikey_hitbtc
 secretKey = secretkey_hitbtc
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -39,7 +39,7 @@ TestResult = PublicHitBTCv2("AnUnknownCommand", "GET")
 '{"error_nr":404,"error_txt":"HTTP-Not Found","response_txt":0}
 Test.IsOk InStr(TestResult, "error") > 0, "unknowncommand 1 failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("error_nr"), 404, "unknowncommand 2 failed, result: ${1}"
+Test.IsEqual JsonResult("error_nr"), 503, "unknowncommand 2 failed, result: ${1}"
 
 
 'Error, wrong parameter

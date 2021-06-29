@@ -7,19 +7,19 @@ Sub TestKraken()
 'https://www.kraken.com/en-us/help/api#public-market-data
 'https://www.kraken.com/help/api#private-user-data
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_kraken = "the key to use everywhere" etc )
-apiKey = apikey_kraken
+Apikey = apikey_kraken
 secretKey = secretkey_kraken
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite

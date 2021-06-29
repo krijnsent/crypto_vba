@@ -6,20 +6,20 @@ Sub TestKucoin()
 'Remember to create a new API key for excel/VBA
 'Kucoin will require ever increasing values/nonces for the private API and the nonces created in VBA might mismatch that of other sources
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_Kucoin = "the key to use everywhere" etc )
-apiKey = apikey_kucoin
+Apikey = apikey_kucoin
 secretKey = secretkey_kucoin
 passphrase = passphrase_kucoin
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 Cred.Add "Passphrase", passphrase
 
@@ -81,12 +81,12 @@ Set Test = Suite.Test("TestKucoinPrivate")
 
 TestResult = PrivateKucoin("accounts", "GET", Cred)
 '{"code":"200000","data":[{"balance":"15.827819","available":"15.827819","holds":"0","currency":"KCS","id":"5c6a4a1d81a34e1da97","type":"trade"},{"balance":"2.12058951","available":"2.12058951",", etc...
-Test.IsOk InStr(TestResult, "code") > 0
-Test.IsOk InStr(TestResult, "balance") > 0
+Test.IsOk InStr(TestResult, "code") > 0, "test accounts 1a failed, result: ${1}"
+Test.IsOk InStr(TestResult, "balance") > 0, "test accounts 1b failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("code") * 1, 200000
-Test.IsOk JsonResult("data").Count > 20
-Test.IsOk JsonResult("data")(1)("balance") > 0
+Test.IsEqual JsonResult("code") * 1, 200000, "test accounts 1c failed, result: ${1}"
+Test.IsOk JsonResult("data").Count > 20, "test accounts 1d failed, result: ${1}"
+Test.IsOk JsonResult("data")(1)("balance") > 0, "test accounts 1e failed, result: ${1}"
 
 'Get only KCS account amount
 Dim Params1 As New Dictionary
@@ -94,12 +94,12 @@ Params1.Add "currency", "KCS"
 TestResult = PrivateKucoin("accounts", "GET", Cred, Params1)
 'Debug.Print TestResult
 '{"code":"200000","data":[{"balance":"15.82887819","available":"15.82887819","holds":"0","currency":"KCS","id":"5c6a4a1d81a34e1da97","type":"trade"}]}
-Test.IsOk InStr(TestResult, "code") > 0
-Test.IsOk InStr(TestResult, "balance") > 0
+Test.IsOk InStr(TestResult, "code") > 0, "test accounts 2a failed, result: ${1}"
+Test.IsOk InStr(TestResult, "balance") > 0, "test accounts 2b failed, result: ${1}"
 Set JsonResult = JsonConverter.ParseJson(TestResult)
-Test.IsEqual JsonResult("code") * 1, 200000
-Test.IsOk JsonResult("data").Count >= 1
-Test.IsOk JsonResult("data")(1)("balance") > 0
+Test.IsEqual JsonResult("code") * 1, 200000, "test accounts 2c failed, result: ${1}"
+Test.IsOk JsonResult("data").Count >= 1, "test accounts 2d failed, result: ${1}"
+Test.IsOk JsonResult("data")(1)("balance") > 0, "test accounts 2e failed, result: ${1}"
 
 'Create a main LTC account (if it doesn't exist)
 Dim Params2 As New Dictionary

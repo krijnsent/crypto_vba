@@ -6,19 +6,19 @@ Sub TestBittrex()
 'v3 - https://bittrex.github.io/api/v3
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 
 'Remove these 2 lines, unless you define 2 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_bittrex
+Apikey = apikey_bittrex
 secretKey = secretkey_bittrex
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 
 ' Create a new test suite
@@ -114,11 +114,11 @@ Params5.Add "timeInForce", "FILL_OR_KILL"
 Params5.Add "quantity", 1
 Params5.Add "limit", 0.1
 TestResult = PrivateBittrex("orders", "POST", Cred, Params5)
-'Debug.Print TestResult
+Debug.Print TestResult
 If InStr(TestResult, "error_nr") Then
-    'e.g. {"error_nr":409,"error_txt":"HTTP-Conflict","response_txt":{"code":"INSUFFICIENT_FUNDS"}}
+    'e.g. {"error_nr":400,"error_txt":"HTTP-Bad Request","response_txt":{"code":"SOURCE_OF_FUNDS_REQUIRED"}}
     Set JsonResult = JsonConverter.ParseJson(TestResult)
-    Test.IsOk JsonResult("error_nr") > 400
+    Test.IsOk JsonResult("error_nr") >= 400
 Else
     'or OK: {"id": "string (uuid)","marketSymbol": "string","direction": "string","type": "string","quantity": "number (double)","limit": "number (double)","ceiling": "number (double)","timeInForce": "string","clientOrderId": "string (uuid)","fillQuantity": "number (double)","commission": "number (double)","proceeds": "number (double)","status": "string","createdAt": "string (date-time)","updatedAt": "string (date-time)","closedAt": "string (date-time)","orderToCancel": {  "type": "string",  "id": "string (uuid)"}}
     Test.IsOk InStr(TestResult, "marketSymbol") > 0

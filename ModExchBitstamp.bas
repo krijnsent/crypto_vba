@@ -5,21 +5,21 @@ Sub TestBitstamp()
 'Documentation: https://Bitstamp.com/home/api
 'Remember to create a new API key for excel/VBA
 
-Dim apiKey As String
+Dim Apikey As String
 Dim secretKey As String
 
-apiKey = "your api key here"
+Apikey = "your api key here"
 secretKey = "your secret key here"
 customerID = "your customer id here"
 
 'Remove these 3 lines, unless you define 3 constants somewhere ( Public Const secretkey_btce = "the key to use everywhere" etc )
-apiKey = apikey_bitstamp
+Apikey = apikey_bitstamp
 secretKey = secretkey_bitstamp
 customerID = customer_id_bitstamp
 
 'Put the credentials in a dictionary
 Dim Cred As New Dictionary
-Cred.Add "apiKey", apiKey
+Cred.Add "apiKey", Apikey
 Cred.Add "secretKey", secretKey
 Cred.Add "customerID", customerID
 
