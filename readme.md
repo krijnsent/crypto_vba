@@ -1,5 +1,5 @@
 # crypto_vba
-An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 365, but should work for Excel 2007+. 
+An Excel/VBA project to communicate with various cryptocurrency exchanges APIs. Tested on Windows 10 & Excel 365, but should work for Excel 2007+. Note: project is on hold - I'm working on other things and don't have the time & energy to jump through all the KYC hoops of exchanges to keep my accounts and test my code.
 
 # Exchanges:
 Get information from/send information to:
